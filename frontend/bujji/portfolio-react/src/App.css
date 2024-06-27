@@ -1,0 +1,29 @@
+body {
+  font-size: 25px; /* Adjust the base font size */
+  font-family: 'Arial', sans-serif; /* Change the default font family if needed */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-size: inherit; /* Ensure headings scale with the base font size */
+}
+
+.ant-typography {
+  font-size: 1.1em; /* Slightly larger text for Ant Design Typography components */
+}
+
+.menu-item {
+  font-size: 18px;
+  color: black;
+}
+
+.menu-item-active {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header {
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 10px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
