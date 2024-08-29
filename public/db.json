@@ -1,0 +1,157 @@
+{
+  "categories": [
+    { "id": 1, "name": "Starters" },
+    { "id": 2, "name": "Main Course" },
+    { "id": 3, "name": "Desserts" },
+    { "id": 4, "name": "Beverages" },
+    { "id": 5, "name": "Side Dishes" },
+    { "id": 6, "name": "Specialty Items" }
+  ],
+  "subcategories": [
+    { "id": 1, "name": "Soups", "categoryId": 1 },
+    { "id": 2, "name": "Salads", "categoryId": 1 },
+    { "id": 3, "name": "Finger Foods", "categoryId": 1 },
+    { "id": 4, "name": "Biryanis", "categoryId": 2 },
+    { "id": 5, "name": "Pulavs", "categoryId": 2 },
+    { "id": 6, "name": "Curries", "categoryId": 2 },
+    { "id": 7, "name": "Pasta/Rice Dishes", "categoryId": 2 },
+    { "id": 8, "name": "Ice Creams", "categoryId": 3 },
+    { "id": 9, "name": "Cakes", "categoryId": 3 },
+    { "id": 10, "name": "Pastries", "categoryId": 3 },
+    { "id": 11, "name": "Hot Beverages", "categoryId": 4 },
+    { "id": 12, "name": "Cold Beverages", "categoryId": 4 },
+    { "id": 13, "name": "Vegetables", "categoryId": 5 },
+    { "id": 14, "name": "Potatoes", "categoryId": 5 },
+    { "id": 15, "name": "Grains", "categoryId": 5 },
+    { "id": 16, "name": "Chef's Specials", "categoryId": 6 },
+    { "id": 17, "name": "Seasonal Dishes", "categoryId": 6 }
+  ],
+  "menu_items": [
+    {
+      "id": 1,
+      "name": "Chicken Biryani",
+      "description": "Fragrant basmati rice cooked with tender chicken pieces and aromatic spices.",
+      "price": 250,
+      "image": "https://example.com/chicken-biryani.jpg",
+      "categoryId": 2,
+      "subcategoryId": 4
+    },
+    {
+      "id": 2,
+      "name": "Mutton Biryani",
+      "description": "Succulent mutton pieces cooked with long-grain basmati rice and traditional spices.",
+      "price": 300,
+      "image": "https://example.com/mutton-biryani.jpg",
+      "categoryId": 2,
+      "subcategoryId": 4
+    },
+    {
+      "id": 3,
+      "name": "Vegetable Pulav",
+      "description": "Aromatic rice dish cooked with mixed vegetables and mild spices.",
+      "price": 180,
+      "image": "https://example.com/veg-pulav.jpg",
+      "categoryId": 2,
+      "subcategoryId": 5
+    },
+    {
+      "id": 4,
+      "name": "Tomato Soup",
+      "description": "Classic tomato soup made with fresh tomatoes and herbs.",
+      "price": 100,
+      "image": "https://example.com/tomato-soup.jpg",
+      "categoryId": 1,
+      "subcategoryId": 1
+    },
+    {
+      "id": 5,
+      "name": "Greek Salad",
+      "description": "Fresh salad with cucumbers, tomatoes, olives, and feta cheese.",
+      "price": 150,
+      "image": "https://example.com/greek-salad.jpg",
+      "categoryId": 1,
+      "subcategoryId": 2
+    },
+    {
+      "id": 6,
+      "name": "Chocolate Brownie",
+      "description": "Rich chocolate brownie served with vanilla ice cream.",
+      "price": 120,
+      "image": "https://example.com/chocolate-brownie.jpg",
+      "categoryId": 3,
+      "subcategoryId": 9
+    },
+    {
+      "id": 7,
+      "name": "Mango Lassi",
+      "description": "Refreshing yogurt-based drink with fresh mango pulp.",
+      "price": 80,
+      "image": "https://example.com/mango-lassi.jpg",
+      "categoryId": 4,
+      "subcategoryId": 12
+    },
+    {
+      "id": 8,
+      "name": "Caesar Salad",
+      "description": "Classic Caesar salad with crispy romaine, croutons, and parmesan.",
+      "price": 160,
+      "image": "https://example.com/caesar-salad.jpg",
+      "categoryId": 1,
+      "subcategoryId": 2
+    },
+    {
+      "id": 9,
+      "name": "Spaghetti Carbonara",
+      "description": "Creamy spaghetti with pancetta, egg, and parmesan cheese.",
+      "price": 220,
+      "image": "https://example.com/spaghetti-carbonara.jpg",
+      "categoryId": 2,
+      "subcategoryId": 7
+    },
+    {
+      "id": 10,
+      "name": "Tiramisu",
+      "description": "Classic Italian dessert with layers of coffee-soaked ladyfingers and mascarpone cheese.",
+      "price": 130,
+      "image": "https://example.com/tiramisu.jpg",
+      "categoryId": 3,
+      "subcategoryId": 10
+    },
+    {
+      "id": 11,
+      "name": "Lemonade",
+      "description": "Refreshing lemonade with a hint of mint.",
+      "price": 90,
+      "image": "https://example.com/lemonade.jpg",
+      "categoryId": 4,
+      "subcategoryId": 12
+    },
+    {
+      "id": 12,
+      "name": "Grilled Vegetables",
+      "description": "Assorted vegetables grilled to perfection.",
+      "price": 150,
+      "image": "https://example.com/grilled-vegetables.jpg",
+      "categoryId": 5,
+      "subcategoryId": 13
+    },
+    {
+      "id": 13,
+      "name": "Garlic Mashed Potatoes",
+      "description": "Creamy mashed potatoes with roasted garlic.",
+      "price": 120,
+      "image": "https://example.com/garlic-mashed-potatoes.jpg",
+      "categoryId": 5,
+      "subcategoryId": 14
+    },
+    {
+      "id": 14,
+      "name": "Seasonal Veggie Platter",
+      "description": "A selection of seasonal vegetables served with dipping sauces.",
+      "price": 180,
+      "image": "https://example.com/seasonal-veggie-platter.jpg",
+      "categoryId": 6,
+      "subcategoryId": 17
+    }
+  ]
+}
