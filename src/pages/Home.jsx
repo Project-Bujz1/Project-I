@@ -11,15 +11,15 @@ function Home() {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
 
   useEffect(() => {
-    fetch('http://localhost:3001/categories')
+    fetch('https://smartserver-json-server.onrender.com/categories')
       .then((res) => res.json())
       .then((data) => setCategories(data));
 
-    fetch('http://localhost:3001/subcategories')
+    fetch('https://smartserver-json-server.onrender.com/subcategories')
       .then((res) => res.json())
       .then((data) => setSubcategories(data));
 
-    fetch('http://localhost:3001/menu_items')
+    fetch('https://smartserver-json-server.onrender.com/menu_items')
       .then((res) => res.json())
       .then((data) => setMenuItems(data));
   }, []);
