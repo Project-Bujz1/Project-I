@@ -7,6 +7,7 @@ import Cart from './pages/Cart';
 import OrderSummary from './pages/OrderSummary';
 import { CartProvider } from './contexts/CartContext';
 import './styles/main.css';
+import AdminPage from './components/AdminPage';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -25,6 +26,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
+              <Route path="/admin" element={<AdminPage/>} />
               <Route path="/order-summary" element={<OrderSummary />} />
             </Routes>
           </div>

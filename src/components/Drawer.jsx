@@ -55,7 +55,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           className="menu-item"
           style={{margin:"20px"}}
         >
-          <Link to="/" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "24px" }}>Home</Link>
+          <Link to="/" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Home</Link>
         </Menu.Item>
         <Menu.Item
           key="cart"
@@ -63,7 +63,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           className="menu-item"
           style={{margin:"20px"}}
         >
-          <Link to="/cart" onClick={onClose} style={{ fontSize: "24px" }}>Cart</Link>
+          <Link to="/cart" onClick={onClose} style={{ fontSize: "20px" }}>Cart</Link>
         </Menu.Item>
         <Menu.Item
           key="order-summary"
@@ -71,7 +71,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           className="menu-item"
           style={{margin:"20px"}}
         >
-          <Link to="/order-summary" onClick={onClose} style={{ fontSize: "24px" }}>Order Summary</Link>
+          <Link to="/order-summary" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
         </Menu.Item>
       </Menu>
       <div style={{ 
