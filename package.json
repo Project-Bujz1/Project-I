@@ -24,9 +24,8 @@
   "build": "react-scripts build",
   "test": "react-scripts test",
   "eject": "react-scripts eject",
-  "lint": "eslint . --max-warnings 0"
-}
-,
+  "lint": "node lint.js"
+},
   "eslintConfig": {
     "extends": [
       "react-app",

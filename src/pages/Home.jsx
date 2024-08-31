@@ -15,6 +15,7 @@ function Home({ cartIconRef, onItemAdded }) {
   useEffect(() => {
     fetch('https://smartserver-json-server.onrender.com/categories')
       .then((res) => res.json())
+      
       .then((data) => {
         setCategories(data);
         setLoading((prev) => ({ ...prev, categories: false }));
