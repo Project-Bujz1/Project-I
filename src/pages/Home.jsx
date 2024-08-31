@@ -1,34 +1,33 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
 import MenuItem from '../components/MenuItem';
 import FoodLoader from '../components/FoodLoader';
 
-function Home() {
+function Home({ cartIconRef, onItemAdded }) {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
-  const cartIconRef = useRef(null);
 
   useEffect(() => {
-    fetch('https://smartserver-json-server.onrender.com/categories')
+    fetch('http://localhost:3001/categories')
       .then((res) => res.json())
       .then((data) => {
         setCategories(data);
         setLoading((prev) => ({ ...prev, categories: false }));
       });
 
-    fetch('https://smartserver-json-server.onrender.com/subcategories')
+    fetch('http://localhost:3001/subcategories')
       .then((res) => res.json())
       .then((data) => {
         setSubcategories(data);
         setLoading((prev) => ({ ...prev, subcategories: false }));
       });
 
-    fetch('https://smartserver-json-server.onrender.com/menu_items')
+    fetch('http://localhost:3001/menu_items')
       .then((res) => res.json())
       .then((data) => {
         setMenuItems(data);
@@ -116,8 +115,13 @@ function Home() {
           ) : (
             <div className="menu-items-grid">
               {filteredMenuItems.map((item) => (
-        <MenuItem key={item.id} item={item} cartIconRef={cartIconRef} />
-      ))}
+                <MenuItem 
+                  key={item.id} 
+                  item={item} 
+                  cartIconRef={cartIconRef} 
+                  onItemAdded={onItemAdded} 
+                />
+              ))}
             </div>
           )}
         </>

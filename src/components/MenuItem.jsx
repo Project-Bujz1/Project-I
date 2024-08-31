@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
 
-function MenuItem({ item, cartIconRef }) {
+function MenuItem({ item, cartIconRef, onItemAdded }) {
   const { cart, addToCart, updateQuantity } = useCart();
   const [quantity, setQuantity] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -30,12 +30,14 @@ function MenuItem({ item, cartIconRef }) {
     }
     setQuantity(quantity + 1);
     triggerAnimation();
+    if (onItemAdded) onItemAdded();
   };
 
   const handleIncreaseQuantity = () => {
     updateQuantity(item.id, quantity + 1);
     setQuantity(quantity + 1);
     triggerAnimation();
+    if (onItemAdded) onItemAdded();
   };
 
   const handleDecreaseQuantity = () => {

@@ -1,10 +1,11 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input, Badge } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
 import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
 import { useCart } from '../contexts/CartContext';
 import './Header.css';
+import CartHitEffect from './CartHitEffect';
 
 const { Search } = Input;
 
@@ -12,6 +13,7 @@ function Header({ toggleDrawer, onCartIconRefChange }) {
   const { cart } = useCart();
   const navigate = useNavigate();
   const cartIconRef = useRef(null);
+  const [showHitEffect, setShowHitEffect] = useState(false);
 
   useEffect(() => {
     if (onCartIconRefChange) {
@@ -21,6 +23,11 @@ function Header({ toggleDrawer, onCartIconRefChange }) {
 
   const handleOrderSummaryClick = () => {
     navigate('/order-summary');
+  };
+
+  const triggerHitEffect = () => {
+    setShowHitEffect(true);
+    setTimeout(() => setShowHitEffect(false), 300);
   };
 
   return (
@@ -51,7 +58,10 @@ function Header({ toggleDrawer, onCartIconRefChange }) {
             />
             <Link to="/cart" className="header__cart-icon">
               <Badge count={cart.length} offset={[10, 0]}>
-                <AiOutlineShoppingCart ref={cartIconRef} className="header__icon" style={{marginTop: "8px"}} />
+                <div ref={cartIconRef} style={{ position: 'relative' }}>
+                  <AiOutlineShoppingCart className="header__icon" style={{marginTop: "8px"}} />
+                  {showHitEffect && <CartHitEffect />}
+                </div>
               </Badge>
             </Link>
           </div>

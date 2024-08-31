@@ -8,6 +8,8 @@ import OrderSummary from './pages/OrderSummary';
 import { CartProvider } from './contexts/CartContext';
 import './styles/main.css';
 import AdminPage from './components/AdminPage';
+import OrderHistory from './components/OrderHistory';
+import OrderConfirmation from './components/OrderConfirmation';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -28,6 +30,8 @@ function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin" element={<AdminPage/>} />
               <Route path="/order-summary" element={<OrderSummary />} />
+              <Route path="/order-history" element={<OrderHistory />} />
+              <Route path="/order-confirmation" element={<OrderConfirmation />} />
             </Routes>
           </div>
         </div>

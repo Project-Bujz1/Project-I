@@ -12,10 +12,14 @@ const FlyingItemAnimation = ({ itemImage, startPosition, endPosition, onAnimatio
         y: endPosition.y - startPosition.y,
         scale: 0.5,
         opacity: 0.7,
-        transition: { duration: 0.8, ease: 'easeInOut' }
+        transition: { 
+          duration: 0.8, 
+          ease: [0.19, 0.69, 0.35, 0.90],
+          opacity: { duration: 0.6 }
+        }
       });
       setIsVisible(false);
-      onAnimationComplete();
+      if (onAnimationComplete) onAnimationComplete();
     };
 
     animateItem();
@@ -24,9 +28,7 @@ const FlyingItemAnimation = ({ itemImage, startPosition, endPosition, onAnimatio
   if (!isVisible) return null;
 
   return (
-    <motion.img
-      src={itemImage}
-      alt="Flying item"
+    <motion.div
       initial={{ x: 0, y: 0, scale: 1, opacity: 1 }}
       animate={controls}
       style={{
@@ -37,8 +39,20 @@ const FlyingItemAnimation = ({ itemImage, startPosition, endPosition, onAnimatio
         height: '50px',
         borderRadius: '25px',
         zIndex: 9999,
+        pointerEvents: 'none',
       }}
-    />
+    >
+      <motion.img
+        src={itemImage}
+        alt="Flying item"
+        style={{
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          borderRadius: '25px',
+        }}
+      />
+    </motion.div>
   );
 };
 
