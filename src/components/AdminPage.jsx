@@ -12,7 +12,7 @@
 //   useEffect(() => {
 //     const fetchOrders = async () => {
 //       try {
-//         const response = await fetch('http://localhost:3001/history');
+//         const response = await fetch('https://smartserver-json-server.onrender.com/history');
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch orders');
 //         }
@@ -36,7 +36,7 @@
 //       const updatedOrder = orders.find(order => order.id === orderId);
 //       const statusMessage = getStatusMessage(newStatus);
 
-//       const response = await fetch(`http://localhost:3001/history/${orderId}`, {
+//       const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
 //         method: 'PATCH',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -163,7 +163,7 @@ const AdminOrderComponent = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('http://localhost:3001/history');
+        const response = await fetch('https://smartserver-json-server.onrender.com/history');
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
@@ -187,7 +187,7 @@ const AdminOrderComponent = () => {
       const updatedOrder = orders.find(order => order.id === orderId);
       const statusMessage = getStatusMessage(newStatus);
 
-      const response = await fetch(`http://localhost:3001/history/${orderId}`, {
+      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
