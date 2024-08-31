@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
+import FlyingItemAnimation from './FlyingItemAnimation';
 
-function MenuItem({ item }) {
+function MenuItem({ item, cartIconRef }) {
   const { cart, addToCart, updateQuantity } = useCart();
   const [quantity, setQuantity] = useState(0);
+  const [showAnimation, setShowAnimation] = useState(false);
+  const [animationStartPosition, setAnimationStartPosition] = useState({ x: 0, y: 0 });
+  const itemRef = useRef(null);
 
   useEffect(() => {
     const cartItem = cart.find((cartItem) => cartItem.id === item.id);
@@ -12,6 +16,12 @@ function MenuItem({ item }) {
     }
   }, [cart, item.id]);
 
+  const triggerAnimation = () => {
+    const itemRect = itemRef.current.getBoundingClientRect();
+    setAnimationStartPosition({ x: itemRect.left, y: itemRect.top });
+    setShowAnimation(true);
+  };
+
   const handleAddToCart = () => {
     if (quantity === 0) {
       addToCart(item);
@@ -19,11 +29,13 @@ function MenuItem({ item }) {
       updateQuantity(item.id, quantity + 1);
     }
     setQuantity(quantity + 1);
+    triggerAnimation();
   };
 
   const handleIncreaseQuantity = () => {
     updateQuantity(item.id, quantity + 1);
     setQuantity(quantity + 1);
+    triggerAnimation();
   };
 
   const handleDecreaseQuantity = () => {
@@ -36,8 +48,20 @@ function MenuItem({ item }) {
     }
   };
 
+  const handleAnimationComplete = () => {
+    setShowAnimation(false);
+  };
+
+  const getCartIconPosition = () => {
+    if (cartIconRef && cartIconRef.current) {
+      const rect = cartIconRef.current.getBoundingClientRect();
+      return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+    }
+    return { x: window.innerWidth - 60, y: 40 }; // Fallback position
+  };
+
   return (
-    <div className="menu-item">
+    <div className="menu-item" ref={itemRef}>
       <img src={item.image} alt={item.name} className="menu-item-image" />
       <div className="menu-item-content">
         <h3 className="menu-item-title">{item.name}</h3>
@@ -57,6 +81,14 @@ function MenuItem({ item }) {
           )}
         </div>
       </div>
+      {showAnimation && (
+        <FlyingItemAnimation
+          itemImage={item.image}
+          startPosition={animationStartPosition}
+          endPosition={getCartIconPosition()}
+          onAnimationComplete={handleAnimationComplete}
+        />
+      )}
     </div>
   );
 }

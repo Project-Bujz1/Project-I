@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Input, Badge } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
@@ -8,9 +8,16 @@ import './Header.css';
 
 const { Search } = Input;
 
-function Header({ toggleDrawer }) {
+function Header({ toggleDrawer, onCartIconRefChange }) {
   const { cart } = useCart();
   const navigate = useNavigate();
+  const cartIconRef = useRef(null);
+
+  useEffect(() => {
+    if (onCartIconRefChange) {
+      onCartIconRefChange(cartIconRef);
+    }
+  }, [onCartIconRefChange]);
 
   const handleOrderSummaryClick = () => {
     navigate('/order-summary');
@@ -44,7 +51,7 @@ function Header({ toggleDrawer }) {
             />
             <Link to="/cart" className="header__cart-icon">
               <Badge count={cart.length} offset={[10, 0]}>
-                <AiOutlineShoppingCart className="header__icon" style={{marginTop: "8px"}} />
+                <AiOutlineShoppingCart ref={cartIconRef} className="header__icon" style={{marginTop: "8px"}} />
               </Badge>
             </Link>
           </div>

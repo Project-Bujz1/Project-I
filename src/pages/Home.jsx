@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
 import MenuItem from '../components/MenuItem';
@@ -11,6 +11,7 @@ function Home() {
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
+  const cartIconRef = useRef(null);
 
   useEffect(() => {
     fetch('https://smartserver-json-server.onrender.com/categories')
@@ -115,8 +116,8 @@ function Home() {
           ) : (
             <div className="menu-items-grid">
               {filteredMenuItems.map((item) => (
-                <MenuItem key={item.id} item={item} />
-              ))}
+        <MenuItem key={item.id} item={item} cartIconRef={cartIconRef} />
+      ))}
             </div>
           )}
         </>
