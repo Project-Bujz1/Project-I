@@ -15,7 +15,7 @@ function Layout({ children }) {
   return (
     <div className="layout">
       <Header 
-        toggleDrawer={() => {/* Implement drawer toggle */}} 
+        // toggleDrawer={() => {}} 
         cartIconRef={cartIconRef}
         triggerHitEffect={triggerHitEffect}
       />

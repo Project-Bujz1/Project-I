@@ -87,11 +87,11 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
       <style>
         {`
           .menu-item.ant-menu-item-selected {
-            background-color: #f5222d !important; /* Red background */
-            color: white !important; /* White text color */
+            background-color: #f5222d !important;
+            color: white !important; 
           }
           .menu-item.ant-menu-item-selected a {
-            color: white !important; /* White text color */
+            color: white !important;
           }
         `}
       </style>
