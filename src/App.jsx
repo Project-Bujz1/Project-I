@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Drawer from './components/Drawer';
@@ -14,20 +14,43 @@ import MenuManagement from './components/MenuManagement';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const cartIconRef = useRef(null);
 
   const toggleDrawer = () => {
     setIsDrawerOpen(!isDrawerOpen);
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+  };
+
+  const handleCartIconRefChange = (ref) => {
+    cartIconRef.current = ref;
+  };
+
+  const handleItemAdded = () => {
+    // Logic for item added animation
   };
 
   return (
     <Router>
       <CartProvider>
         <div className="App">
-          <Header toggleDrawer={toggleDrawer} />
+          <Header toggleDrawer={toggleDrawer} 
+            onCartIconRefChange={handleCartIconRefChange}
+            onSearch={handleSearch}
+          />
           <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
           <div className="container">
-            <Routes>
-              <Route path="/" element={<Home />} />
+          <Routes>
+            <Route  path="/" element={<Home 
+                  cartIconRef={cartIconRef} 
+                  onItemAdded={handleItemAdded}
+                  searchTerm={searchTerm}
+                />
+              } 
+            />
               <Route path="/cart" element={<Cart />} />
               <Route path="/admin" element={<AdminPage/>} />
               <Route path="/order-summary" element={<OrderSummary />} />

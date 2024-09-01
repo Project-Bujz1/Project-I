@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, Badge } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
 import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
@@ -9,11 +9,13 @@ import CartHitEffect from './CartHitEffect';
 
 const { Search } = Input;
 
-function Header({ toggleDrawer, onCartIconRefChange }) {
+function Header({ toggleDrawer, onCartIconRefChange, onSearch }) {
   const { cart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const cartIconRef = useRef(null);
   const [showHitEffect, setShowHitEffect] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     if (onCartIconRefChange) {
@@ -28,6 +30,16 @@ function Header({ toggleDrawer, onCartIconRefChange }) {
   const triggerHitEffect = () => {
     setShowHitEffect(true);
     setTimeout(() => setShowHitEffect(false), 300);
+  };
+
+  const handleSearch = (value) => {
+    setSearchTerm(value);
+    if (onSearch) {
+      onSearch(value);
+    }
+    if (location.pathname !== '/') {
+      navigate('/');
+    }
   };
 
   return (
@@ -49,6 +61,9 @@ function Header({ toggleDrawer, onCartIconRefChange }) {
             <Search
               placeholder="Search menu..."
               className="header__search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onSearch={handleSearch}
             />
           </div>
           <div className="header__right">
