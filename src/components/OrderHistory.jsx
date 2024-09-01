@@ -11,7 +11,7 @@
 
 //   const fetchOrders = async () => {
 //     try {
-//       const response = await fetch('https://smartserver-json-server.onrender.com');
+//       const response = await fetch('http://localhost:3001');
 //       const data = await response.json();
 //       setOrders(data);
 //     } catch (error) {
@@ -77,6 +77,7 @@
 // }
 
 // export default OrderHistory;
+
 import React, { useEffect, useState } from 'react';
 import { List, Card, Button, Popconfirm, message, Tag } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
