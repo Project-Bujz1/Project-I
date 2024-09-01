@@ -11,7 +11,7 @@
 
 //   const fetchOrders = async () => {
 //     try {
-//       const response = await fetch('http://localhost:3001');
+//       const response = await fetch('https://smartserver-json-server.onrender.com/history');
 //       const data = await response.json();
 //       setOrders(data);
 //     } catch (error) {
@@ -21,7 +21,7 @@
 
 //   const handleDelete = async (orderId) => {
 //     try {
-//       const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`, {
+//       const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
 //         method: 'DELETE',
 //       });
 //       if (!response.ok) {
@@ -77,7 +77,6 @@
 // }
 
 // export default OrderHistory;
-
 import React, { useEffect, useState } from 'react';
 import { List, Card, Button, Popconfirm, message, Tag } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
@@ -94,7 +93,7 @@ function OrderHistory() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://smartserver-json-server.onrender.com');
+      const response = await fetch('https://smartserver-json-server.onrender.com/history');
       if (!response.ok) {
         throw new Error('Failed to fetch order history');
       }
@@ -110,7 +109,7 @@ function OrderHistory() {
 
   const handleDelete = async (orderId) => {
     try {
-      const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`, {
+      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {
