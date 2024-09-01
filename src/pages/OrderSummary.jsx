@@ -27,7 +27,7 @@
 //     };
 
 //     try {
-//       await fetch('https://smartserver-json-server.onrender.com', {
+//       await fetch('https://smartserver-json-server.onrender.com/history', {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ function OrderSummary() {
     };
 
     try {
-      const response = await fetch('https://smartserver-json-server.onrender.com', {
+      const response = await fetch('https://smartserver-json-server.onrender.com/history', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
