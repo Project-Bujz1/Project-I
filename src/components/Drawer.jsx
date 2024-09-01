@@ -1,7 +1,7 @@
 import React from 'react';
 import { Drawer, Menu } from 'antd';
 import { Link } from 'react-router-dom';
-import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined } from '@ant-design/icons';
+import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined, UnorderedListOutlined, HistoryOutlined, UserOutlined, SettingOutlined, AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 
 const RestaurantDrawer = ({ isOpen, onClose }) => {
   return (
@@ -75,7 +75,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
         </Menu.Item>
         <Menu.Item
           key="order-history"
-          icon={<FileTextOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          icon={<HistoryOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
           className="menu-item"
           style={{margin:"20px"}}
         >
@@ -83,11 +83,19 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
         </Menu.Item>
         <Menu.Item
           key="admin"
-          icon={<FileTextOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          icon={<UserOutlined  style={{ fontWeight: 'bold', fontSize: "24px" }} />}
           className="menu-item"
           style={{margin:"20px"}}
         >
           <Link to="/admin" onClick={onClose} style={{ fontSize: "20px" }}>Admin</Link>
+        </Menu.Item>
+        <Menu.Item
+          key="menu-management"
+          icon={<AppstoreOutlined  style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          className="menu-item"
+          style={{margin:"20px"}}
+        >
+          <Link to="/menu-management" onClick={onClose} style={{ fontSize: "20px" }}>Menu Management</Link>
         </Menu.Item>
       </Menu>
       <div style={{ 

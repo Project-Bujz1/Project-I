@@ -12,7 +12,7 @@ const AdminOrderComponent = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('https://smartserver-json-server.onrender.com/history');
+        const response = await fetch('https://smartserver-json-server.onrender.com');
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
@@ -36,7 +36,7 @@ const AdminOrderComponent = () => {
       const updatedOrder = orders.find(order => order.id === orderId);
       const statusMessage = getStatusMessage(newStatus);
 
-      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
+      const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

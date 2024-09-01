@@ -11,7 +11,7 @@
 
 //   const fetchOrders = async () => {
 //     try {
-//       const response = await fetch('https://smartserver-json-server.onrender.com/history');
+//       const response = await fetch('https://smartserver-json-server.onrender.com');
 //       const data = await response.json();
 //       setOrders(data);
 //     } catch (error) {
@@ -21,7 +21,7 @@
 
 //   const handleDelete = async (orderId) => {
 //     try {
-//       const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
+//       const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`, {
 //         method: 'DELETE',
 //       });
 //       if (!response.ok) {
@@ -93,7 +93,7 @@ function OrderHistory() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://smartserver-json-server.onrender.com/history');
+      const response = await fetch('https://smartserver-json-server.onrender.com');
       if (!response.ok) {
         throw new Error('Failed to fetch order history');
       }
@@ -109,7 +109,7 @@ function OrderHistory() {
 
   const handleDelete = async (orderId) => {
     try {
-      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
+      const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

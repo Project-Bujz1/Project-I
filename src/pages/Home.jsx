@@ -13,7 +13,7 @@ function Home({ cartIconRef, onItemAdded }) {
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
 
   useEffect(() => {
-    fetch('https://smartserver-json-server.onrender.com/categories')
+    fetch('http://localhost:3001/categories')
       .then((res) => res.json())
       
       .then((data) => {
@@ -21,14 +21,14 @@ function Home({ cartIconRef, onItemAdded }) {
         setLoading((prev) => ({ ...prev, categories: false }));
       });
 
-    fetch('https://smartserver-json-server.onrender.com/subcategories')
+    fetch('http://localhost:3001/subcategories')
       .then((res) => res.json())
       .then((data) => {
         setSubcategories(data);
         setLoading((prev) => ({ ...prev, subcategories: false }));
       });
 
-    fetch('https://smartserver-json-server.onrender.com/menu_items')
+    fetch('http://localhost:3001/menu_items')
       .then((res) => res.json())
       .then((data) => {
         setMenuItems(data);

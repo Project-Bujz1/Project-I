@@ -9,7 +9,7 @@
 //   useEffect(() => {
 //     const fetchOrderStatus = async () => {
 //       try {
-//         const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`);
+//         const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`);
 //         const order = await response.json();
 //         setOrderStatus(order.status || 'Pending');
 //       } catch (error) {
@@ -65,7 +65,7 @@
 //   useEffect(() => {
 //     const fetchOrderStatus = async () => {
 //       try {
-//         const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`);
+//         const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`);
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch order status');
 //         }
@@ -139,7 +139,7 @@
 //   useEffect(() => {
 //     const fetchOrderStatus = async () => {
 //       try {
-//         const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`);
+//         const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`);
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch order status');
 //         }
@@ -214,7 +214,7 @@ function OrderConfirmation() {
   useEffect(() => {
     const fetchOrderStatus = async () => {
       try {
-        const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`);
+        const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch order status');
         }

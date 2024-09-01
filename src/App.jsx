@@ -10,6 +10,7 @@ import './styles/main.css';
 import AdminPage from './components/AdminPage';
 import OrderHistory from './components/OrderHistory';
 import OrderConfirmation from './components/OrderConfirmation';
+import MenuManagement from './components/MenuManagement';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -32,6 +33,7 @@ function App() {
               <Route path="/order-summary" element={<OrderSummary />} />
               <Route path="/order-history" element={<OrderHistory />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
+              <Route path="/menu-management" element={<MenuManagement />} />
             </Routes>
           </div>
         </div>
