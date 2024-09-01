@@ -168,7 +168,10 @@ const AdminOrderComponent = () => {
           throw new Error('Failed to fetch orders');
         }
         const data = await response.json();
-        setOrders(data);
+  
+        // Sort orders by timestamp in descending order
+        const sortedOrders = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        setOrders(sortedOrders);
       } catch (error) {
         console.error('Failed to fetch orders', error);
         message.error('Failed to fetch orders');
