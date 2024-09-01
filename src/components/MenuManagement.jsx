@@ -7,7 +7,7 @@ const { Header, Content } = Layout;
 const { Option } = Select;
 const { Title } = Typography;
 
-const API_URL = 'http://localhost:3001';
+const API_URL = 'https://smartserver-json-server.onrender.com';
 
 // Styled Components
 const StyledLayout = styled(Layout)`
