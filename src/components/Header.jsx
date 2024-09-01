@@ -1,27 +1,22 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, Badge } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
 import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
 import { useCart } from '../contexts/CartContext';
+import { useCartIcon } from '../contexts/CartIconContext';
 import './Header.css';
 import CartHitEffect from './CartHitEffect';
 
 const { Search } = Input;
 
-function Header({ toggleDrawer, onCartIconRefChange, onSearch }) {
+function Header({ toggleDrawer, onSearch }) {
   const { cart } = useCart();
+  const cartIconRef = useCartIcon();
   const navigate = useNavigate();
   const location = useLocation();
-  const cartIconRef = useRef(null);
   const [showHitEffect, setShowHitEffect] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
-  useEffect(() => {
-    if (onCartIconRefChange) {
-      onCartIconRefChange(cartIconRef);
-    }
-  }, [onCartIconRefChange]);
 
   const handleOrderSummaryClick = () => {
     navigate('/order-summary');

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
+import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
 
-function MenuItem({ item, cartIconRef, onItemAdded }) {
+function MenuItem({ item, onItemAdded }) {
   const { cart, addToCart, updateQuantity } = useCart();
+  const cartIconRef = useCartIcon();
   const [quantity, setQuantity] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
   const [animationStartPosition, setAnimationStartPosition] = useState({ x: 0, y: 0 });

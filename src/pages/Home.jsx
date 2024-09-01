@@ -75,6 +75,15 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     setSelectedSubcategory(null);
   };
 
+  const renderMenuItem = (item) => (
+    <MenuItem 
+      key={item.id} 
+      item={item} 
+      cartIconRef={cartIconRef} 
+      onItemAdded={onItemAdded} 
+    />
+  );
+
   return (
     <div className="home-container" style={{ marginTop: '10px' }}>
       {searchTerm ? (
@@ -84,14 +93,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
           </h2>
           {searchResults.length > 0 ? (
             <div className="menu-items-grid">
-              {searchResults.map((item) => (
-                <MenuItem 
-                  key={item.id} 
-                  item={item} 
-                  cartIconRef={cartIconRef} 
-                  onItemAdded={onItemAdded} 
-                />
-              ))}
+              {searchResults.map(renderMenuItem)}
             </div>
           ) : (
             <p style={{ textAlign: 'center' }}>No items found.</p>
@@ -150,14 +152,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
                 <p>Loading menu items...</p>
               ) : (
                 <div className="menu-items-grid">
-                  {filteredMenuItems.map((item) => (
-                    <MenuItem 
-                      key={item.id} 
-                      item={item} 
-                      cartIconRef={cartIconRef} 
-                      onItemAdded={onItemAdded} 
-                    />
-                  ))}
+                  {filteredMenuItems.map(renderMenuItem)}
                 </div>
               )}
             </>
