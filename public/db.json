@@ -192,141 +192,142 @@
     }
   ],
   "menu_items": [
-    {
-      "id": 1,
-      "name": "Tomato Basil Soup",
-      "description": "A creamy soup made with ripe tomatoes and fresh basil, served with a drizzle of olive oil.",
-      "price": 150,
-      "image": "https://www.google.com/imgres?q=Tomato%20Basil%20Soup&imgurl=https%3A%2F%2Fcdn.loveandlemons.com%2Fwp-content%2Fuploads%2F2020%2F09%2Ftomato-basil-soup.jpg&imgrefurl=https%3A%2F%2Fwww.loveandlemons.com%2Ftomato-basil-soup-recipe%2F&docid=6Dg4O6HyPZ5NbM&tbnid=nlyB2vCChbtrvM&vet=12ahUKEwi87sO3rJ6IAxXywTgGHTk3F78QM3oECBgQAA..i&w=1160&h=1525&hcb=2&ved=2ahUKEwi87sO3rJ6IAxXywTgGHTk3F78QM3oECBgQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 2,
-      "name": "Mushroom Bisque",
-      "description": "Rich and creamy bisque made from a blend of assorted mushrooms, herbs, and a hint of garlic.",
-      "price": 180,
-      "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbVzOf9DvoMJTn5KZfwSVQUoD2O_pf9uqJxpPh5bxoEi7j7-kai76KRXq81bHDb1X-fVY&usqp=CAU",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 3,
-      "name": "Butternut Squash Soup",
-      "description": "Smooth and velvety soup made from roasted butternut squash, ginger, and a touch of cream.",
-      "price": 170,
-      "image": "https://www.google.com/imgres?q=Butternut%20Squash%20Soup&imgurl=https%3A%2F%2Fs23209.pcdn.co%2Fwp-content%2Fuploads%2F2014%2F12%2F230711_DD_Roasted-Butternut-Squash-Bacon-Soup_243.jpg&imgrefurl=https%3A%2F%2Fdamndelicious.net%2F2014%2F12%2F10%2Froasted-butternut-squash-bacon-soup%2F&docid=GjuZX2MaZq6H0M&tbnid=EGbBDOCOn4WvYM&vet=12ahUKEwih15z8rJ6IAxURxDgGHT8LJhkQM3oECBYQAA..i&w=1520&h=2280&hcb=2&ved=2ahUKEwih15z8rJ6IAxURxDgGHT8LJhkQM3oECBYQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 4,
-      "name": "Vegetable Minestrone",
-      "description": "A hearty Italian-style soup with mixed vegetables, beans, and pasta, in a rich tomato broth.",
-      "price": 160,
-      "image": "https://www.google.com/imgres?q=Vegetable%20Minestrone&imgurl=https%3A%2F%2Fimages.immediate.co.uk%2Fproduction%2Fvolatile%2Fsites%2F30%2F2021%2F03%2FClassic-Minestrone-Soup-13720e5.jpg%3Fresize%3D768%2C574&imgrefurl=https%3A%2F%2Fwww.bbcgoodfood.com%2Frecipes%2Fclassic-minestrone-soup&docid=-AVj4EiVjipcWM&tbnid=HGziPNMlmty2qM&vet=12ahUKEwiV9pCQrZ6IAxWrzTgGHe61NxsQM3oECEoQAA..i&w=768&h=574&hcb=2&ved=2ahUKEwiV9pCQrZ6IAxWrzTgGHe61NxsQM3oECEoQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 5,
-      "name": "Lentil Soup",
-      "description": "Comforting and nourishing soup made with lentils, carrots, celery, and spices.",
-      "price": 140,
-      "image": "https://www.google.com/imgres?q=Lentil%20Soup&imgurl=https%3A%2F%2Fwww.cookinwithmima.com%2Fwp-content%2Fuploads%2F2020%2F04%2Flebanese-lentil-soup-5-500x500.jpg&imgrefurl=https%3A%2F%2Fwww.cookinwithmima.com%2Flebanese-lentil-soup%2F&docid=Gy3PfbBp_KGZmM&tbnid=YPAutOqDYY3ESM&vet=12ahUKEwj_oqCgrZ6IAxW3_aACHQZIAHgQM3oECGEQAA..i&w=500&h=500&hcb=2&ved=2ahUKEwj_oqCgrZ6IAxW3_aACHQZIAHgQM3oECGEQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 6,
-      "name": "Veg Clear Soup",
-      "description": "A light and clear soup with fresh vegetables.",
-      "price": 80,
-      "image": "https://www.google.com/imgres?q=Veg%20Clear%20Soup&imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FHzR5z7zNaF4%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fm.youtube.com%2Fwatch%3Fv%3DHzR5z7zNaF4&docid=k_xwMWhTCSyDsM&tbnid=HFLgcmX7n7kHYM&vet=12ahUKEwjkgsLzsZ6IAxU_zTgGHZKpDN0QM3oECFAQAA..i&w=1280&h=720&hcb=2&ved=2ahUKEwjkgsLzsZ6IAxU_zTgGHZKpDN0QM3oECFAQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 7,
-      "name": "Veg Clear Soup 1/2",
-      "description": "A smaller serving of our light and clear vegetable soup.",
-      "price": 100,
-      "image": "https://www.google.com/imgres?q=Veg%20Clear%20Soup&imgurl=https%3A%2F%2Fi.ytimg.com%2Fvi%2FHzR5z7zNaF4%2Fmaxresdefault.jpg&imgrefurl=https%3A%2F%2Fm.youtube.com%2Fwatch%3Fv%3DHzR5z7zNaF4&docid=k_xwMWhTCSyDsM&tbnid=HFLgcmX7n7kHYM&vet=12ahUKEwjkgsLzsZ6IAxU_zTgGHZKpDN0QM3oECFAQAA..i&w=1280&h=720&hcb=2&ved=2ahUKEwjkgsLzsZ6IAxU_zTgGHZKpDN0QM3oECFAQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 8,
-      "name": "Veg Manchow Soup",
-      "description": "A spicy and tangy Chinese-style soup with mixed vegetables and crispy noodles.",
-      "price": 100,
-      "image": "https://www.google.com/imgres?q=Veg%20Manchow%20Soup&imgurl=https%3A%2F%2Fwww.secondrecipe.com%2Fwp-content%2Fuploads%2F2020%2F06%2Fveg-manchow-soup.jpg&imgrefurl=https%3A%2F%2Fwww.secondrecipe.com%2Fveg-manchow-soup%2F&docid=Assc_AzfyhLZ-M&tbnid=WapoECV4V8tCCM&vet=12ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oECHYQAA..i&w=1200&h=1593&hcb=2&ved=2ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oECHYQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 9,
-      "name": "Veg Manchow Soup 1/2",
-      "description": "A smaller serving of our spicy and tangy Chinese-style vegetable soup.",
-      "price": 130,
-      "image": "https://www.google.com/imgres?q=Veg%20Manchow%20Soup&imgurl=https%3A%2F%2Fwww.secondrecipe.com%2Fwp-content%2Fuploads%2F2020%2F06%2Fveg-manchow-soup.jpg&imgrefurl=https%3A%2F%2Fwww.secondrecipe.com%2Fveg-manchow-soup%2F&docid=Assc_AzfyhLZ-M&tbnid=WapoECV4V8tCCM&vet=12ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oECHYQAA..i&w=1200&h=1593&hcb=2&ved=2ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oECHYQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 10,
-      "name": "Veg Manchurian Soup",
-      "description": "Spicy soup with vegetable Manchurian balls in a flavorful broth.",
-      "price": 150,
-      "image": "https://www.google.com/imgres?q=Veg%20Manchow%20Soup&imgurl=https%3A%2F%2Fi0.wp.com%2Fwww.shanazrafiq.com%2Fwp-content%2Fuploads%2F2021%2F01%2F1-Chicken-Manchow-Soup-8.jpg%3Ffit%3D1200%252C798%26ssl%3D1&imgrefurl=https%3A%2F%2Fwww.shanazrafiq.com%2F2021%2F01%2Fchicken-manchow-soup%2F&docid=zKl0rCDvtJotcM&tbnid=IQ0MSa9tJmmlQM&vet=12ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oFCIQBEAA..i&w=1200&h=798&hcb=2&ved=2ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oFCIQBEAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 11,
-      "name": "Veg Manchurian Soup 1/2",
-      "description": "A smaller serving of our spicy soup with vegetable Manchurian balls.",
-      "price": 160,
-      "image": "https://www.google.com/imgres?q=Veg%20Manchow%20Soup&imgurl=https%3A%2F%2Fi0.wp.com%2Fwww.shanazrafiq.com%2Fwp-content%2Fuploads%2F2021%2F01%2F1-Chicken-Manchow-Soup-8.jpg%3Ffit%3D1200%252C798%26ssl%3D1&imgrefurl=https%3A%2F%2Fwww.shanazrafiq.com%2F2021%2F01%2Fchicken-manchow-soup%2F&docid=zKl0rCDvtJotcM&tbnid=IQ0MSa9tJmmlQM&vet=12ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oFCIQBEAA..i&w=1200&h=798&hcb=2&ved=2ahUKEwjMv8aXsp6IAxW3_aACHQZIAHgQM3oFCIQBEAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 12,
-      "name": "Tomato Soup",
-      "description": "A classic, smooth tomato soup seasoned with herbs and spices.",
-      "price": 130,
-      "image": "https://www.google.com/imgres?q=Tomato%20Soup&imgurl=https%3A%2F%2Fcdn.loveandlemons.com%2Fwp-content%2Fuploads%2F2023%2F01%2Ftomato-soup-recipe.jpg&imgrefurl=https%3A%2F%2Fwww.loveandlemons.com%2Ftomato-soup-recipe%2F&docid=D-JnQTzwLEl5GM&tbnid=z-9uwxcZPBCLJM&vet=12ahUKEwj9s5Hbsp6IAxVGwjgGHaMcELgQM3oECB0QAA..i&w=1160&h=1160&hcb=2&ved=2ahUKEwj9s5Hbsp6IAxVGwjgGHaMcELgQM3oECB0QAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 13,
-      "name": "Tomato Soup 1/2",
-      "description": "A smaller serving of our classic smooth tomato soup.",
-      "price": 160,
-      "image": "https://www.google.com/imgres?q=Tomato%20Soup&imgurl=https%3A%2F%2Fcdn.loveandlemons.com%2Fwp-content%2Fuploads%2F2023%2F01%2Ftomato-soup-recipe.jpg&imgrefurl=https%3A%2F%2Fwww.loveandlemons.com%2Ftomato-soup-recipe%2F&docid=D-JnQTzwLEl5GM&tbnid=z-9uwxcZPBCLJM&vet=12ahUKEwj9s5Hbsp6IAxVGwjgGHaMcELgQM3oECB0QAA..i&w=1160&h=1160&hcb=2&ved=2ahUKEwj9s5Hbsp6IAxVGwjgGHaMcELgQM3oECB0QAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 14,
-      "name": "Veg Garlic Soup",
-      "description": "Flavorful soup with roasted garlic and vegetables, seasoned to perfection.",
-      "price": 140,
-      "image": "https://www.google.com/imgres?q=veg%20Garlic%20Soup&imgurl=https%3A%2F%2Fcdn.tarladalal.com%2Fmembers%2F9306%2Fprocstepimgs%2Fgarlic-vegetable-soup_dsc4825-(13)-12-185894.jpg&imgrefurl=https%3A%2F%2Fwww.tarladalal.com%2Fgarlic-vegetable-soup---healthy-heart-5535r&docid=bpmFDklydl_VuM&tbnid=9MAev_8oleyBuM&vet=12ahUKEwi26oyEs56IAxW94jgGHRJVAEgQM3oECBsQAA..i&w=750&h=562&hcb=2&ved=2ahUKEwi26oyEs56IAxW94jgGHRJVAEgQM3oECBsQAA",
-      "categoryId": 1,
-      "subcategoryId": 1
-    },
-    {
-      "id": 15,
-      "name": "Chicken Soup",
-      "description": "A classic chicken soup made with tender chicken pieces, vegetables, and herbs.",
-      "price": 180,
-      "image": "https://www.google.com/imgres?q=Chicken%20Soup&imgurl=https%3A%2F%2Fi2.wp.com%2Fwww.downshiftology.com%2Fwp-content%2Fuploads%2F2023%2F10%2FChicken-Soup-main-2.jpg&imgrefurl=https%3A%2F%2Fdownshiftology.com%2Frecipes%2Fchicken-soup%2F&docid=q6X_nGHU-4DPbM&tbnid=EH1jGtVAJKWDgM&vet=12ahUKEwjgi9b2uZ6IAxW33jgGHWoJA6sQM3oECGQQAA..i&w=1600&h=1067&hcb=2&ved=2ahUKEwjgi9b2uZ6IAxW33jgGHWoJA6sQM3oECGQQAA",
-      "categoryId": 1,
-      "subcategoryId": 2
-    },
+   {
+    "id": 1,
+    "name": "Tomato Basil Soup",
+    "description": "A creamy soup made with ripe tomatoes and fresh basil, served with a drizzle of olive oil.",
+    "price": 150,
+    "image": "https://cdn.loveandlemons.com/wp-content/uploads/2020/09/tomato-basil-soup-recipe-580x809.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 2,
+    "name": "Mushroom Bisque",
+    "description": "Rich and creamy bisque made from a blend of assorted mushrooms, herbs, and a hint of garlic.",
+    "price": 180,
+    "image": "https://provincetownindependent.org/wp-content/uploads/2020/01/Shorr-Mushroom-Bisque-Photo-No-Credit-600x400.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 3,
+    "name": "Butternut Squash Soup",
+    "description": "Smooth and velvety soup made from roasted butternut squash, ginger, and a touch of cream.",
+    "price": 170,
+    "image": "https://www.twopeasandtheirpod.com/wp-content/uploads/2022/11/Butternut-Squash-Soup-4-1025x1536.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 4,
+    "name": "Vegetable Minestrone",
+    "description": "A hearty Italian-style soup with mixed vegetables, beans, and pasta, in a rich tomato broth.",
+    "price": 160,
+    "image": "https://minimalistbaker.com/wp-content/uploads/2017/08/PERFECT-1-Pot-Vegan-Minestrone-Vegetables-beans-pasta-SO-delicious-and-healthy-minestrone-soup-recipe-vegan-glutenfree-minimalistbaker-5-768x1152.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 5,
+    "name": "Lentil Soup",
+    "description": "Comforting and nourishing soup made with lentils, carrots, celery, and spices.",
+    "price": 140,
+    "image": "https://www.themediterraneandish.com/wp-content/uploads/2020/01/greek-red-lentil-soup-recipe-4-768x1152.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 6,
+    "name": "Veg Clear Soup",
+    "description": "A light and clear soup with fresh vegetables.",
+    "price": 80,
+    "image": "https://www.yummytummyaarthi.com/wp-content/uploads/2022/07/chicken-clear-soup-1-720x480.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 7,
+    "name": "Veg Clear Soup 1/2",
+    "description": "A smaller serving of our light and clear vegetable soup.",
+    "price": 100,
+    "image": "https://www.yummytummyaarthi.com/wp-content/uploads/2022/07/chicken-clear-soup-1-720x480.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 8,
+    "name": "Veg Manchow Soup",
+    "description": "A spicy and tangy Chinese-style soup with mixed vegetables and crispy noodles.",
+    "price": 100,
+    "image": "https://i0.wp.com/kitchenflavours.net/wp-content/uploads/2021/11/Manchow-Soup.jpg?w=666&ssl=1",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 9,
+    "name": "Veg Manchow Soup 1/2",
+    "description": "A smaller serving of our spicy and tangy Chinese-style vegetable soup.",
+    "price": 130,
+    "image": "https://i0.wp.com/kitchenflavours.net/wp-content/uploads/2021/11/Manchow-Soup.jpg?w=666&ssl=1",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 10,
+    "name": "Veg Manchurian Soup",
+    "description": "Spicy soup with vegetable Manchurian balls in a flavorful broth.",
+    "price": 150,
+    "image": "https://i0.wp.com/kitchenflavours.net/wp-content/uploads/2021/11/Manchow-Soup.jpg?w=666&ssl=1",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 11,
+    "name": "Veg Tom yum Soup ",
+    "description": "A smaller serving of our spicy soup with vegetable Manchurian balls.",
+    "price": 160,
+    "image": "https://www.thespruceeats.com/thmb/8omoj5zmE0fM70g88SttPNRkHmI=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/vegetarian-tom-yum-soup-3217762-hero-01-4872510cb5f24d9480e7a2f4b8f23c57.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 12,
+    "name": "Tomato Soup",
+    "description": "A classic, smooth tomato soup seasoned with herbs and spices.",
+    "price": 130,
+    "image": "https://cdn-lbppn.nitrocdn.com/TIvUOgkSVuwIZbJQMoNKauSIODDirNaR/assets/images/optimized/rev-3600644/daenskitchen.com/wp-content/uploads/2022/06/Tomato-Soup-Daens-Kitchen-High-Res-6-768x1023.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 13,
+    "name": "Tomato Soup 1/2",
+    "description": "A smaller serving of our classic smooth tomato soup.",
+    "price": 160,
+    "image": "https://cdn-lbppn.nitrocdn.com/TIvUOgkSVuwIZbJQMoNKauSIODDirNaR/assets/images/optimized/rev-3600644/daenskitchen.com/wp-content/uploads/2022/06/Tomato-Soup-Daens-Kitchen-High-Res-6-768x1023.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  
+  {
+    "id": 14,
+    "name": "Veg Garlic Soup",
+    "description": "Flavorful soup with roasted garlic and vegetables, seasoned to perfection.",
+    "price": 140,
+    "image": "https://i.ytimg.com/vi/r63FjYBi5XA/maxresdefault.jpg",
+    "categoryId": 1,
+    "subcategoryId": 1
+  },
+  {
+    "id": 15,
+    "name": "Chicken Soup",
+    "description": "A classic chicken soup made with tender chicken pieces, vegetables, and herbs.",
+    "price": 180,
+    "image": "https://www.pressurecookrecipes.com/wp-content/uploads/2024/02/instant-pot-chicken-soup-770x556.webp",
+    "categoryId": 1,
+    "subcategoryId": 2
+  },
     {
       "id": 16,
       "name": "Seafood Chowder",
@@ -797,10 +798,10 @@
     },
     {
       "id": 68,
-      "name": "Chicken Pakoras",
+      "name": "Crispy Chicken wings",
       "description": "Spicy chicken pieces dipped in a gram flour batter and deep-fried until crispy.",
       "price": 180,
-      "image": "https://i.ytimg.com/vi/xlszcRPKDqk/sddefault.jpg",
+      "image": "https://www.allrecipes.com/thmb/Dqn-wx0S77ag4mfgWBfRBWBVuYo=/160x90/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/ALR-187822-baked-chicken-wings-4x3-5c7b4624c8554f3da5aabb7d3a91a209.jpg",
       "categoryId": 1,
       "subcategoryId": 6
     },
@@ -947,7 +948,96 @@
       "image": "https://yummyindiankitchen.com/wp-content/uploads/2015/12/chicken-pakoda-recipe-chicken-pakodi.jpg",
       "categoryId": 1,
       "subcategoryId": 6
-    }
+    },{
+    "id": 85,
+    "name": "Saffron Veg Biryani",
+    "description": "Fragrant basmati rice cooked with mixed vegetables, saffron, and aromatic spices.",
+    "price": 220,
+    "image": "https://img.freepik.com/premium-photo/delicious-veg-biryani-with-saffron-hint_1179130-187766.jpg?w=740",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 86,
+    "name": "Hyderabadi Vegetable Biryani",
+    "description": "A traditional Hyderabadi-style biryani made with basmati rice, mixed vegetables, and a blend of exotic spices.",
+    "price": 240,
+    "image": "https://www.cookshideout.com/wp-content/uploads/2017/03/Hyderabadi-Veg-Biryani-Thali3S-720x1084.jpg",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 87,
+    "name": "Mushroom and Peas Biryani",
+    "description": "Flavorful basmati rice cooked with mushrooms, peas, and a mix of Indian spices.",
+    "price": 230,
+    "image": "https://i0.wp.com/www.happyandharried.com/wp-content/uploads/2016/08/Mushroom-Corn-Peas-Pulao.jpg?w=736&ssl=1",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 88,
+    "name": "Palak Vegetable Biryani",
+    "description": "Healthy spinach-based biryani with mixed vegetables and aromatic spices.",
+    "price": 210,
+    "image": "https://www.indianveggiedelight.com/wp-content/uploads/2019/06/palak_biryani-1-768x1024.jpg",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 89,
+    "name": "Kashmiri Pulao Biryani",
+    "description": "Mild and sweet biryani cooked with basmati rice, nuts, dry fruits, and mild spices.",
+    "price": 250,
+    "image": "https://i0.wp.com/aartimadan.com/wp-content/uploads/2020/12/Kashmiri-Pulao.jpg?resize=768%2C431&ssl=1",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 90,
+    "name": "Sag Paneer Biryani",
+    "description": "Spinach-based biryani with paneer cubes, cooked with basmati rice and Indian spices.",
+    "price": 240,
+    "image": "https://www.cookwithmanali.com/wp-content/uploads/2020/05/Instant-Pot-Paneer-Biryani.jpg",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 91,
+    "name": "Veg Jalfrezi Biryani",
+    "description": "Spicy biryani with mixed vegetables, peppers, onions, and a tangy tomato-based sauce.",
+    "price": 230,
+    "image": "https://i0.wp.com/www.blissofcooking.com/wp-content/uploads/2018/07/Vegetable-Jalfrezi-Feature.jpg?w=720&ssl=1",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 92,
+    "name": "Mughlai Vegetable Biryani",
+    "description": "Rich and aromatic biryani made with basmati rice, vegetables, and a blend of Mughlai spices.",
+    "price": 260,
+    "image": "https://www.vegrecipesofindia.com/wp-content/uploads/2015/12/mughlai-veg-biryani-recipe.jpg",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 93,
+    "name": "Tawa Vegetable Biryani",
+    "description": "A unique biryani cooked on a flat tawa, with vegetables, spices, and basmati rice.",
+    "price": 220,
+    "image": "https://www.foodfusion.com/wp-content/uploads/2018/07/Tawa-Biryani-Recipe-by-Food-Fusion-1.jpg",
+    "categoryId": 2,
+    "subcategoryId": 7
+  },
+  {
+    "id": 94,
+    "name": "Awadhi Vegetable Biryani",
+    "description": "Aromatic biryani from the Awadhi cuisine, made with vegetables, basmati rice, and mild spices.",
+    "price": 240,
+    "image": "https://cookwithrenu.com/wp-content/uploads/2019/04/Awadhi-Vegetable-Biryani_4.jpg.webp",
+    "categoryId": 2,
+    "subcategoryId": 7
+  }
   ],
   "history": [
     {
@@ -1065,94 +1155,7 @@
       "timestamp": "2024-08-31T09:38:38.074Z",
       "status": "pending",
       "statusMessage": "Your order is being processed"
-    },
-    {
-      "id": 1725166329322,
-      "items": [
-        {
-          "id": 65,
-          "name": "Chicken Tikka",
-          "description": "Marinated chicken chunks grilled to perfection, infused with spices and yogurt.",
-          "price": 200,
-          "image": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tandoorimumbai.jpg",
-          "categoryId": 1,
-          "subcategoryId": 6,
-          "quantity": 1
-        }
-      ],
-      "total": "200.00",
-      "tableNumber": "2",
-      "timestamp": "2024-09-01T04:52:09.322Z",
-      "status": "pending",
-      "statusMessage": "Your order is being processed"
-    },
-    {
-      "id": 1725172077687,
-      "items": [
-        {
-          "id": 65,
-          "name": "Chicken Tikka",
-          "description": "Marinated chicken chunks grilled to perfection, infused with spices and yogurt.",
-          "price": 200,
-          "image": "https://upload.wikimedia.org/wikipedia/commons/b/bd/Tandoorimumbai.jpg",
-          "categoryId": 1,
-          "subcategoryId": 6,
-          "quantity": 1
-        },
-        {
-          "id": 66,
-          "name": "Fish Amritsari",
-          "description": "Deep-fried fish fillets coated in a spiced gram flour batter, a popular snack from Amritsar.",
-          "price": 220,
-          "image": "https://sinfullyspicy.com/wp-content/uploads/2022/07/1200-by-1200-images-4.jpg",
-          "categoryId": 1,
-          "subcategoryId": 6,
-          "quantity": 1
-        }
-      ],
-      "total": "420.00",
-      "tableNumber": "4",
-      "timestamp": "2024-09-01T06:27:57.687Z",
-      "status": "pending",
-      "statusMessage": "Your order is being processed"
-    },
-    {
-      "id": 1725172396798,
-      "items": [
-        {
-          "id": 67,
-          "name": "Mutton Shami Kebabs",
-          "description": "Tender mutton patties made from ground meat, lentils, and spices, shallow-fried until crisp.",
-          "price": 250,
-          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTxEBTvyGYpnf4Z7avNPE3ST4nOYhNaKbjsyQ&s",
-          "categoryId": 1,
-          "subcategoryId": 6,
-          "quantity": 1
-        }
-      ],
-      "total": "250.00",
-      "tableNumber": "2",
-      "timestamp": "2024-09-01T06:33:16.798Z",
-      "status": "pending",
-      "statusMessage": "Your order is being processed"
     }
   ],
-  "tables": [
-    {
-      "id": 1,
-      "number": 1
-    },
-    {
-      "id": 2,
-      "number": 2
-    },
-    {
-      "id": "f89e",
-      "number": 3
-    },
-    {
-      "id": "15e1",
-      "number": 4
-    }
-  ]
+  "feedback": []
 }

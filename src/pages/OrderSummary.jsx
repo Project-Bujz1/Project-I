@@ -50,7 +50,7 @@ function OrderSummary() {
       clearCart();
 
       // Send new order notification through WebSocket
-      ws.current = new WebSocket('ws://localhost:3001');
+      ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify({ type: 'newOrder', order: savedOrder }));
       };

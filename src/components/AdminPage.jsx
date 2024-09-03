@@ -148,7 +148,6 @@
 // };
 
 // export default AdminOrderComponent;
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, Tag, Select, Typography, message, Spin, notification } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined } from '@ant-design/icons';
@@ -183,9 +182,14 @@ const AdminOrderComponent = () => {
     fetchOrders();
 
     // Set up WebSocket connection
-    ws.current = new WebSocket('ws://localhost:3001');
+    ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
+
+    ws.current.onopen = () => {
+      console.log('WebSocket connected');
+    };
 
     ws.current.onmessage = (event) => {
+      console.log('Received message:', event.data);
       const data = JSON.parse(event.data);
       if (data.type === 'newOrder') {
         setOrders(prevOrders => [data.order, ...prevOrders]);
@@ -195,13 +199,11 @@ const AdminOrderComponent = () => {
           description: `Order #${data.order.id} has been placed`,
           icon: <BellOutlined style={{ color: '#ff4d4f' }} />,
         });
-      } else if (data.type === 'statusUpdate') {
-        setOrders(prevOrders =>
-          prevOrders.map(order =>
-            order.id === data.orderId ? { ...order, status: data.status } : order
-          )
-        );
       }
+    };
+
+    ws.current.onerror = (error) => {
+      console.error('WebSocket error:', error);
     };
 
     return () => {
@@ -235,12 +237,23 @@ const AdminOrderComponent = () => {
       );
 
       // Send status update through WebSocket
-      ws.current.send(JSON.stringify({ type: 'statusUpdate', orderId, status: newStatus }));
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        const message = JSON.stringify({ 
+          type: 'statusUpdate', 
+          orderId: orderId, 
+          status: newStatus,
+          statusMessage: statusMessage
+        });
+        console.log('Sending WebSocket message:', message);
+        ws.current.send(message);
+      } else {
+        console.error('WebSocket is not open. Status update not sent.');
+      }
 
       message.success(`Order #${orderId} status updated to ${newStatus}`);
 
       // Remove from newOrders if present
-      setNewOrders(prev => prev.filter(order => order.id !== orderId));
+      setNewOrders(prev => prev.filter(id => id !== orderId));
     } catch (error) {
       console.error('Failed to update order status', error);
       message.error('Failed to update order status');
