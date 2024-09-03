@@ -12,6 +12,8 @@ import AdminPage from './components/AdminPage';
 import OrderHistory from './components/OrderHistory';
 import OrderConfirmation from './components/OrderConfirmation';
 import MenuManagement from './components/MenuManagement';
+import WaitingScreen from './components/WaitingScreen'; // Import the new WaitingScreen component
+
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -39,28 +41,28 @@ function App() {
             />
             
             <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
-            <div className="container">            <Routes>
-              <Route 
-                path="/" 
-                element={
-                  <Home 
-                    onItemAdded={handleItemAdded}
-                    searchTerm={searchTerm}
-                  />
-                } 
-              />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/admin" element={<AdminPage/>} />
-              <Route path="/order-summary" element={<OrderSummary />} />
-              <Route path="/order-history" element={<OrderHistory />} />
-              <Route path="/order-confirmation" element={<OrderConfirmation />} />
-              <Route path="/menu-management" element={<MenuManagement />} />
-            </Routes>
+            <div className="container">
+              <Routes>
+                <Route 
+                  path="/" 
+                  element={
+                    <Home 
+                      onItemAdded={handleItemAdded}
+                      searchTerm={searchTerm}
+                    />
+                  } 
+                />
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/admin" element={<AdminPage/>} />
+                <Route path="/order-summary" element={<OrderSummary />} />
+                <Route path="/order-history" element={<OrderHistory />} />
+                <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                <Route path="/menu-management" element={<MenuManagement />} />
+                <Route path="/waiting/:orderId" element={<WaitingScreen />} /> {/* New route for WaitingScreen */}
+              </Routes>
+            </div>
           </div>
-          </div>
-
         </CartIconProvider>
-        
       </CartProvider>
     </Router>
   );

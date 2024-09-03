@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { Modal, Button, Input, Rate } from 'antd';
 import { useNavigate } from 'react-router-dom';
@@ -13,6 +13,7 @@ function OrderSummary() {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
+  const ws = useRef(null);
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -47,7 +48,15 @@ function OrderSummary() {
       }
       const savedOrder = await response.json();
       clearCart();
-      setIsModalVisible(true);
+
+      // Send new order notification through WebSocket
+      ws.current = new WebSocket('ws://localhost:3001');
+      ws.current.onopen = () => {
+        ws.current.send(JSON.stringify({ type: 'newOrder', order: savedOrder }));
+      };
+
+      // Redirect to WaitingScreen
+      navigate(`/waiting/${savedOrder.id}`);
     } catch (error) {
       console.error('Failed to save order', error);
       alert('Failed to place order. Please try again.');

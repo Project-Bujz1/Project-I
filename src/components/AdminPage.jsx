@@ -149,9 +149,9 @@
 
 // export default AdminOrderComponent;
 
-import React, { useState, useEffect } from 'react';
-import { Card, Tag, Select, Typography, message, Spin } from 'antd';
-import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, Tag, Select, Typography, message, Spin, notification } from 'antd';
+import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -159,6 +159,8 @@ const { Title, Text } = Typography;
 const AdminOrderComponent = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [newOrders, setNewOrders] = useState([]);
+  const ws = useRef(null);
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -169,7 +171,6 @@ const AdminOrderComponent = () => {
         }
         const data = await response.json();
   
-        // Sort orders by timestamp in descending order
         const sortedOrders = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         setOrders(sortedOrders);
       } catch (error) {
@@ -181,8 +182,33 @@ const AdminOrderComponent = () => {
     };
     fetchOrders();
 
-    const interval = setInterval(fetchOrders, 30000);
-    return () => clearInterval(interval);
+    // Set up WebSocket connection
+    ws.current = new WebSocket('ws://localhost:3001');
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'newOrder') {
+        setOrders(prevOrders => [data.order, ...prevOrders]);
+        setNewOrders(prev => [...prev, data.order.id]);
+        notification.open({
+          message: 'New Order Arrived',
+          description: `Order #${data.order.id} has been placed`,
+          icon: <BellOutlined style={{ color: '#ff4d4f' }} />,
+        });
+      } else if (data.type === 'statusUpdate') {
+        setOrders(prevOrders =>
+          prevOrders.map(order =>
+            order.id === data.orderId ? { ...order, status: data.status } : order
+          )
+        );
+      }
+    };
+
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
   }, []);
 
   const handleUpdateStatus = async (orderId, newStatus) => {
@@ -207,7 +233,14 @@ const AdminOrderComponent = () => {
           order.id === orderId ? { ...order, status: newStatus, statusMessage } : order
         )
       );
+
+      // Send status update through WebSocket
+      ws.current.send(JSON.stringify({ type: 'statusUpdate', orderId, status: newStatus }));
+
       message.success(`Order #${orderId} status updated to ${newStatus}`);
+
+      // Remove from newOrders if present
+      setNewOrders(prev => prev.filter(order => order.id !== orderId));
     } catch (error) {
       console.error('Failed to update order status', error);
       message.error('Failed to update order status');
@@ -256,7 +289,12 @@ const AdminOrderComponent = () => {
           <Card 
             key={order.id}
             hoverable
-            style={{ backgroundColor: '#fff', borderRadius: '8px' }}
+            style={{ 
+              backgroundColor: '#fff', 
+              borderRadius: '8px',
+              boxShadow: newOrders.some(newOrder => newOrder.id === order.id) ? '0 0 10px #ff4d4f' : 'none',
+              animation: newOrders.some(newOrder => newOrder.id === order.id) ? 'pulse 2s infinite' : 'none'
+            }}
             bodyStyle={{ padding: '16px' }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
