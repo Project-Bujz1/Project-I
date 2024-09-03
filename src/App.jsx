@@ -12,7 +12,7 @@ import AdminPage from './components/AdminPage';
 import OrderHistory from './components/OrderHistory';
 import OrderConfirmation from './components/OrderConfirmation';
 import MenuManagement from './components/MenuManagement';
-import WaitingScreen from './components/WaitingScreen'; // Import the new WaitingScreen component
+import WaitingScreen from './components/WaitingScreen';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
