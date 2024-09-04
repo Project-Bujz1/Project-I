@@ -120,7 +120,7 @@ function OrderSummary() {
         style={{ marginBottom: '10px' }}
       />
       <button className="pay-button" onClick={handlePayClick}>
-        Pay at Counter
+        Confirm Order
       </button>
       <Modal
         title="Thank You!"

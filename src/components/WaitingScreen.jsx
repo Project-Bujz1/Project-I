@@ -99,10 +99,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch } from 'antd';
-import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, HomeOutlined, CheckCircleOutlined, CoffeeOutlined, SoundOutlined } from '@ant-design/icons';
-import { useCart } from '../contexts/CartContext'; // Make sure the path is correct
+import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, HomeOutlined, CheckCircleOutlined, CoffeeOutlined, SoundOutlined, CloseOutlined } from '@ant-design/icons';
+import { useCart } from '../contexts/CartContext'; 
 
-// Add your notification sound file here
 import notificationSound from './notification.mp3';
 
 const { Title, Text } = Typography;
@@ -188,11 +187,27 @@ const WaitingScreen = () => {
     }
   };
 
-  const handleAddMore = () => {
-    navigate('/'); // Assuming '/' is the home route
+  const handleCancelOrder = async () => {
+    // Logic to cancel the order
+    try {
+      // Assume the backend API updates the order status to 'cancelled'
+      const response = await fetch(`https://smartserver-json-server.onrender.com/orders/${orderId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: 'cancelled' }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to cancel the order');
+      }
+      message.success('Order has been cancelled successfully');
+      navigate(`/order-confirmation/${orderId}`);
+    } catch (error) {
+      console.error('Failed to cancel the order', error);
+      message.error('Failed to cancel the order. Please try again.');
+    }
   };
 
-  const handleComplete = () => {
+  const handleCompleteOrder = () => {
     clearCart(); // Clear the cart when order is completed
     setIsModalVisible(true);
   };
@@ -222,7 +237,9 @@ const WaitingScreen = () => {
       console.error('Failed to save feedback', error);
       message.error('Failed to submit feedback. Please try again.');
     }
-  };  if (loading) {
+  };
+
+  if (loading) {
     return <Spin size="large" />;
   }
 
@@ -247,11 +264,21 @@ const WaitingScreen = () => {
         <Title level={4} style={{ marginTop: '16px' }}>{order.statusMessage}</Title>
         <Text type="secondary">We'll notify you when your order status changes</Text>
         <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-          <Button icon={<HomeOutlined />} onClick={handleAddMore}>
-            Add More
+          <Button
+            icon={<CloseOutlined />}
+            onClick={handleCancelOrder}
+            type="default"
+            disabled={order.status !== 'pending'}
+          >
+            Cancel Order
           </Button>
-          <Button icon={<CheckOutlined />} onClick={handleComplete} type="primary">
-            Complete
+          <Button
+            icon={<CheckOutlined />}
+            onClick={handleCompleteOrder}
+            type="primary"
+            disabled={order.status !== 'ready'}
+          >
+            Complete Order
           </Button>
         </div>
       </Card>
