@@ -98,9 +98,12 @@
 // export default WaitingScreen;
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate } from 'antd';
-import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, HomeOutlined, CheckCircleOutlined, CoffeeOutlined } from '@ant-design/icons';
+import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch } from 'antd';
+import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, HomeOutlined, CheckCircleOutlined, CoffeeOutlined, SoundOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext'; // Make sure the path is correct
+
+// Add your notification sound file here
+import notificationSound from './notification.mp3';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -108,13 +111,15 @@ const { TextArea } = Input;
 const WaitingScreen = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
-  const { clearCart } = useCart(); // Access clearCart from the context
+  const { clearCart } = useCart();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
+  const [soundEnabled, setSoundEnabled] = useState(false);
   const ws = useRef(null);
+  const audioRef = useRef(new Audio(notificationSound));
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -149,6 +154,10 @@ const WaitingScreen = () => {
         const newStatusMessage = data.statusMessage;
         setOrder(prevOrder => ({ ...prevOrder, status: newStatus, statusMessage: newStatusMessage }));
         
+        if (soundEnabled) {
+          audioRef.current.play().catch(error => console.error('Error playing audio:', error));
+        }
+
         notification.open({
           message: 'Order Status Updated',
           description: `Your order status has been updated to: ${newStatus}`,
@@ -167,7 +176,7 @@ const WaitingScreen = () => {
         ws.current.close();
       }
     };
-  }, [orderId]);
+  }, [orderId, soundEnabled]);
 
   const getStatusIcon = (status) => {
     switch(status) {
@@ -213,9 +222,7 @@ const WaitingScreen = () => {
       console.error('Failed to save feedback', error);
       message.error('Failed to submit feedback. Please try again.');
     }
-  };
-
-  if (loading) {
+  };  if (loading) {
     return <Spin size="large" />;
   }
 
@@ -224,7 +231,16 @@ const WaitingScreen = () => {
   }
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#fff5f5' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#fff5f5' }}>
+      <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
+        <Switch
+          checkedChildren={<SoundOutlined />}
+          unCheckedChildren={<SoundOutlined />}
+          checked={soundEnabled}
+          onChange={setSoundEnabled}
+        />
+        <Text style={{ marginLeft: '8px' }}>Sound Notifications</Text>
+      </div>
       <Card style={{ width: 300, textAlign: 'center', borderRadius: '8px' }}>
         <Title level={3}>Order #{orderId}</Title>
         {getStatusIcon(order.status)}
