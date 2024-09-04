@@ -47,7 +47,7 @@ function OrderSummary() {
         throw new Error('Failed to save order');
       }
       const savedOrder = await response.json();
-      clearCart();
+      // clearCart();
 
       // Send new order notification through WebSocket
       ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');

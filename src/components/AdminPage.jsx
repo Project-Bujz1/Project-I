@@ -152,6 +152,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, Tag, Select, Typography, message, Spin, notification } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined } from '@ant-design/icons';
 
+// Add your notification sound file here
+import notificationSound from './notification.mp3';
+
 const { Option } = Select;
 const { Title, Text } = Typography;
 
@@ -160,6 +163,7 @@ const AdminOrderComponent = () => {
   const [loading, setLoading] = useState(true);
   const [newOrders, setNewOrders] = useState([]);
   const ws = useRef(null);
+  const audioRef = useRef(new Audio(notificationSound)); // Create a ref for the audio
 
   useEffect(() => {
     const fetchOrders = async () => {
@@ -169,7 +173,7 @@ const AdminOrderComponent = () => {
           throw new Error('Failed to fetch orders');
         }
         const data = await response.json();
-  
+
         const sortedOrders = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         setOrders(sortedOrders);
       } catch (error) {
@@ -194,6 +198,10 @@ const AdminOrderComponent = () => {
       if (data.type === 'newOrder') {
         setOrders(prevOrders => [data.order, ...prevOrders]);
         setNewOrders(prev => [...prev, data.order.id]);
+
+        // Play the notification sound
+        audioRef.current.play();
+
         notification.open({
           message: 'New Order Arrived',
           description: `Order #${data.order.id} has been placed`,

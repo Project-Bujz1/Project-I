@@ -100,6 +100,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, HomeOutlined, CheckCircleOutlined, CoffeeOutlined } from '@ant-design/icons';
+import { useCart } from '../contexts/CartContext'; // Make sure the path is correct
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -107,6 +108,7 @@ const { TextArea } = Input;
 const WaitingScreen = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
+  const { clearCart } = useCart(); // Access clearCart from the context
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -182,6 +184,7 @@ const WaitingScreen = () => {
   };
 
   const handleComplete = () => {
+    clearCart(); // Clear the cart when order is completed
     setIsModalVisible(true);
   };
 
