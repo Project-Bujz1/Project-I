@@ -98,9 +98,10 @@
 // export default WaitingScreen;
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch } from 'antd';
-import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, HomeOutlined, CheckCircleOutlined, CoffeeOutlined, SoundOutlined, CloseOutlined } from '@ant-design/icons';
+import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch, Progress, Tooltip } from 'antd';
+import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, CloseOutlined, CoffeeOutlined, SoundOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext'; 
+import { IoVolumeMuteOutline } from "react-icons/io5";
 
 import notificationSound from './notification.mp3';
 
@@ -187,10 +188,18 @@ const WaitingScreen = () => {
     }
   };
 
+  const getStatusProgress = (status) => {
+    switch (status) {
+      case 'pending': return 25;
+      case 'preparing': return 50;
+      case 'ready': return 100;
+      case 'delayed': return 75;
+      default: return 0;
+    }
+  };
+
   const handleCancelOrder = async () => {
-    // Logic to cancel the order
     try {
-      // Assume the backend API updates the order status to 'cancelled'
       const response = await fetch(`https://smartserver-json-server.onrender.com/orders/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -248,57 +257,94 @@ const WaitingScreen = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', backgroundColor: '#fff5f5' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
       <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
         <Switch
           checkedChildren={<SoundOutlined />}
-          unCheckedChildren={<SoundOutlined />}
+          unCheckedChildren={<IoVolumeMuteOutline  />}
           checked={soundEnabled}
           onChange={setSoundEnabled}
+          style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
         />
-        <Text style={{ marginLeft: '8px' }}>Sound Notifications</Text>
+        <Text style={{ marginLeft: '8px', color: '#ff4d4f' }}>Sound Notifications</Text>
       </div>
-      <Card style={{ width: 300, textAlign: 'center', borderRadius: '8px' }}>
-        <Title level={3}>Order #{orderId}</Title>
-        {getStatusIcon(order.status)}
-        <Title level={4} style={{ marginTop: '16px' }}>{order.statusMessage}</Title>
-        <Text type="secondary">We'll notify you when your order status changes</Text>
-        <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'space-between' }}>
-          <Button
-            icon={<CloseOutlined />}
-            onClick={handleCancelOrder}
-            type="default"
-            disabled={order.status !== 'pending'}
-          >
-            Cancel Order
-          </Button>
-          <Button
-            icon={<CheckOutlined />}
-            onClick={handleCompleteOrder}
-            type="primary"
-            disabled={order.status !== 'ready'}
-          >
-            Complete Order
-          </Button>
+      <Card
+        style={{
+          width: '100%',
+          maxWidth: '400px',
+          textAlign: 'center',
+          borderRadius: '16px',
+          border: '1px solid #e9ecef',
+          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+          padding: '20px',
+          background: '#fff',
+          transition: 'transform 0.3s ease',
+          ':hover': {
+            transform: 'translateY(-5px)',
+          }
+        }}
+      >
+        <Title level={3} style={{ color: '#343a40' }}>Order #{orderId}</Title>
+        <Progress
+          type="circle"
+          percent={getStatusProgress(order.status)}
+          format={() => getStatusIcon(order.status)}
+          width={80}
+          strokeColor={{
+            '0%': '#108ee9',
+            '100%': '#87d068',
+          }}
+        />
+        <Title level={4} style={{ marginTop: '16px', color: '#343a40' }}>{order.statusMessage}</Title>
+        <Text type="secondary" style={{ color: '#6c757d' }}>We'll notify you when your order status changes</Text>
+        <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+          <Tooltip title="Cancel your order" placement="bottom">
+            <Button
+              icon={<CloseOutlined />}
+              onClick={handleCancelOrder}
+              type="default"
+              disabled={order.status !== 'pending'}
+              style={{ backgroundColor: '#f8f9fa', color: '#ff4d4f', borderColor: '#e9ecef', fontWeight: 'bold' }}
+            >
+              Cancel
+            </Button>
+          </Tooltip>
+          <Tooltip title="Complete your order" placement="bottom">
+            <Button
+              icon={<CheckOutlined />}
+              onClick={handleCompleteOrder}
+              type="primary"
+              disabled={order.status !== 'ready'}
+              style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', fontWeight: 'bold' }}
+            >
+              Complete
+            </Button>
+          </Tooltip>
         </div>
       </Card>
-
       <Modal
         title="Thank You!"
         visible={isModalVisible}
         onOk={handleSubmitFeedback}
         onCancel={() => setIsModalVisible(false)}
         okText="Submit Feedback"
+        cancelText="Later"
+        footer={[
+          <Button key="submit" type="primary" onClick={handleSubmitFeedback} style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}>
+            Submit Feedback
+          </Button>,
+        ]}
         centered
         style={{ top: 20 }}
+        bodyStyle={{ backgroundColor: '#fff5f5', color: '#ff4d4f', textAlign: 'center' }}
       >
-        <div style={{ fontSize: '24px', marginBottom: '16px', textAlign: 'center' }}>
-          <CheckCircleOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
-          <CoffeeOutlined style={{ color: '#1890ff', marginRight: '8px' }} />
+        <div style={{ fontSize: '24px', marginBottom: '16px' }}>
+          <CheckCircleOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
+          <CoffeeOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
         </div>
-        <p style={{ fontSize: '18px', fontWeight: 'bold', textAlign: 'center' }}>Thank you for dining with us!</p>
+        <p style={{ fontSize: '18px', fontWeight: 'bold' }}>Thank you for dining with us!</p>
         <p>We hope you enjoyed your meal. Please provide your feedback below:</p>
-        <TextArea
+        <Input.TextArea
           placeholder="Leave your feedback here..."
           value={feedback}
           onChange={(e) => setFeedback(e.target.value)}
