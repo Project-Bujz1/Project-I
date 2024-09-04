@@ -125,6 +125,14 @@ const MenuManagement = () => {
     fetchData();
   }, []);
 
+
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    form.setFieldsValue({ subcategoryId: null }); // Reset subcategory field
+  };
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -303,7 +311,7 @@ const MenuManagement = () => {
               <Input />
             </Form.Item>
             <Form.Item name="categoryId" label="Category" rules={[{ required: true }]}>
-              <Select>
+              <Select onChange={handleCategoryChange}>
                 {categories.map(category => (
                   <Option key={category.id} value={category.id}>{category.name}</Option>
                 ))}
@@ -311,7 +319,7 @@ const MenuManagement = () => {
             </Form.Item>
             <Form.Item name="subcategoryId" label="Subcategory" rules={[{ required: true }]}>
               <Select>
-                {subcategories.filter(sub => sub.categoryId === form.getFieldValue('categoryId')).map(subcategory => (
+                {subcategories.filter(sub => sub.categoryId === selectedCategory).map(subcategory => (
                   <Option key={subcategory.id} value={subcategory.id}>{subcategory.name}</Option>
                 ))}
               </Select>
