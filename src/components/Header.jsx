@@ -26,6 +26,8 @@ function Header({ toggleDrawer, onSearch }) {
   };
 
   const handleSignOut = () => {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('role');
     setIsSignOutModalVisible(true); // Show confirmation modal
   };
 
