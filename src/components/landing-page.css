@@ -31,8 +31,8 @@
   }
   
   .logo {
-    width: 150px;
-    height: 150px;
+    width: 100px;
+    height: 100px;
     margin-bottom: 2rem;
     animation: pulse 2s infinite;
   }
