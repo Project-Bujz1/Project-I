@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, Badge } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
 import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
+import { LiaSignOutAltSolid } from "react-icons/lia";
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import './Header.css';
@@ -20,6 +21,10 @@ function Header({ toggleDrawer, onSearch }) {
 
   const handleOrderSummaryClick = () => {
     navigate('/order-summary');
+  };
+
+  const handleSignOut = () => {
+    navigate('/');
   };
 
   const triggerHitEffect = () => {
@@ -74,6 +79,10 @@ function Header({ toggleDrawer, onSearch }) {
                 </div>
               </Badge>
             </Link>
+            <LiaSignOutAltSolid 
+              onClick={handleSignOut} 
+              className="header__icon"
+            />
           </div>
         </div>
       </div>
