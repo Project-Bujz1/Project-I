@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom';
 import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined, UnorderedListOutlined, HistoryOutlined, UserOutlined, SettingOutlined, AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 
 const RestaurantDrawer = ({ isOpen, onClose }) => {
+  // Fetch the role from localStorage
+  const role = localStorage.getItem('role');
+
   return (
     <Drawer
       title={
@@ -49,23 +52,26 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           backgroundColor: 'white',
         }}
       >
-        <Menu.Item
-          key="home"
-          icon={<HomeOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
-          className="menu-item"
-          style={{margin:"20px"}}
-        >
-          <Link to="/home" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Home</Link>
-        </Menu.Item>
-        <Menu.Item
-          key="cart"
-          icon={<ShoppingCartOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
-          className="menu-item"
-          style={{margin:"20px"}}
-        >
-          <Link to="/cart" onClick={onClose} style={{ fontSize: "20px" }}>Cart</Link>
-        </Menu.Item>
-        <Menu.Item
+        {/* Conditional Rendering for Customer */}
+        {role === 'customer' && (
+          <>
+            <Menu.Item
+              key="home"
+              icon={<HomeOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              className="menu-item"
+              style={{ margin: "20px" }}
+            >
+              <Link to="/home" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Home</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="cart"
+              icon={<ShoppingCartOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              className="menu-item"
+              style={{ margin: "20px" }}
+            >
+              <Link to="/cart" onClick={onClose} style={{ fontSize: "20px" }}>Cart</Link>
+            </Menu.Item>
+            <Menu.Item
           key="order-summary"
           icon={<FileTextOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
           className="menu-item"
@@ -73,30 +79,39 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
         >
           <Link to="/order-summary" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
         </Menu.Item>
+          </>
+        )}
+
         <Menu.Item
           key="order-history"
           icon={<HistoryOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
           className="menu-item"
-          style={{margin:"20px"}}
+          style={{ margin: "20px" }}
         >
           <Link to="/order-history" onClick={onClose} style={{ fontSize: "20px" }}>Order History</Link>
         </Menu.Item>
-        <Menu.Item
-          key="admin"
-          icon={<UserOutlined  style={{ fontWeight: 'bold', fontSize: "24px" }} />}
-          className="menu-item"
-          style={{margin:"20px"}}
-        >
-          <Link to="/admin" onClick={onClose} style={{ fontSize: "20px" }}>Admin</Link>
-        </Menu.Item>
-        <Menu.Item
-          key="menu-management"
-          icon={<AppstoreOutlined  style={{ fontWeight: 'bold', fontSize: "24px" }} />}
-          className="menu-item"
-          style={{margin:"20px"}}
-        >
-          <Link to="/menu-management" onClick={onClose} style={{ fontSize: "20px" }}>Menu Management</Link>
-        </Menu.Item>
+
+        {/* Conditional Rendering for Admin */}
+        {role === 'admin' && (
+          <>
+            <Menu.Item
+              key="admin"
+              icon={<UserOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              className="menu-item"
+              style={{ margin: "20px" }}
+            >
+              <Link to="/admin" onClick={onClose} style={{ fontSize: "20px" }}>Admin</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="menu-management"
+              icon={<AppstoreOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              className="menu-item"
+              style={{ margin: "20px" }}
+            >
+              <Link to="/menu-management" onClick={onClose} style={{ fontSize: "20px" }}>Menu Management</Link>
+            </Menu.Item>
+          </>
+        )}
       </Menu>
       <div style={{ 
         position: 'absolute', 

@@ -29,6 +29,7 @@ const LandingPage = () => {
         if (response.ok) {
           const data = await response.json();
           localStorage.setItem('adminToken', data.token);
+          localStorage.setItem('role', 'admin'); // Set role as 'admin'
           navigate('/admin');
         } else {
           const errorData = await response.json();
@@ -36,6 +37,7 @@ const LandingPage = () => {
         }
       } else {
         // Customer login logic (no credentials required)
+        localStorage.setItem('role', 'customer'); // Set role as 'customer'
         navigate('/Home');
       }
     } catch (error) {
