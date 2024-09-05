@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Input, Badge } from 'antd';
+import { Input, Badge, Tooltip, Modal } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
 import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
 import { LiaSignOutAltSolid } from "react-icons/lia";
@@ -10,6 +10,7 @@ import './Header.css';
 import CartHitEffect from './CartHitEffect';
 
 const { Search } = Input;
+const role = localStorage.getItem('role');
 
 function Header({ toggleDrawer, onSearch }) {
   const { cart } = useCart();
@@ -18,13 +19,23 @@ function Header({ toggleDrawer, onSearch }) {
   const location = useLocation();
   const [showHitEffect, setShowHitEffect] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isSignOutModalVisible, setIsSignOutModalVisible] = useState(false);
 
   const handleOrderSummaryClick = () => {
     navigate('/order-summary');
   };
 
   const handleSignOut = () => {
+    setIsSignOutModalVisible(true); // Show confirmation modal
+  };
+
+  const handleConfirmSignOut = () => {
+    setIsSignOutModalVisible(false);
     navigate('/');
+  };
+
+  const handleCancelSignOut = () => {
+    setIsSignOutModalVisible(false);
   };
 
   const triggerHitEffect = () => {
@@ -67,25 +78,46 @@ function Header({ toggleDrawer, onSearch }) {
             />
           </div>
           <div className="header__right">
-            <AiOutlineFileText 
-              onClick={handleOrderSummaryClick} 
-              className="header__icon"
-            />
-            <Link to="/cart" className="header__cart-icon">
-              <Badge count={cart.length} offset={[10, 0]}>
-                <div ref={cartIconRef} style={{ position: 'relative' }}>
-                  <AiOutlineShoppingCart className="header__icon" style={{marginTop: "8px"}} />
-                  {showHitEffect && <CartHitEffect />}
-                </div>
-              </Badge>
-            </Link>
-            <LiaSignOutAltSolid 
-              onClick={handleSignOut} 
-              className="header__icon"
-            />
+          {role === 'customer' && (
+<>
+            <Tooltip title="Order Summary">
+              <AiOutlineFileText 
+                onClick={handleOrderSummaryClick} 
+                className="header__icon"
+              />
+            </Tooltip>
+            <Tooltip title="Cart">
+              <Link to="/cart" className="header__cart-icon">
+                <Badge count={cart.length} offset={[10, 0]}>
+                  <div ref={cartIconRef} style={{ position: 'relative' }}>
+                    <AiOutlineShoppingCart className="header__icon" style={{marginTop: "8px"}} />
+                    {showHitEffect && <CartHitEffect />}
+                  </div>
+                </Badge>
+              </Link>
+            </Tooltip></>
+)}
+            <Tooltip title="Sign Out">
+              <LiaSignOutAltSolid 
+                onClick={handleSignOut} 
+                className="header__icon"
+              />
+            </Tooltip>
           </div>
         </div>
       </div>
+
+      {/* Sign Out Confirmation Modal */}
+      <Modal
+        title="Confirm Sign Out"
+        visible={isSignOutModalVisible}
+        onOk={handleConfirmSignOut}
+        onCancel={handleCancelSignOut}
+        okText="Yes, Sign Out"
+        cancelText="Cancel"
+      >
+        <p>Are you sure you want to sign out?</p>
+      </Modal>
     </header>
   );
 }
