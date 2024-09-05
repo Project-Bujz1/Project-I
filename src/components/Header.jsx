@@ -32,8 +32,8 @@ function Header({ toggleDrawer, onSearch }) {
     if (onSearch) {
       onSearch(value);
     }
-    if (location.pathname !== '/') {
-      navigate('/');
+    if (location.pathname !== '/home') {
+      navigate('/home');
     }
   };
 
@@ -43,7 +43,7 @@ function Header({ toggleDrawer, onSearch }) {
         <div className="header__content">
           <div className="header__left">
             <TiThMenu className="header__menu-button" onClick={toggleDrawer} />
-            <Link to="/" className="header__logo">
+            <Link to="/home" className="header__logo">
               <img 
                 src={process.env.PUBLIC_URL + '/assets/logo-transparent-png.png'} 
                 alt="Smart Server" 
