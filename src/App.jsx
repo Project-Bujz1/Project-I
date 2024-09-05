@@ -13,6 +13,7 @@ import OrderHistory from './components/OrderHistory';
 import OrderConfirmation from './components/OrderConfirmation';
 import MenuManagement from './components/MenuManagement';
 import WaitingScreen from './components/WaitingScreen';
+import LandingPage from './components/LandingPage';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -35,6 +36,12 @@ function App() {
       <CartProvider>
         <CartIconProvider>
           <div className="App">
+            <Routes>
+              <Route path="/landing" element={<LandingPage />} />
+              <Route
+                path="*"
+                element={
+                  <>
             <Header 
               toggleDrawer={toggleDrawer} 
               onSearch={handleSearch}
@@ -58,9 +65,13 @@ function App() {
                 <Route path="/order-history" element={<OrderHistory />} />
                 <Route path="/order-confirmation" element={<OrderConfirmation />} />
                 <Route path="/menu-management" element={<MenuManagement />} />
-                <Route path="/waiting/:orderId" element={<WaitingScreen />} /> {/* New route for WaitingScreen */}
+                <Route path="/waiting/:orderId" element={<WaitingScreen />} /> 
               </Routes>
             </div>
+           </>
+          }
+              />
+            </Routes>
           </div>
         </CartIconProvider>
       </CartProvider>
