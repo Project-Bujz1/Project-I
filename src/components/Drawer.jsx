@@ -55,7 +55,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           className="menu-item"
           style={{margin:"20px"}}
         >
-          <Link to="/" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Home</Link>
+          <Link to="/home" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Home</Link>
         </Menu.Item>
         <Menu.Item
           key="cart"

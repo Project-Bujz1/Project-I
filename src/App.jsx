@@ -37,7 +37,7 @@ function App() {
         <CartIconProvider>
           <div className="App">
             <Routes>
-              <Route path="/landing" element={<LandingPage />} />
+              <Route path="/" element={<LandingPage />} />
               <Route
                 path="*"
                 element={
@@ -46,12 +46,12 @@ function App() {
               toggleDrawer={toggleDrawer} 
               onSearch={handleSearch}
             />
-            
+
             <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
             <div className="container">
               <Routes>
                 <Route 
-                  path="/" 
+                  path="/Home" 
                   element={
                     <Home 
                       onItemAdded={handleItemAdded}

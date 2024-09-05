@@ -36,7 +36,7 @@ const LandingPage = () => {
         }
       } else {
         // Customer login logic (no credentials required)
-        navigate('/');
+        navigate('/Home');
       }
     } catch (error) {
       setError('An error occurred. Please try again.');

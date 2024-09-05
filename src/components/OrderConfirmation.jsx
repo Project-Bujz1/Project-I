@@ -245,7 +245,7 @@ function OrderConfirmation() {
       <FoodLoader />
 
       <div className="btn-container">
-        <Link to="/" className="order-button">
+        <Link to="/home" className="order-button">
           Order More Items
         </Link>
         <Link to="/order-summary" className="order-button">
