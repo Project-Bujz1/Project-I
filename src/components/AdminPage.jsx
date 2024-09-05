@@ -376,7 +376,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, Tag, Select, Typography, message, Spin, notification, Switch } from 'antd';
-import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, SoundOutlined } from '@ant-design/icons';
+import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, SoundOutlined, CloseCircleOutlined } from '@ant-design/icons';
 
 import notificationSound from './notification.mp3';
 
@@ -422,17 +422,39 @@ const AdminOrderComponent = () => {
       console.log('Received message:', event.data);
       const data = JSON.parse(event.data);
       if (data.type === 'newOrder') {
+        // Add the new order to the beginning of the orders array
         setOrders(prevOrders => [data.order, ...prevOrders]);
+        
+        // Add the new order ID to the newOrders array for highlighting
         setNewOrders(prev => [...prev, data.order.id]);
+
+        // Play sound notification if enabled
+        if (soundEnabled) {
+          audioRef.current.play().catch(error => console.error('Error playing audio:', error));
+        }
+
+        // Show visual notification
+        notification.open({
+          message: 'New Order Arrived',
+          description: `Order #${data.order.id} has been placed for Table ${data.order.tableNumber}`,
+          icon: <BellOutlined style={{ color: '#ff4d4f' }} />,
+          duration: 4.5,
+        });
+           } else if (data.type === 'statusUpdate') {
+        setOrders(prevOrders =>
+          prevOrders.map(order =>
+            order.id == data.orderId ? { ...order, status: data.status, statusMessage: data.statusMessage } : order
+          )
+        );
 
         if (soundEnabled) {
           audioRef.current.play().catch(error => console.error('Error playing audio:', error));
         }
 
         notification.open({
-          message: 'New Order Arrived',
-          description: `Order #${data.order.id} has been placed`,
-          icon: <BellOutlined style={{ color: '#ff4d4f' }} />,
+          message: 'Order Status Updated',
+          description: `Order #${data.orderId} status: ${data.status}`,
+          icon: data.status === 'cancelled' ? <CloseCircleOutlined style={{ color: '#ff4d4f' }} /> : <BellOutlined style={{ color: '#1890ff' }} />,
         });
       }
     };
@@ -510,6 +532,7 @@ const AdminOrderComponent = () => {
       case 'preparing': return <SyncOutlined spin />;
       case 'ready': return <CheckOutlined />;
       case 'delayed': return <ExclamationCircleOutlined />;
+      case 'cancelled': return <CloseCircleOutlined />;
       default: return null;
     }
   };
@@ -520,6 +543,7 @@ const AdminOrderComponent = () => {
       case 'preparing': return 'blue';
       case 'ready': return 'green';
       case 'delayed': return 'orange';
+      case 'cancelled': return 'red';
       default: return 'default';
     }
   };
@@ -571,19 +595,20 @@ const AdminOrderComponent = () => {
             </div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Text type="secondary">{new Date(order.timestamp).toLocaleString()}</Text>
-              <Select
-                value={order.status || 'pending'}
-                style={{ width: 120 }}
-                onChange={(newStatus) => handleUpdateStatus(order.id, newStatus)}
-              >
-                {['pending', 'preparing', 'ready', 'delayed'].map((status) => (
-                  <Option key={status} value={status}>
-                    <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
-                      {status.toUpperCase()}
-                    </Tag>
-                  </Option>
-                ))}
-              </Select>
+    <Select
+      value={order.status || 'pending'}
+      style={{ width: 120 }}
+      onChange={(newStatus) => handleUpdateStatus(order.id, newStatus)}
+      disabled={order.status === 'cancelled'}
+    >
+      {['pending', 'preparing', 'ready', 'delayed', 'cancelled'].map((status) => (
+        <Option key={status} value={status}>
+          <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
+            {status.toUpperCase()}
+          </Tag>
+        </Option>
+      ))}
+    </Select>
             </div>
             <div style={{ marginTop: '8px' }}>
               <Text type="secondary">{order.statusMessage || getStatusMessage(order.status || 'pending')}</Text>

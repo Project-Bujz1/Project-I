@@ -200,16 +200,35 @@ const WaitingScreen = () => {
 
   const handleCancelOrder = async () => {
     try {
-      const response = await fetch(`https://smartserver-json-server.onrender.com/orders/${orderId}`, {
+      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: 'cancelled' }),
+        body: JSON.stringify({ 
+          status: 'cancelled',
+          statusMessage: 'Your order has been cancelled'
+        }),
       });
       if (!response.ok) {
         throw new Error('Failed to cancel the order');
       }
+      
+      // Update local state
+      setOrder(prevOrder => ({ ...prevOrder, status: 'cancelled', statusMessage: 'Your order has been cancelled' }));
+
+      // Send WebSocket message to notify admin
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        const message = JSON.stringify({
+          type: 'statusUpdate',
+          orderId: orderId,
+          status: 'cancelled',
+          statusMessage: 'Order has been cancelled by the customer'
+        });
+        ws.current.send(message);
+      }
+
       message.success('Order has been cancelled successfully');
-      navigate(`/order-confirmation/${orderId}`);
+      clearCart(); // Clear the cart when order is completed
+      // navigate(`/order-confirmation/${orderId}`);
     } catch (error) {
       console.error('Failed to cancel the order', error);
       message.error('Failed to cancel the order. Please try again.');
@@ -298,67 +317,67 @@ const WaitingScreen = () => {
         <Title level={4} style={{ marginTop: '16px', color: '#343a40' }}>{order.statusMessage}</Title>
         <Text type="secondary" style={{ color: '#6c757d' }}>We'll notify you when your order status changes</Text>
         <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <Tooltip title="Cancel your order" placement="bottom">
-            <Button
-              icon={<CloseOutlined />}
-              onClick={handleCancelOrder}
-              type="default"
-              disabled={order.status !== 'pending'}
-              style={{ backgroundColor: '#f8f9fa', color: '#ff4d4f', borderColor: '#e9ecef', fontWeight: 'bold' }}
-            >
-              Cancel
-            </Button>
-          </Tooltip>
-          <Tooltip title="Complete your order" placement="bottom">
-            <Button
-              icon={<CheckOutlined />}
-              onClick={handleCompleteOrder}
-              type="primary"
-              disabled={order.status !== 'ready'}
-              style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', fontWeight: 'bold' }}
-            >
-              Complete
-            </Button>
-          </Tooltip>
-        </div>
-      </Card>
-      <Modal
-        title="Thank You!"
-        visible={isModalVisible}
-        onOk={handleSubmitFeedback}
-        onCancel={() => setIsModalVisible(false)}
-        okText="Submit Feedback"
-        cancelText="Later"
-        footer={[
-          <Button key="submit" type="primary" onClick={handleSubmitFeedback} style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}>
-            Submit Feedback
-          </Button>,
-        ]}
-        centered
-        style={{ top: 20 }}
-        bodyStyle={{ backgroundColor: '#fff5f5', color: '#ff4d4f', textAlign: 'center' }}
+    <Tooltip title="Cancel your order" placement="bottom">
+      <Button
+        icon={<CloseOutlined />}
+        onClick={handleCancelOrder}
+        type="default"
+        disabled={order.status !== 'pending' && order.status !== 'preparing'}
+        style={{ backgroundColor: '#f8f9fa', color: '#ff4d4f', borderColor: '#e9ecef', fontWeight: 'bold' }}
       >
-        <div style={{ fontSize: '24px', marginBottom: '16px' }}>
-          <CheckCircleOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
-          <CoffeeOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
-        </div>
-        <p style={{ fontSize: '18px', fontWeight: 'bold' }}>Thank you for dining with us!</p>
-        <p>We hope you enjoyed your meal. Please provide your feedback below:</p>
-        <Input.TextArea
-          placeholder="Leave your feedback here..."
-          value={feedback}
-          onChange={(e) => setFeedback(e.target.value)}
-          rows={4}
-          style={{ marginBottom: '10px' }}
-        />
-        <Rate
-          allowHalf
-          value={rating}
-          onChange={(value) => setRating(value)}
-          style={{ marginBottom: '10px' }}
-        />
-      </Modal>
-    </div>
+        Cancel
+      </Button>
+    </Tooltip>
+ <Tooltip title="Complete your order" placement="bottom">
+ <Button
+   icon={<CheckOutlined />}
+   onClick={handleCompleteOrder}
+   type="primary"
+   disabled={order.status !== 'ready'}
+   style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', fontWeight: 'bold' }}
+ >
+   Complete
+ </Button>
+</Tooltip>
+</div>
+</Card>
+<Modal
+title="Thank You!"
+visible={isModalVisible}
+onOk={handleSubmitFeedback}
+onCancel={() => setIsModalVisible(false)}
+okText="Submit Feedback"
+cancelText="Later"
+footer={[
+<Button key="submit" type="primary" onClick={handleSubmitFeedback} style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}>
+ Submit Feedback
+</Button>,
+]}
+centered
+style={{ top: 20 }}
+bodyStyle={{ backgroundColor: '#fff5f5', color: '#ff4d4f', textAlign: 'center' }}
+>
+<div style={{ fontSize: '24px', marginBottom: '16px' }}>
+<CheckCircleOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
+<CoffeeOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
+</div>
+<p style={{ fontSize: '18px', fontWeight: 'bold' }}>Thank you for dining with us!</p>
+<p>We hope you enjoyed your meal. Please provide your feedback below:</p>
+<Input.TextArea
+placeholder="Leave your feedback here..."
+value={feedback}
+onChange={(e) => setFeedback(e.target.value)}
+rows={4}
+style={{ marginBottom: '10px' }}
+/>
+<Rate
+allowHalf
+value={rating}
+onChange={(value) => setRating(value)}
+style={{ marginBottom: '10px' }}
+/>
+</Modal>
+</div>
   );
 };
 
