@@ -55,11 +55,11 @@ function OrderHistory() {
   };
 
   if (loading) {
-    return <FoodLoader />;
+    return <div style={{marginTop: '150px'}}> <FoodLoader />;</div>
   }
 
   return (
-    <div className="order-history-container" style={{ padding: '20px', maxWidth: '800px', margin: 'auto', color: '#ff4d4f' }}>
+    <div className="order-history-container" style={{ padding: '20px', maxWidth: '800px', margin: 'auto', color: '#ff4d4f', marginTop: '95px' }}>
       <h2 style={{ textAlign: 'center', color: '#ff4d4f' }}>Order History</h2>
       <List
         grid={{ gutter: 16, column: 1 }}

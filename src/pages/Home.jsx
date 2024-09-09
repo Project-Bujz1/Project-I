@@ -103,7 +103,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
         <>
           {!selectedCategory && (
             <>
-              <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center' }}>Menu Categories</h2>
+              <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '15px' }}>Menu Categories</h2>
               {loading.categories ? (
                 <FoodLoader />
               ) : (
@@ -144,7 +144,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
 
           {selectedSubcategory && (
             <>
-              <button className="back-button" onClick={handleBackToSubcategories}>
+              <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '10px'}}>
                 ← Back to {selectedCategory.name}
               </button>
               <h2 className="section-title">{selectedSubcategory.name}</h2>
