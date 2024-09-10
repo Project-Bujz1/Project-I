@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
+import FoodLoader from './FoodLoader';
 
 function MenuItem({ item, onItemAdded }) {
   const { cart, addToCart, updateQuantity } = useCart();
@@ -9,6 +10,7 @@ function MenuItem({ item, onItemAdded }) {
   const [quantity, setQuantity] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
   const [animationStartPosition, setAnimationStartPosition] = useState({ x: 0, y: 0 });
+  const [imageLoaded, setImageLoaded] = useState(false);
   const itemRef = useRef(null);
 
   useEffect(() => {
@@ -64,22 +66,104 @@ function MenuItem({ item, onItemAdded }) {
     return { x: window.innerWidth - 60, y: 40 }; // Fallback position
   };
 
+  const handleImageLoad = () => {
+    setImageLoaded(true);
+  };
+
+  const styles = {
+    menuItem: {
+      border: '1px solid #ddd',
+      borderRadius: '8px',
+      overflow: 'hidden',
+      margin: '10px',
+      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+    },
+    imageContainer: {
+      position: 'relative',
+      width: '100%',
+      height: '150px',
+      overflow: 'hidden',
+    },
+    image: {
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      transition: 'opacity 0.3s ease-in-out',
+      opacity: imageLoaded ? 1 : 0,
+    },
+    content: {
+      padding: '15px',
+    },
+    title: {
+      fontSize: '18px',
+      fontWeight: 'bold',
+      margin: '0 0 10px 0',
+    },
+    description: {
+      fontSize: '14px',
+      color: '#666',
+      margin: '0 0 15px 0',
+    },
+    footer: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    price: {
+      fontSize: '16px',
+      fontWeight: 'bold',
+    },
+    quantityControls: {
+      display: 'flex',
+      alignItems: 'center',
+    },
+    quantityBtn: {
+      width: '30px',
+      height: '30px',
+      border: 'none',
+      background: '#f0f0f0',
+      cursor: 'pointer',
+      fontSize: '18px',
+    },
+    quantityDisplay: {
+      margin: '0 10px',
+      fontSize: '16px',
+    },
+    addToCartBtn: {
+      padding: '8px 15px',
+      background: '#4CAF50',
+      color: 'white',
+      border: 'none',
+      borderRadius: '4px',
+      cursor: 'pointer',
+      fontSize: '14px',
+    },
+  };
+
   return (
-    <div className="menu-item" ref={itemRef}>
-      <img src={item.image} alt={item.name} className="menu-item-image" />
-      <div className="menu-item-content">
-        <h3 className="menu-item-title">{item.name}</h3>
-        <p className="menu-item-description">{item.description}</p>
-        <div className="menu-item-footer">
-          <span className="menu-item-price">₹{item.price}</span>
+    <div style={styles.menuItem} ref={itemRef}>
+      <div style={styles.imageContainer}>
+        {!imageLoaded && <FoodLoader />}
+        <img
+          src={item.image}
+          alt={item.name}
+          style={styles.image}
+          onLoad={handleImageLoad}
+        />
+      </div>
+      <div style={styles.content}>
+        <h3 style={styles.title}>{item.name}</h3>
+        <p style={styles.description}>{item.description}</p>
+        <div style={styles.footer}>
+          <span style={styles.price}>₹{item.price}</span>
           {quantity > 0 ? (
-            <div className="quantity-controls">
-              <button onClick={handleDecreaseQuantity} className="quantity-btn">-</button>
-              <span className="quantity-display">{quantity}</span>
-              <button onClick={handleIncreaseQuantity} className="quantity-btn">+</button>
+            <div style={styles.quantityControls}>
+              <button onClick={handleDecreaseQuantity} style={styles.quantityBtn}>-</button>
+              <span style={styles.quantityDisplay}>{quantity}</span>
+              <button onClick={handleIncreaseQuantity} style={styles.quantityBtn}>+</button>
             </div>
           ) : (
-            <button onClick={handleAddToCart} className="add-to-cart-btn">
+            <button onClick={handleAddToCart} style={styles.addToCartBtn}>
               Add to Cart
             </button>
           )}
