@@ -116,9 +116,16 @@ function OrderSummary() {
       <Input
         placeholder="Enter Table Number"
         value={tableNumber}
-        onChange={(e) => setTableNumber(e.target.value)}
-        style={{ marginBottom: '10px' }}
-      />
+        onChange={(e) => {
+        const value = e.target.value;
+        // Only allow numeric values
+        if (/^\d*$/.test(value)) {
+          setTableNumber(value);
+        }
+      }}
+  style={{ marginBottom: '10px' }}
+/>
+
       <button className="pay-button" onClick={handlePayClick}>
         Confirm Order
       </button>
