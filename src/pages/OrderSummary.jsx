@@ -85,7 +85,7 @@ function OrderSummary() {
       }
       alert('Thank you for your feedback!');
       setIsModalVisible(false);
-      navigate(`/order-confirmation/${feedbackDetails.orderId}`);
+      navigate('/home');
     } catch (error) {
       console.error('Failed to save feedback', error);
       alert('Failed to submit feedback. Please try again.');

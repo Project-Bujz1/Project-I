@@ -162,7 +162,9 @@ const WaitingScreen = () => {
       }
       message.success('Thank you for your feedback!');
       setIsModalVisible(false);
-      navigate(`/order-confirmation/${orderId}`);
+      // navigate(`/order-confirmation/${orderId}`);
+      navigate('/home');
+
     } catch (error) {
       console.error('Failed to save feedback', error);
       message.error('Failed to submit feedback. Please try again.');
