@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, Badge, Tooltip, Modal } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
 import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
-import { LiaSignOutAltSolid } from "react-icons/lia";
+import { IoPowerSharp } from "react-icons/io5";
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import './Header.css';
@@ -100,8 +100,8 @@ function Header({ toggleDrawer, onSearch }) {
             </Tooltip></>
 )}
             <Tooltip title="Sign Out">
-              <LiaSignOutAltSolid 
-                onClick={handleSignOut} 
+            <IoPowerSharp
+            onClick={handleSignOut} 
                 className="header__icon"
               />
             </Tooltip>
