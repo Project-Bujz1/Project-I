@@ -111,15 +111,65 @@ function Header({ toggleDrawer, onSearch }) {
 
       {/* Sign Out Confirmation Modal */}
       <Modal
-        title="Confirm Sign Out"
-        visible={isSignOutModalVisible}
-        onOk={handleConfirmSignOut}
-        onCancel={handleCancelSignOut}
-        okText="Yes, Sign Out"
-        cancelText="Cancel"
-      >
-        <p>Are you sure you want to sign out?</p>
-      </Modal>
+      title="Confirm Sign Out"
+      visible={isSignOutModalVisible}
+      onOk={handleConfirmSignOut}
+      onCancel={handleCancelSignOut}
+      okText="Yes, Sign Out"
+      cancelText="Cancel"
+      style={{
+        content: {
+          background: 'linear-gradient(135deg, #ffffff, #fff0f0)',
+          borderRadius: '1rem',
+          overflow: 'hidden',
+          boxShadow: '0 10px 25px rgba(255, 0, 0, 0.1)',
+        }
+      }}
+      bodyStyle={{
+        padding: '12px',
+        fontSize: '1rem',
+        color: '#333333',
+      }}
+      headStyle={{
+        background: '#ff0000',
+        borderBottom: 'none',
+        padding: '8px 12px',
+      }}
+      titleStyle={{
+        color: '#ffffff',
+        fontSize: '1.5rem',
+        fontWeight: 'bold',
+      }}
+      footerStyle={{
+        borderTop: 'none',
+        padding: '8px 12px',
+      }}
+      okButtonProps={{
+        style: {
+          backgroundColor: '#ff0000',
+          borderColor: '#ff0000',
+          color: '#ffffff',
+          borderRadius: '0.5rem',
+          fontWeight: 'bold',
+          height: '30px',
+          padding: '0 20px',
+          transition: 'all 0.3s ease',
+        }
+      }}
+      cancelButtonProps={{
+        style: {
+          borderColor: '#ff0000',
+          color: '#ff0000',
+          borderRadius: '0.5rem',
+          fontWeight: 'bold',
+          height: '30px',
+          padding: '0 20px',
+          transition: 'all 0.3s ease',
+        }
+      }}
+    >
+      <p>Are you sure you want to sign out?</p>
+    </Modal>
     </header>
   );
 }
