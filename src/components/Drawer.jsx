@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Drawer, Menu } from 'antd';
 import { Link } from 'react-router-dom';
 import { MdRestaurant } from "react-icons/md";
 import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined, UnorderedListOutlined, HistoryOutlined, UserOutlined, SettingOutlined, AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 
 const RestaurantDrawer = ({ isOpen, onClose }) => {
-  // Fetch the role from localStorage
+  const [restaurantName, setRestaurantName] = useState('');
   const role = localStorage.getItem('role');
+
+  useEffect(() => {
+    fetchRestaurantData();
+  }, []);
+
+  const fetchRestaurantData = async () => {
+    try {
+      const response = await fetch('http://localhost:3002/restaurant');
+      if (response.ok) {
+        const data = await response.json();
+        setRestaurantName(data.name);
+      }
+    } catch (error) {
+      console.error("Error fetching restaurant data:", error);
+    }
+  };
 
   return (
     <Drawer
@@ -73,13 +89,13 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
               <Link to="/cart" onClick={onClose} style={{ fontSize: "20px" }}>Cart</Link>
             </Menu.Item>
             <Menu.Item
-          key="order-summary"
-          icon={<FileTextOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
-          className="menu-item"
-          style={{margin:"20px"}}
-        >
-          <Link to="/order-summary" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
-        </Menu.Item>
+              key="order-summary"
+              icon={<FileTextOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              className="menu-item"
+              style={{margin:"20px"}}
+            >
+              <Link to="/order-summary" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
+            </Menu.Item>
           </>
         )}
 
@@ -130,7 +146,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
         padding: '10px', 
         textAlign: 'center' 
       }}>
-        <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.45)' }}>© 2024 Restaurant Name</p>
+        <p style={{ margin: 0, color: 'rgba(0, 0, 0, 0.45)' }}>© 2024 {restaurantName || 'Restaurant Name'}</p>
       </div>
       <style>
         {`
