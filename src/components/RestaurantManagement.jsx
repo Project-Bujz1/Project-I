@@ -6,9 +6,17 @@ import 'leaflet/dist/leaflet.css';
 
 const RestaurantManagement = () => {
   const [loading, setLoading] = useState(false);
-  const [logo, setLogo] = useState(null);
-  const [address, setAddress] = useState('');
-  const [position, setPosition] = useState(null);
+  const [restaurant, setRestaurant] = useState({
+    id: 1,
+    name: '',
+    logo: null,
+    phone: '',
+    email: '',
+    address: '',
+    position: null,
+    seatingCapacity: '',
+    cuisineType: ''
+  });
   const [showMap, setShowMap] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -16,6 +24,8 @@ const RestaurantManagement = () => {
   const mapRef = useRef(null);
 
   useEffect(() => {
+    fetchRestaurantData();
+    
     delete L.Icon.Default.prototype._getIconUrl;
     L.Icon.Default.mergeOptions({
       iconRetinaUrl: '/api/placeholder/32/32',
@@ -24,15 +34,52 @@ const RestaurantManagement = () => {
     });
   }, []);
 
-  const onSubmit = (e) => {
+  const fetchRestaurantData = async () => {
+    try {
+      const response = await fetch('http://localhost:3002/restaurant');
+      if (response.ok) {
+        const data = await response.json();
+        setRestaurant(data);
+      }
+    } catch (error) {
+      console.error("Error fetching restaurant data:", error);
+    }
+  };
+
+  const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => setLoading(false), 2000);
+    try {
+      const response = await fetch('http://localhost:3002/restaurant', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(restaurant),
+      });
+      if (response.ok) {
+        console.log("Restaurant information updated successfully");
+      } else {
+        console.error("Failed to update restaurant information");
+      }
+    } catch (error) {
+      console.error("Error updating restaurant information:", error);
+    }
+    setLoading(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setRestaurant(prev => ({ ...prev, [name]: value }));
   };
 
   const handleLogoChange = (e) => {
     if (e.target.files[0]) {
-      setLogo(URL.createObjectURL(e.target.files[0]));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setRestaurant(prev => ({ ...prev, logo: reader.result }));
+      };
+      reader.readAsDataURL(e.target.files[0]);
     }
   };
 
@@ -44,7 +91,7 @@ const RestaurantManagement = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         const { latitude, longitude } = position.coords;
-        setPosition([latitude, longitude]);
+        setRestaurant(prev => ({ ...prev, position: [latitude, longitude] }));
         setShowMap(true);
         fetchAddress(latitude, longitude);
       }, (error) => {
@@ -59,7 +106,7 @@ const RestaurantManagement = () => {
     try {
       const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
       const data = await response.json();
-      setAddress(data.display_name);
+      setRestaurant(prev => ({ ...prev, address: data.display_name }));
     } catch (error) {
       console.error("Error fetching address:", error);
     }
@@ -76,8 +123,11 @@ const RestaurantManagement = () => {
   };
 
   const selectSearchResult = (result) => {
-    setPosition([parseFloat(result.lat), parseFloat(result.lon)]);
-    setAddress(result.display_name);
+    setRestaurant(prev => ({
+      ...prev,
+      position: [parseFloat(result.lat), parseFloat(result.lon)],
+      address: result.display_name
+    }));
     setSearchResults([]);
     setSearchQuery('');
   };
@@ -86,13 +136,13 @@ const RestaurantManagement = () => {
     const map = useMap();
     
     React.useEffect(() => {
-      if (position) {
-        map.setView(position, 13);
+      if (restaurant.position) {
+        map.setView(restaurant.position, 13);
       }
-    }, [position, map]);
+    }, [restaurant.position, map]);
 
     map.on('click', (e) => {
-      setPosition([e.latlng.lat, e.latlng.lng]);
+      setRestaurant(prev => ({ ...prev, position: [e.latlng.lat, e.latlng.lng] }));
       fetchAddress(e.latlng.lat, e.latlng.lng);
     });
 
@@ -243,67 +293,88 @@ const RestaurantManagement = () => {
 
   return (
     <div style={containerStyle}>
-    {loading && <RestaurantLoader />}
-    <h1 style={headerStyle}>Restaurant Management</h1>
-    <form onSubmit={onSubmit}>
-      <div style={sectionStyle}>
-        <h2 style={{ color: '#FF0000', marginBottom: '1rem', textAlign: 'center' }}>Restaurant Logo</h2>
-        <div onClick={triggerFileInput} style={logoContainerStyle}>
-          {logo ? (
-            <img src={logo} alt="Restaurant logo" style={logoStyle} />
-          ) : (
-            <PlusCircle size={48} color="#FF0000" />
-          )}
-        </div>
-        <input 
-          type="file" 
-          ref={fileInputRef}
-          onChange={handleLogoChange} 
-          style={{ display: 'none' }}
-          accept="image/*"
-        />
-        <p style={{ textAlign: 'center', color: '#666', marginBottom: '1rem' }}>
-          Click to upload or change logo
-        </p>
-      </div>
-
-      <div style={sectionStyle}>
-        <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Basic Information</h2>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={labelStyle}>
-            <Utensils size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-            Restaurant Name
-          </label>
-          <input type="text" style={inputStyle} placeholder="e.g. Red Plate Bistro" />
+      {loading && <RestaurantLoader />}
+      <h1 style={headerStyle}>Restaurant Management</h1>
+      <form onSubmit={onSubmit}>
+        <div style={sectionStyle}>
+          <h2 style={{ color: '#FF0000', marginBottom: '1rem', textAlign: 'center' }}>Restaurant Logo</h2>
+          <div onClick={triggerFileInput} style={logoContainerStyle}>
+            {restaurant.logo ? (
+              <img src={restaurant.logo} alt="Restaurant logo" style={logoStyle} />
+            ) : (
+              <PlusCircle size={48} color="#FF0000" />
+            )}
+          </div>
+          <input 
+            type="file" 
+            ref={fileInputRef}
+            onChange={handleLogoChange} 
+            style={{ display: 'none' }}
+            accept="image/*"
+          />
+          <p style={{ textAlign: 'center', color: '#666', marginBottom: '1rem' }}>
+            Click to upload or change logo
+          </p>
         </div>
 
-          {/* Phone and Email inputs remain the same */}
+        <div style={sectionStyle}>
+          <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Basic Information</h2>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={labelStyle}>
+              <Utensils size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+              Restaurant Name
+            </label>
+            <input
+              type="text"
+              name="name"
+              value={restaurant.name}
+              onChange={handleInputChange}
+              style={inputStyle}
+              placeholder="e.g. Red Plate Bistro"
+            />
+          </div>
+
           <div style={{ display: 'flex', gap: '1rem' }}>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
                 <Phone size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
                 Phone
               </label>
-              <input type="tel" style={inputStyle} placeholder="(123) 456-7890" />
+              <input
+                type="tel"
+                name="phone"
+                value={restaurant.phone}
+                onChange={handleInputChange}
+                style={inputStyle}
+                placeholder="(123) 456-7890"
+              />
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
                 <Mail size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
                 Email
               </label>
-              <input type="email" style={inputStyle} placeholder="info@redplatebistro.com" />
+              <input
+                type="email"
+                name="email"
+                value={restaurant.email}
+                onChange={handleInputChange}
+                style={inputStyle}
+                placeholder="info@redplatebistro.com"
+              />
             </div>
-         </div>
-         <div style={{ marginBottom: '1rem' }}>
+          </div>
+          <div style={{ marginBottom: '1rem' }}>
             <label style={labelStyle}>
               <MapPin size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
               Address
             </label>
             <textarea 
+              name="address"
+              value={restaurant.address}
+              onChange={handleInputChange}
               style={{ ...inputStyle, height: '5rem' }} 
               placeholder="123 Gourmet Street, Foodie City, 12345"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
             ></textarea>
             <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
               <button type="button" onClick={getCurrentLocation} style={{ ...buttonStyle, flex: 1 }}>
@@ -345,16 +416,15 @@ const RestaurantManagement = () => {
                 )}
               </div>
               <div style={{ height: '300px', marginBottom: '1rem' }}>
-                <MapContainer center={position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
+                <MapContainer center={restaurant.position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
                   <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  {position && <Marker position={position} />}
+                  {restaurant.position && <Marker position={restaurant.position} />}
                   <MapEvents />
                 </MapContainer>
               </div>
-              
             </>
           )}
-                 </div>
+        </div>
                  
         <div style={sectionStyle}>
           <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Restaurant Details</h2>
@@ -364,18 +434,32 @@ const RestaurantManagement = () => {
                 <Users size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
                 Seating Capacity
               </label>
-              <input type="number" style={inputStyle} min="1" placeholder="e.g. 50" />
+              <input
+                type="number"
+                name="seatingCapacity"
+                value={restaurant.seatingCapacity}
+                onChange={handleInputChange}
+                style={inputStyle}
+                min="1"
+                placeholder="e.g. 50"
+              />
             </div>
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
                 <ChefHat size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
                 Cuisine Type
               </label>
-              <input type="text" style={inputStyle} placeholder="e.g. Italian, Asian Fusion" />
+              <input
+                type="text"
+                name="cuisineType"
+                value={restaurant.cuisineType}
+                onChange={handleInputChange}
+                style={inputStyle}
+                placeholder="e.g. Italian, Asian Fusion"
+              />
             </div>
           </div>
         </div>
-        {/* Restaurant Details section remains the same */}
 
         <button type="submit" style={buttonStyle}>
           <Utensils size={18} style={{ marginRight: '0.5rem' }} />
