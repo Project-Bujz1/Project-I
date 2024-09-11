@@ -10,7 +10,6 @@ import './Header.css';
 import CartHitEffect from './CartHitEffect';
 
 const { Search } = Input;
-const role = localStorage.getItem('role');
 
 function Header({ toggleDrawer, onSearch }) {
   const { cart } = useCart();
@@ -22,6 +21,9 @@ function Header({ toggleDrawer, onSearch }) {
   const [isSignOutModalVisible, setIsSignOutModalVisible] = useState(false);
   const [restaurantLogo, setRestaurantLogo] = useState('');
   const [isLogoModalVisible, setIsLogoModalVisible] = useState(false);
+  
+  // Add state to track the role
+  const [role, setRole] = useState(localStorage.getItem('role'));
 
   useEffect(() => {
     fetchRestaurantLogo();
@@ -39,6 +41,13 @@ function Header({ toggleDrawer, onSearch }) {
     }
   };
 
+  // Detect role change and navigate when logged out
+  useEffect(() => {
+    if (!role) {
+      navigate('/');
+    }
+  }, [role, navigate]);
+
   const handleOrderSummaryClick = () => {
     navigate('/order-summary');
   };
@@ -50,8 +59,8 @@ function Header({ toggleDrawer, onSearch }) {
   const handleConfirmSignOut = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('role');
+    setRole(null); // Update the role state to null
     setIsSignOutModalVisible(false);
-    navigate('/');
   };
 
   const handleCancelSignOut = () => {
@@ -93,24 +102,24 @@ function Header({ toggleDrawer, onSearch }) {
             </Link>
           </div>
           <div className="header__center">
-  <Search
-    placeholder="Search menu..."
-    className="header__search-input"
-    value={searchTerm}
-    onChange={(e) => setSearchTerm(e.target.value)}
-    onSearch={handleSearch}
-  />
-  {restaurantLogo && (
-    <div className="header__restaurant-logo-container">
-      <img 
-        src={restaurantLogo}
-        alt="Restaurant Logo"
-        className="header__restaurant-logo"
-        onClick={handleLogoClick}
-      />
-    </div>
-  )}
-</div>
+            <Search
+              placeholder="Search menu..."
+              className="header__search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onSearch={handleSearch}
+            />
+            {restaurantLogo && (
+              <div className="header__restaurant-logo-container">
+                <img 
+                  src={restaurantLogo}
+                  alt="Restaurant Logo"
+                  className="header__restaurant-logo"
+                  onClick={handleLogoClick}
+                />
+              </div>
+            )}
+          </div>
 
           <div className="header__right">
             {role === 'customer' && (
