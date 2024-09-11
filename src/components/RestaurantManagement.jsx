@@ -1,8 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Utensils, MapPin, Phone, Mail, Clock, Users, ChefHat, DollarSign, Camera, Loader2, PlusCircle, MapIcon, Crosshair, Search } from 'lucide-react';
-import { MapContainer, TileLayer, Marker, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+
+// Add this import at the top of your file
+import markerIcon from 'leaflet/dist/images/marker-icon.png';
+import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
+import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const RestaurantManagement = () => {
   const [loading, setLoading] = useState(false);
@@ -23,15 +28,19 @@ const RestaurantManagement = () => {
   const fileInputRef = useRef(null);
   const mapRef = useRef(null);
 
+  // Define custom icon
+  const customIcon = new L.Icon({
+    iconUrl: markerIcon,
+    iconRetinaUrl: markerIcon2x,
+    shadowUrl: markerShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
   useEffect(() => {
     fetchRestaurantData();
-    
-    delete L.Icon.Default.prototype._getIconUrl;
-    L.Icon.Default.mergeOptions({
-      iconRetinaUrl: '/api/placeholder/32/32',
-      iconUrl: '/api/placeholder/32/32',
-      shadowUrl: '/api/placeholder/32/32',
-    });
   }, []);
 
   const fetchRestaurantData = async () => {
@@ -416,11 +425,25 @@ const RestaurantManagement = () => {
                 )}
               </div>
               <div style={{ height: '300px', marginBottom: '1rem' }}>
-                <MapContainer center={restaurant.position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
-                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                  {restaurant.position && <Marker position={restaurant.position} />}
-                  <MapEvents />
-                </MapContainer>
+              <MapContainer center={restaurant.position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              {restaurant.position && (
+                <Marker position={restaurant.position} icon={customIcon}>
+<Popup>
+          <div style={{
+            backgroundColor: 'red',
+            color: 'white',
+            padding: '10px',
+            borderRadius: '5px',
+            textAlign: 'center',
+          }}>
+            <h3>{restaurant.name}</h3>
+            <p>{restaurant.address}</p>
+          </div>
+        </Popup>                </Marker>
+              )}
+              <MapEvents />
+            </MapContainer>
               </div>
             </>
           )}
