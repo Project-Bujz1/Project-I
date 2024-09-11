@@ -21,6 +21,8 @@
   }
   
   .header__center {
+    display: flex;
+    align-items: center;
     flex-grow: 1;
     margin: 0 20px;
   }
@@ -40,6 +42,17 @@
     height: 50px;
     width: 60px;
   }
+  .header__restaurant-logo {
+    height: 40px;
+    width: 40px;
+    cursor: pointer;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .header__restaurant-logo-container {
+    margin-left: 10px; /* Space between search bar and logo */
+  }
   
   .header__logo-text {
     color: #f5222d;
@@ -49,7 +62,7 @@
   }
   
   .header__search-input {
-    width: 100%;
+    flex-grow: 1; /* Make the search input take up available space */
   }
   
   .header__menu-button {

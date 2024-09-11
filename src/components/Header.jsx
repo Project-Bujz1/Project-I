@@ -93,30 +93,25 @@ function Header({ toggleDrawer, onSearch }) {
             </Link>
           </div>
           <div className="header__center">
-            <Search
-              placeholder="Search menu..."
-              className="header__search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onSearch={handleSearch}
-            />
-            {restaurantLogo && (
-              <img 
-                src={restaurantLogo}
-                alt="Restaurant Logo"
-                // className="header__restaurant-logo"
-                onClick={handleLogoClick}
-                style={{
-                  height: '40px',
-                  width: '40px',
-                  marginLeft: '10px',
-                  cursor: 'pointer',
-                  borderRadius: '50%',
-                  objectFit: 'cover'
-                }}
-              />
-            )}
-          </div>
+  <Search
+    placeholder="Search menu..."
+    className="header__search-input"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    onSearch={handleSearch}
+  />
+  {restaurantLogo && (
+    <div className="header__restaurant-logo-container">
+      <img 
+        src={restaurantLogo}
+        alt="Restaurant Logo"
+        className="header__restaurant-logo"
+        onClick={handleLogoClick}
+      />
+    </div>
+  )}
+</div>
+
           <div className="header__right">
             {role === 'customer' && (
               <>
