@@ -131,7 +131,7 @@ function MenuItem({ item, onItemAdded }) {
     },
     addToCartBtn: {
       padding: '8px 15px',
-      background: '#4CAF50',
+      background: 'red',
       color: 'white',
       border: 'none',
       borderRadius: '4px',
