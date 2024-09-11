@@ -45,7 +45,7 @@ const RestaurantManagement = () => {
 
   const fetchRestaurantData = async () => {
     try {
-      const response = await fetch('http://localhost:3002/restaurant');
+      const response = await fetch('https://smartserver-json-server.onrender.com/restaurant');
       if (response.ok) {
         const data = await response.json();
         setRestaurant(data);
@@ -59,7 +59,7 @@ const RestaurantManagement = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3002/restaurant', {
+      const response = await fetch('https://smartserver-json-server.onrender.com/restaurant', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
