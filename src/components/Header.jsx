@@ -31,15 +31,37 @@ function Header({ toggleDrawer, onSearch }) {
 
   const fetchRestaurantLogo = async () => {
     try {
-      const response = await fetch('https://smartserver-json-server.onrender.com/restaurant');
+      // Get the orgId from localStorage
+      const orgId = localStorage.getItem('orgId');
+  
+      if (!orgId) {
+        console.error("No orgId found in localStorage");
+        return;
+      }
+  
+      // Fetch the restaurant data from the server
+      const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
+      
       if (response.ok) {
         const data = await response.json();
-        setRestaurantLogo(data.logo);
+        
+        // Find the restaurant that matches the orgId
+        const restaurant = data.find(restaurant => restaurant.orgId === orgId);
+  
+        if (restaurant) {
+          // Set the restaurant logo if found
+          setRestaurantLogo(restaurant.logo);
+        } else {
+          console.error("No restaurant found with the given orgId");
+        }
+      } else {
+        console.error("Error fetching restaurant data:", response.status);
       }
     } catch (error) {
       console.error("Error fetching restaurant logo:", error);
     }
   };
+  
 
   // Detect role change and navigate when logged out
   useEffect(() => {
