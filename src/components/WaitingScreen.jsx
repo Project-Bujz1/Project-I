@@ -26,12 +26,16 @@ const WaitingScreen = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`);
+        const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
+        const response = await fetch(`https://smartserver-json-server.onrender.com/history?id=${orderId}&orgId=${orgId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch order');
         }
         const data = await response.json();
-        setOrder(data);
+        if (data.length === 0) {
+          throw new Error('Order not found');
+        }
+        setOrder(data[0]);
       } catch (error) {
         console.error('Failed to fetch order', error);
         message.error('Failed to fetch order');
@@ -46,12 +50,14 @@ const WaitingScreen = () => {
 
     ws.current.onopen = () => {
       console.log('WebSocket connected');
+      const orgId = localStorage.getItem('orgId');
+      ws.current.send(JSON.stringify({ type: 'subscribe', orgId: orgId }));
     };
 
     ws.current.onmessage = (event) => {
       console.log('Received message:', event.data);
       const data = JSON.parse(event.data);
-      if (data.type === 'statusUpdate' && data.orderId == orderId) {
+      if (data.type === 'statusUpdate' && data.orderId == orderId && data.orgId === localStorage.getItem('orgId')) {
         const newStatus = data.status;
         const newStatusMessage = data.statusMessage;
         setOrder(prevOrder => ({ ...prevOrder, status: newStatus, statusMessage: newStatusMessage }));
@@ -102,6 +108,7 @@ const WaitingScreen = () => {
 
   const handleCancelOrder = async () => {
     try {
+      const orgId = localStorage.getItem('orgId');
       const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -122,6 +129,7 @@ const WaitingScreen = () => {
         const message = JSON.stringify({
           type: 'statusUpdate',
           orderId: orderId,
+          orgId: orgId,
           status: 'cancelled',
           statusMessage: 'Order has been cancelled by the customer'
         });

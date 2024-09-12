@@ -14,11 +14,12 @@ const AdminOrderComponent = () => {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const ws = useRef(null);
   const audioRef = useRef(new Audio(notificationSound));
+  const orgId = localStorage.getItem('orgId');
 
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const response = await fetch('https://smartserver-json-server.onrender.com/history');
+        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}`);
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
@@ -45,7 +46,7 @@ const AdminOrderComponent = () => {
     ws.current.onmessage = (event) => {
       console.log('Received message:', event.data);
       const data = JSON.parse(event.data);
-      if (data.type === 'newOrder') {
+      if (data.type === 'newOrder' && data.order.orgId == orgId) {
         // Add the new order to the beginning of the orders array
         setOrders(prevOrders => [data.order, ...prevOrders]);
         
@@ -64,7 +65,7 @@ const AdminOrderComponent = () => {
           icon: <BellOutlined style={{ color: '#ff4d4f' }} />,
           duration: 4.5,
         });
-           } else if (data.type === 'statusUpdate') {
+      } else if (data.type === 'statusUpdate' && data.orgId == orgId) {
         setOrders(prevOrders =>
           prevOrders.map(order =>
             order.id == data.orderId ? { ...order, status: data.status, statusMessage: data.statusMessage } : order
@@ -91,7 +92,7 @@ const AdminOrderComponent = () => {
         ws.current.close();
       }
     };
-  }, [soundEnabled]);
+  }, [soundEnabled, orgId]);
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
@@ -103,7 +104,7 @@ const AdminOrderComponent = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ status: newStatus, statusMessage }),
+        body: JSON.stringify({ status: newStatus, statusMessage, orgId }),
       });
 
       if (!response.ok) {
@@ -122,7 +123,8 @@ const AdminOrderComponent = () => {
           type: 'statusUpdate', 
           orderId: orderId, 
           status: newStatus,
-          statusMessage: statusMessage
+          statusMessage: statusMessage,
+          orgId: orgId
         });
         console.log('Sending WebSocket message:', message);
         ws.current.send(message);

@@ -19,7 +19,14 @@ function OrderHistory() {
         throw new Error('Failed to fetch order history');
       }
       const data = await response.json();
-      setOrders(data);
+      
+      // Get the orgId from localStorage
+      const orgId = localStorage.getItem('orgId');
+      
+      // Filter orders based on the orgId
+      const filteredOrders = data.filter(order => order.orgId === orgId);
+      
+      setOrders(filteredOrders);
     } catch (error) {
       console.error('Failed to fetch order history', error);
       message.error('Failed to fetch order history');

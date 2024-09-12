@@ -4,31 +4,19 @@ import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
-// Add this import at the top of your file
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 
 const RestaurantManagement = () => {
   const [loading, setLoading] = useState(false);
-  const [restaurant, setRestaurant] = useState({
-    id: 1,
-    name: '',
-    logo: null,
-    phone: '',
-    email: '',
-    address: '',
-    position: null,
-    seatingCapacity: '',
-    cuisineType: ''
-  });
+  const [restaurant, setRestaurant] = useState(null);
   const [showMap, setShowMap] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const fileInputRef = useRef(null);
   const mapRef = useRef(null);
 
-  // Define custom icon
   const customIcon = new L.Icon({
     iconUrl: markerIcon,
     iconRetinaUrl: markerIcon2x,
@@ -45,13 +33,22 @@ const RestaurantManagement = () => {
 
   const fetchRestaurantData = async () => {
     try {
-      const response = await fetch('https://smartserver-json-server.onrender.com/restaurant');
+      setLoading(true);
+      const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
+      const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
       if (response.ok) {
         const data = await response.json();
-        setRestaurant(data);
+        const restaurantData = data.find(r => r.orgId === orgId);
+        if (restaurantData) {
+          setRestaurant(restaurantData);
+        } else {
+          console.error("No restaurant found for this orgId");
+        }
       }
     } catch (error) {
       console.error("Error fetching restaurant data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,7 +56,7 @@ const RestaurantManagement = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await fetch('https://smartserver-json-server.onrender.com/restaurant', {
+      const response = await fetch(`https://smartserver-json-server.onrender.com/restaurants/${restaurant.id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -303,9 +300,11 @@ const RestaurantManagement = () => {
   return (
     <div style={containerStyle}>
       {loading && <RestaurantLoader />}
-      <h1 style={headerStyle}>Restaurant Management</h1>
-      <form onSubmit={onSubmit}>
-        <div style={sectionStyle}>
+      {restaurant ? (
+        <>
+          <h1 style={headerStyle}>Restaurant Management</h1>
+          <form onSubmit={onSubmit}>
+          <div style={sectionStyle}>
           <h2 style={{ color: '#FF0000', marginBottom: '1rem', textAlign: 'center' }}>Restaurant Logo</h2>
           <div onClick={triggerFileInput} style={logoContainerStyle}>
             {restaurant.logo ? (
@@ -489,6 +488,13 @@ const RestaurantManagement = () => {
           Save Restaurant Information
         </button>
       </form>
+        </>
+      ) : (
+        <div style={{ textAlign: 'center', color: '#FF0000' }}>
+          <h2>No restaurant data found for this organization.</h2>
+          <p>Please check your login or contact support.</p>
+        </div>
+      )}
       <style jsx>{`
         @keyframes spin {
           to { transform: rotate(360deg); }

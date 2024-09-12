@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Menu, Form, Input, Button, Select, Table, Modal, message, Typography } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, MenuOutlined } from '@ant-design/icons';
+import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import styled from 'styled-components';
 
 const { Header, Content } = Layout;
@@ -120,26 +120,27 @@ const MenuManagement = () => {
   const [form] = Form.useForm();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+
+  // Get orgId from localStorage
+  const orgId = localStorage.getItem('orgId');
 
   useEffect(() => {
     fetchData();
   }, []);
 
-
-  const [selectedCategory, setSelectedCategory] = useState(null);
-
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    form.setFieldsValue({ subcategoryId: null }); // Reset subcategory field
+    form.setFieldsValue({ subcategoryId: null });
   };
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const [categoriesRes, subcategoriesRes, menuItemsRes] = await Promise.all([
-        fetch(`${API_URL}/categories`),
-        fetch(`${API_URL}/subcategories`),
-        fetch(`${API_URL}/menu_items`)
+        fetch(`${API_URL}/categories?orgId=${orgId}`),
+        fetch(`${API_URL}/subcategories?orgId=${orgId}`),
+        fetch(`${API_URL}/menu_items?orgId=${orgId}`)
       ]);
       const [categoriesData, subcategoriesData, menuItemsData] = await Promise.all([
         categoriesRes.json(),
@@ -162,7 +163,7 @@ const MenuManagement = () => {
       const response = await fetch(`${API_URL}/${type}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
+        body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
       });
       if (response.ok) {
         fetchData();
@@ -182,7 +183,7 @@ const MenuManagement = () => {
       const response = await fetch(`${API_URL}/${type}/${editingItem.id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(values)
+        body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
       });
       if (response.ok) {
         fetchData();
@@ -330,14 +331,7 @@ const MenuManagement = () => {
     );
   };
 
-
-//   const tabContent = {
-//     '1': <StyledTable columns={columns.categories} dataSource={categories} loading={loading} rowKey="id" />,
-//     '2': <StyledTable columns={columns.subcategories} dataSource={subcategories} loading={loading} rowKey="id" />,
-//     '3': <StyledTable columns={columns.menuItems} dataSource={menuItems} loading={loading} rowKey="id" />
-//   };
-
-const tabContent = {
+  const tabContent = {
     '1': (
       <StyledTableContainer>
         <StyledTable columns={columns.categories} dataSource={categories} loading={loading} rowKey="id" />
@@ -355,7 +349,6 @@ const tabContent = {
     ),
   };
 
-  
   return (
     <StyledLayout style={{marginTop: "100px"}}>
       <StyledHeader>

@@ -12,29 +12,39 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
   const [searchResults, setSearchResults] = useState([]);
+  
+  const orgId = localStorage.getItem('orgId'); // Get orgId from localStorage
 
   useEffect(() => {
-    fetch('https://smartserver-json-server.onrender.com/categories')
+    const orgId = localStorage.getItem('orgId');  // Retrieve the orgId from localStorage
+    
+    if (orgId) {
+      fetch('https://smartserver-json-server.onrender.com/categories')
       .then((res) => res.json())
-      .then((data) => {
-        setCategories(data);
-        setLoading((prev) => ({ ...prev, categories: false }));
-      });
+            .then((data) => {
+                const matchedCategories = data.filter(category => category.orgId === parseInt(orgId));  // Filter categories by orgId
+                setCategories(matchedCategories);
+                setLoading((prev) => ({ ...prev, categories: false }));
+            });
 
-    fetch('https://smartserver-json-server.onrender.com/subcategories')
-      .then((res) => res.json())
-      .then((data) => {
-        setSubcategories(data);
-        setLoading((prev) => ({ ...prev, subcategories: false }));
-      });
+            fetch('https://smartserver-json-server.onrender.com/subcategories')
+            .then((res) => res.json())
+            .then((data) => {
+                const matchedSubcategories = data.filter(subcategory => subcategory.orgId === parseInt(orgId));  // Filter subcategories by orgId
+                setSubcategories(matchedSubcategories);
+                setLoading((prev) => ({ ...prev, subcategories: false }));
+            });
 
-    fetch('https://smartserver-json-server.onrender.com/menu_items')
-      .then((res) => res.json())
-      .then((data) => {
-        setMenuItems(data);
-        setLoading((prev) => ({ ...prev, menuItems: false }));
-      });
-  }, []);
+            fetch('https://smartserver-json-server.onrender.com/menu_items')
+            .then((res) => res.json())
+            .then((data) => {
+                const matchedMenuItems = data.filter(item => item.orgId === parseInt(orgId));  // Filter menu items by orgId
+                setMenuItems(matchedMenuItems);
+                setLoading((prev) => ({ ...prev, menuItems: false }));
+            });
+    }
+}, []);
+
 
   useEffect(() => {
     if (searchTerm) {

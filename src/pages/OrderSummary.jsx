@@ -41,8 +41,11 @@ function OrderSummary() {
 
     setLoading(true);
 
+    const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
+
     const orderDetails = {
       id: Date.now(),
+      orgId: orgId, // Include the orgId in the order details
       items: cart,
       total: total.toFixed(2),
       tableNumber,

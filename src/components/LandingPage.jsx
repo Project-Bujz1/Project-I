@@ -32,6 +32,7 @@ const LandingPage = () => {
                     const data = await response.json();
                     localStorage.setItem('adminToken', data.token);
                     localStorage.setItem('role', 'admin');
+                    localStorage.setItem('orgId', data.orgId);  // Store the orgId
                     navigate('/admin');
                 } else {
                     const errorData = await response.json();
