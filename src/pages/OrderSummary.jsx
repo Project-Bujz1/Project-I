@@ -21,10 +21,33 @@ function OrderSummary() {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   useEffect(() => {
-    fetch('https://smartserver-json-server.onrender.com/restaurant')
-      .then(response => response.json())
-      .then(data => setSeatingCapacity(parseInt(data.seatingCapacity)))
-      .catch(error => console.error('Error fetching restaurant data:', error));
+    const fetchSeatingCapacity = async () => {
+      try {
+        const orgId = localStorage.getItem('orgId');
+        if (!orgId) {
+          console.error('No orgId found in localStorage');
+          return;
+        }
+  
+        const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
+        if (!response.ok) {
+          throw new Error('Failed to fetch restaurant data');
+        }
+  
+        const restaurants = await response.json();
+        const restaurant = restaurants.find(r => r.orgId === orgId);
+  
+        if (restaurant) {
+          setSeatingCapacity(parseInt(restaurant.seatingCapacity));
+        } else {
+          console.error('No restaurant found for the given orgId');
+        }
+      } catch (error) {
+        console.error('Error fetching restaurant data:', error);
+      }
+    };
+  
+    fetchSeatingCapacity();
   }, []);
 
   const handlePayClick = async () => {

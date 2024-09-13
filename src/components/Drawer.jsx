@@ -6,15 +6,30 @@ import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined, UnorderedListOutl
 
 const RestaurantDrawer = ({ isOpen, onClose }) => {
   const [restaurantName, setRestaurantName] = useState('');
-  const role = localStorage.getItem('role');
+  const [role, setRole] = useState('');
 
   useEffect(() => {
     fetchRestaurantData();
+    const storedRole = localStorage.getItem('role');
+    setRole(storedRole || '');
+
+    // Add event listener for storage changes
+    window.addEventListener('storage', handleStorageChange);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
+
+  const handleStorageChange = (event) => {
+    if (event.key === 'role') {
+      setRole(event.newValue || '');
+    }
+  };
 
   const fetchRestaurantData = async () => {
     try {
-      // Get orgId from localStorage
       const orgId = localStorage.getItem('orgId');
       
       if (!orgId) {
@@ -22,17 +37,13 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
         return;
       }
   
-      // Fetch restaurant data from the server
       const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
       
       if (response.ok) {
         const data = await response.json();
-        
-        // Find the restaurant that matches the orgId
         const restaurant = data.find(restaurant => restaurant.orgId === orgId);
         
         if (restaurant) {
-          // Set the restaurant name
           setRestaurantName(restaurant.name);
         } else {
           console.error("No restaurant found with the given orgId");
@@ -44,7 +55,6 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
       console.error("Error fetching restaurant data:", error);
     }
   };
-  
 
   return (
     <Drawer
@@ -91,7 +101,6 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           backgroundColor: 'white',
         }}
       >
-        {/* Conditional Rendering for Customer */}
         {role === 'customer' && (
           <>
             <Menu.Item
@@ -130,7 +139,6 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           <Link to="/order-history" onClick={onClose} style={{ fontSize: "20px" }}>Order History</Link>
         </Menu.Item>
 
-        {/* Conditional Rendering for Admin */}
         {role === 'admin' && (
           <>
             <Menu.Item

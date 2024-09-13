@@ -454,7 +454,7 @@ const RestaurantManagement = () => {
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
                 <Users size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Seating Capacity
+                Table Count
               </label>
               <input
                 type="number"
@@ -469,7 +469,7 @@ const RestaurantManagement = () => {
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
                 <ChefHat size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Cuisine Type
+                Cuisine
               </label>
               <input
                 type="text"
