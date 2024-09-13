@@ -11,9 +11,9 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
 
 # Mock credentials with different orgIds (replace with database in production)
 users = {
-    'yati': {'password': 'yati', 'orgId': 1},
+    'yati': {'password': 'yati', 'orgId': 3},
     'ammammagarillu': {'password': 'ammammagarillu', 'orgId': 2},
-    'biryanis': {'password': 'biryanis', 'orgId': 3}
+    'biryanis': {'password': 'biryanis', 'orgId': 1}
 }
 
 # Token verification decorator
