@@ -22,12 +22,17 @@ export function CartProvider({ children }) {
   };
 
   const updateQuantity = (itemId, newQuantity) => {
-    setCart((prevCart) =>
-      prevCart.map((item) =>
-        item.id === itemId ? { ...item, quantity: newQuantity } : item
-      )
-    );
+    if (newQuantity <= 0) {
+      removeFromCart(itemId); // Remove item if quantity is 0 or less
+    } else {
+      setCart((prevCart) =>
+        prevCart.map((item) =>
+          item.id === itemId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+    }
   };
+  
 
   const clearCart = () => {
     setCart([]);

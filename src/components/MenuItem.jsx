@@ -5,7 +5,7 @@ import FlyingItemAnimation from './FlyingItemAnimation';
 import FoodLoader from './FoodLoader';
 
 function MenuItem({ item, onItemAdded }) {
-  const { cart, addToCart, updateQuantity } = useCart();
+  const { cart, addToCart, updateQuantity, removeFromCart,  } = useCart();
   const cartIconRef = useCartIcon();
   const [quantity, setQuantity] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -49,10 +49,11 @@ function MenuItem({ item, onItemAdded }) {
       updateQuantity(item.id, quantity - 1);
       setQuantity(quantity - 1);
     } else if (quantity === 1) {
-      updateQuantity(item.id, 0);
+      removeFromCart(item.id);  // Remove item from cart if quantity is 0
       setQuantity(0);
     }
   };
+  
 
   const handleAnimationComplete = () => {
     setShowAnimation(false);
