@@ -15,6 +15,7 @@ import MenuManagement from './components/MenuManagement';
 import WaitingScreen from './components/WaitingScreen';
 import LandingPage from './components/LandingPage';
 import RestaurantManagement from './components/RestaurantManagement';
+import BillSummary from './components/BillSummary';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -43,35 +44,35 @@ function App() {
                 path="*"
                 element={
                   <>
-            <Header 
-              toggleDrawer={toggleDrawer} 
-              onSearch={handleSearch}
-            />
-
-            <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
-            <div className="container">
-              <Routes>
-                <Route 
-                  path="/Home" 
-                  element={
-                    <Home 
-                      onItemAdded={handleItemAdded}
-                      searchTerm={searchTerm}
+                    <Header 
+                      toggleDrawer={toggleDrawer} 
+                      onSearch={handleSearch}
                     />
-                  } 
-                />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/admin" element={<AdminPage/>} />
-                <Route path="/order-summary" element={<OrderSummary />} />
-                <Route path="/order-history" element={<OrderHistory />} />
-                <Route path="/order-confirmation" element={<OrderConfirmation />} />
-                <Route path="/menu-management" element={<MenuManagement />} />
-                <Route path="/waiting/:orderId" element={<WaitingScreen />} /> 
-                <Route path="/management" element={<RestaurantManagement />} /> 
-              </Routes>
-            </div>
-           </>
-          }
+                    <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
+                    <div className="container">
+                      <Routes>
+                        <Route 
+                          path="/Home" 
+                          element={
+                            <Home 
+                              onItemAdded={handleItemAdded}
+                              searchTerm={searchTerm}
+                            />
+                          } 
+                        />
+                        <Route path="/cart" element={<Cart />} />
+                        <Route path="/admin" element={<AdminPage/>} />
+                        <Route path="/order-summary" element={<OrderSummary />} />
+                        <Route path="/order-history" element={<OrderHistory />} />
+                        <Route path="/order-confirmation" element={<OrderConfirmation />} />
+                        <Route path="/menu-management" element={<MenuManagement />} />
+                        <Route path="/waiting/:orderId" element={<WaitingScreen />} /> 
+                        <Route path="/management" element={<RestaurantManagement />} /> 
+                      </Routes>
+                    </div>
+                    <BillSummary />
+                  </>
+                }
               />
             </Routes>
           </div>
