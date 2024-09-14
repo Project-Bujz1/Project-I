@@ -274,7 +274,7 @@ function Header({ toggleDrawer, onSearch }) {
             </p>
             <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <FaUtensils style={{ marginRight: '10px', color: '#ff4d4f' }} />
-              Cuisine: {restaurantDetails.cuisineType}
+              Cuisine: {restaurantDetails.peopleCount}
             </p>
             <p style={{ display: 'flex', alignItems: 'center' }}>
               <AiOutlineShoppingCart style={{ marginRight: '10px', color: '#ff4d4f' }} />

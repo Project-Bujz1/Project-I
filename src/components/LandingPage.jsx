@@ -349,7 +349,7 @@ const LandingPage = () => {
                             >
                                 <Card.Meta 
                                     title={restaurant.name} 
-                                    description={`Cuisine: ${restaurant.cuisineType}`} 
+                                    description={`Count: ${restaurant.peopleCount}`} 
                                 />
                             </Card>
                         ))}

@@ -469,12 +469,12 @@ const RestaurantManagement = () => {
             <div style={{ flex: 1 }}>
               <label style={labelStyle}>
                 <ChefHat size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Cuisine
+                Count
               </label>
               <input
                 type="text"
-                name="cuisineType"
-                value={restaurant.cuisineType}
+                name="peopleCount"
+                value={restaurant.peopleCount}
                 onChange={handleInputChange}
                 style={inputStyle}
                 placeholder="e.g. Italian, Asian Fusion"

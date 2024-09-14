@@ -1203,7 +1203,7 @@
         -74.006
       ],
       "seatingCapacity": 50,
-      "cuisineType": "Indian"
+      "peopleCount": 200
     },
     {
       "id": "2",
@@ -1217,8 +1217,16 @@
         34.0522,
         -118.2437
       ],
-      "seatingCapacity": 30,
-      "cuisineType": "Japanese"
+      "seatingCapacity": 10,
+      "peopleCount": 40
+    }
+  ],
+  "settings": [
+    {
+      "id": "1",
+      "orgId": "1",
+      "enableRestaurantManagement": false,
+      "enableHistory": true
     }
   ]
 }
