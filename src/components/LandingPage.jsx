@@ -61,7 +61,7 @@
 //         localStorage.setItem('role', 'customer');
 //         localStorage.setItem('orgId', orgId.toString());
 //         setIsRestaurantModalVisible(false);
-//         navigate('/Home');
+//         navigate('/home');
 //     };
 
 //     const togglePasswordVisibility = () => {
@@ -247,7 +247,7 @@ const LandingPage = () => {
         localStorage.setItem('role', 'customer');
         localStorage.setItem('orgId', orgId.toString());
         setIsRestaurantModalVisible(false);
-        navigate('/Home');
+        navigate('/home');
     };
 
     const togglePasswordVisibility = () => {

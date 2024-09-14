@@ -52,7 +52,7 @@ function App() {
                     <div className="container">
                       <Routes>
                         <Route 
-                          path="/Home" 
+                          path="/home" 
                           element={
                             <Home 
                               onItemAdded={handleItemAdded}
