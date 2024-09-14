@@ -130,14 +130,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           </>
         )}
 
-        <Menu.Item
-          key="order-history"
-          icon={<HistoryOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
-          className="menu-item"
-          style={{ margin: "20px" }}
-        >
-          <Link to="/order-history" onClick={onClose} style={{ fontSize: "20px" }}>Order History</Link>
-        </Menu.Item>
+
 
         {role === 'admin' && (
           <>
@@ -165,6 +158,15 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
             >
               <Link to="/management" onClick={onClose} style={{ fontSize: "20px" }}>Restaurant Management</Link>
             </Menu.Item>
+
+            <Menu.Item
+          key="order-history"
+          icon={<HistoryOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          className="menu-item"
+          style={{ margin: "20px" }}
+        >
+          <Link to="/order-history" onClick={onClose} style={{ fontSize: "20px" }}>Order History</Link>
+        </Menu.Item>
           </>
         )}
       </Menu>
