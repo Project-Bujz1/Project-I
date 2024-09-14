@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Input, Badge, Tooltip, Modal } from 'antd';
+import { Input, Badge, Tooltip, Modal, Rate } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
-import { AiOutlineShoppingCart, AiOutlineFileText } from 'react-icons/ai';
+import { AiOutlineShoppingCart, AiOutlineFileText, AiFillPhone, AiFillMail, AiFillEnvironment } from 'react-icons/ai';
 import { IoPowerSharp } from "react-icons/io5";
+import { FaUtensils } from "react-icons/fa";
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import './Header.css';
@@ -23,33 +24,25 @@ function Header({ toggleDrawer, onSearch }) {
   const [isLogoModalVisible, setIsLogoModalVisible] = useState(false);
   
   // Add state to track the role
-  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [role, setRole] = useState(localStorage.getItem('role'));  const [restaurantDetails, setRestaurantDetails] = useState(null);
 
   useEffect(() => {
-    fetchRestaurantLogo();
+    fetchRestaurantDetails();
   }, []);
 
-  const fetchRestaurantLogo = async () => {
+  const fetchRestaurantDetails = async () => {
     try {
-      // Get the orgId from localStorage
       const orgId = localStorage.getItem('orgId');
-  
       if (!orgId) {
         console.error("No orgId found in localStorage");
         return;
       }
-  
-      // Fetch the restaurant data from the server
       const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
-      
       if (response.ok) {
         const data = await response.json();
-        
-        // Find the restaurant that matches the orgId
         const restaurant = data.find(restaurant => restaurant.orgId === orgId);
-  
         if (restaurant) {
-          // Set the restaurant logo if found
+          setRestaurantDetails(restaurant);
           setRestaurantLogo(restaurant.logo);
         } else {
           console.error("No restaurant found with the given orgId");
@@ -58,10 +51,9 @@ function Header({ toggleDrawer, onSearch }) {
         console.error("Error fetching restaurant data:", response.status);
       }
     } catch (error) {
-      console.error("Error fetching restaurant logo:", error);
+      console.error("Error fetching restaurant details:", error);
     }
   };
-  
 
   // Detect role change and navigate when logged out
   useEffect(() => {
@@ -110,6 +102,8 @@ function Header({ toggleDrawer, onSearch }) {
 
   return (
     <header className="header">
+      {/* ... (previous header content) */}
+
       <div className="header__container">
         <div className="header__content">
           <div className="header__left">
@@ -236,37 +230,58 @@ function Header({ toggleDrawer, onSearch }) {
         <p>Are you sure you want to sign out?</p>
       </Modal>
 
-      {/* Restaurant Logo Modal */}
+      {/* Enhanced Restaurant Logo Modal */}
       <Modal
         visible={isLogoModalVisible}
         onCancel={() => setIsLogoModalVisible(false)}
         footer={null}
-        width={400}
+        width="90%"
         style={{
-          content: {
-            background: 'linear-gradient(135deg, #ffffff, #fff0f0)',
-            borderRadius: '1rem',
-            overflow: 'hidden',
-            boxShadow: '0 10px 25px rgba(255, 0, 0, 0.1)',
-          }
+          maxWidth: '600px',
         }}
         bodyStyle={{
           padding: '20px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
+          background: 'linear-gradient(135deg, #ffffff, #fff0f0)',
+          borderRadius: '1rem',
         }}
       >
-        <img 
-          src={restaurantLogo}
-          alt="Restaurant Logo"
-          style={{
-            maxWidth: '100%',
-            maxHeight: '300px',
-            objectFit: 'contain',
-            borderRadius: '10px',
-          }}
-        />
+        {restaurantDetails && (
+          <div className="restaurant-details">
+            <img 
+              src={restaurantDetails.logo}
+              alt={`${restaurantDetails.name} Logo`}
+              style={{
+                width: '100%',
+                maxHeight: '200px',
+                objectFit: 'contain',
+                borderRadius: '10px',
+                marginBottom: '20px',
+              }}
+            />
+            <h2 style={{ fontSize: '24px', marginBottom: '10px', color: '#333' }}>{restaurantDetails.name}</h2>
+            <Rate disabled defaultValue={4} style={{ marginBottom: '15px' }} />
+            <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <AiFillPhone style={{ marginRight: '10px', color: '#ff4d4f' }} />
+              {restaurantDetails.phone}
+            </p>
+            <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <AiFillMail style={{ marginRight: '10px', color: '#ff4d4f' }} />
+              {restaurantDetails.email}
+            </p>
+            <p style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
+              <AiFillEnvironment style={{ marginRight: '10px', marginTop: '4px', color: '#ff4d4f' }} />
+              <span>{restaurantDetails.address}</span>
+            </p>
+            <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+              <FaUtensils style={{ marginRight: '10px', color: '#ff4d4f' }} />
+              Cuisine: {restaurantDetails.cuisineType}
+            </p>
+            <p style={{ display: 'flex', alignItems: 'center' }}>
+              <AiOutlineShoppingCart style={{ marginRight: '10px', color: '#ff4d4f' }} />
+              Seating Capacity: {restaurantDetails.seatingCapacity}
+            </p>
+          </div>
+        )}
       </Modal>
     </header>
   );
