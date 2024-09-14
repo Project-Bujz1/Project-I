@@ -3,6 +3,7 @@ import { Drawer, Menu } from 'antd';
 import { Link } from 'react-router-dom';
 import { MdRestaurant } from "react-icons/md";
 import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined, UnorderedListOutlined, HistoryOutlined, UserOutlined, SettingOutlined, AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
+import { LuLayoutDashboard } from "react-icons/lu";
 
 const RestaurantDrawer = ({ isOpen, onClose }) => {
   const [restaurantName, setRestaurantName] = useState('');
@@ -158,6 +159,14 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
             >
               <Link to="/management" onClick={onClose} style={{ fontSize: "20px" }}>Restaurant Management</Link>
             </Menu.Item>
+            <Menu.Item
+          key="dashboard"
+          icon={<LuLayoutDashboard style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          className="menu-item"
+          style={{ margin: "20px" }}
+        >
+          <Link to="/dashboard" onClick={onClose} style={{ fontSize: "20px" }}>Restaurant Dashboard</Link>
+        </Menu.Item>
 
             <Menu.Item
           key="order-history"

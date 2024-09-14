@@ -14,7 +14,7 @@ const { Header, Content } = Layout;
 const { Option } = Select;
 const { Title, Text } = Typography;
 
-const AdminOrderComponent = () => {
+export const RestaurantDashBoard = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [restaurantData, setRestaurantData] = useState({
@@ -156,4 +156,4 @@ const AdminOrderComponent = () => {
   );
 };
 
-export default AdminOrderComponent;
+export default RestaurantDashBoard;

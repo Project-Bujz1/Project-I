@@ -16,6 +16,7 @@ import WaitingScreen from './components/WaitingScreen';
 import LandingPage from './components/LandingPage';
 import RestaurantManagement from './components/RestaurantManagement';
 import BillSummary from './components/BillSummary';
+import RestaurantDashBoard from './components/RestaurantDashboard';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -68,6 +69,7 @@ function App() {
                         <Route path="/menu-management" element={<MenuManagement />} />
                         <Route path="/waiting/:orderId" element={<WaitingScreen />} /> 
                         <Route path="/management" element={<RestaurantManagement />} /> 
+                        <Route path="/dashboard" element={<RestaurantDashBoard />} /> 
                       </Routes>
                     </div>
                     <BillSummary />
