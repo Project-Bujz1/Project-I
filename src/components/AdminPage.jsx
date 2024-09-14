@@ -7,7 +7,7 @@
 //   BellOutlined, CheckCircleOutlined, ClockCircleOutlined, 
 //   ExclamationCircleOutlined, CloseCircleOutlined, SoundOutlined, 
 //   DashboardOutlined, ShoppingCartOutlined, SettingOutlined, 
-//   TableOutlined, UserOutlined
+//   MdOutlineTableRestaurant, UserOutlined
 // } from '@ant-design/icons';
 
 // const { Header, Sider, Content } = Layout;
@@ -209,7 +209,7 @@
 //         {tables.map((_, index) => {
 //           const isOccupied = index < occupiedTables;
 //           return (
-//             <TableOutlined
+//             <MdOutlineTableRestaurant
 //               key={index}
 //               style={{
 //                 fontSize: '24px',
@@ -287,7 +287,7 @@
 //               title="Tables Occupied"
 //               value={`${restaurantData.occupiedTables}/${restaurantData.tableCount}`}
 //               valueStyle={{ color: '#ff4d4f' }}
-//               prefix={<TableOutlined />}
+//               prefix={<MdOutlineTableRestaurant />}
 //             />
 //           </Card>
 //         </Col>
@@ -367,9 +367,9 @@ import {
   BellOutlined, CheckCircleOutlined, ClockCircleOutlined, 
   ExclamationCircleOutlined, CloseCircleOutlined, SoundOutlined, 
   DashboardOutlined, ShoppingCartOutlined, SettingOutlined, 
-  TableOutlined, UserOutlined, MenuOutlined
+   UserOutlined, MenuOutlined
 } from '@ant-design/icons';
-
+import { MdOutlineTableRestaurant } from "react-icons/md";
 const { Header, Content } = Layout;
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -569,7 +569,7 @@ const AdminOrderComponent = () => {
         {tables.map((_, index) => {
           const isOccupied = index < occupiedTables;
           return (
-            <TableOutlined
+            <MdOutlineTableRestaurant
               key={index}
               style={{
                 fontSize: '24px',
@@ -647,7 +647,7 @@ const AdminOrderComponent = () => {
               title="Tables Occupied"
               value={`${restaurantData.occupiedTables}/${restaurantData.tableCount}`}
               valueStyle={{ color: '#ff4d4f' }}
-              prefix={<TableOutlined />}
+              prefix={<MdOutlineTableRestaurant />}
             />
           </Card>
         </Col>
