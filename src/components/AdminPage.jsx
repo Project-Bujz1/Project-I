@@ -1,27 +1,19 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { 
-  Layout, Menu, Card, Badge, Tag, Select, Typography, notification, 
-  Switch, Spin, List, Avatar, Statistic, Row, Col, Progress, Drawer
-} from 'antd';
-import { 
-  BellOutlined, CheckCircleOutlined, ClockCircleOutlined, 
-  ExclamationCircleOutlined, CloseCircleOutlined, SoundOutlined, 
-  DashboardOutlined, ShoppingCartOutlined, SettingOutlined, 
-   UserOutlined, MenuOutlined
-} from '@ant-design/icons';
-import { MdOutlineTableRestaurant } from "react-icons/md";
-const { Header, Content } = Layout;
+import { Card, Tag, Select, Typography, message, Spin, notification, Switch } from 'antd';
+import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, SoundOutlined, CloseCircleOutlined } from '@ant-design/icons';
+
+import notificationSound from './notification.mp3';
+
 const { Option } = Select;
 const { Title, Text } = Typography;
 
 const AdminOrderComponent = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [restaurantData, setRestaurantData] = useState({
-    seatingCapacity: 50,
-    tableCount: 10,
-    occupiedTables: 0
-  });
+  const [newOrders, setNewOrders] = useState([]);
+  const [soundEnabled, setSoundEnabled] = useState(false);
+  const ws = useRef(null);
+  const audioRef = useRef(new Audio(notificationSound));
   const orgId = localStorage.getItem('orgId');
 
   useEffect(() => {
@@ -35,124 +27,222 @@ const AdminOrderComponent = () => {
 
         const sortedOrders = data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
         setOrders(sortedOrders);
-        updateRestaurantData(sortedOrders);
       } catch (error) {
         console.error('Failed to fetch orders', error);
-        notification.error({ message: 'Failed to fetch orders' });
+        message.error('Failed to fetch orders');
       } finally {
         setLoading(false);
       }
     };
-
     fetchOrders();
 
+    // Set up WebSocket connection
+    ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
 
-  }, [ orgId]);
+    ws.current.onopen = () => {
+      console.log('WebSocket connected');
+    };
 
-  const updateRestaurantData = (currentOrders) => {
-    const occupiedTables = currentOrders.reduce((acc, order) => {
-      if (order.status !== 'cancelled' && order.status !== 'ready') {
-        acc += 1;
+    ws.current.onmessage = (event) => {
+      console.log('Received message:', event.data);
+      const data = JSON.parse(event.data);
+      if (data.type === 'newOrder' && data.order.orgId == orgId) {
+        // Add the new order to the beginning of the orders array
+        setOrders(prevOrders => [data.order, ...prevOrders]);
+        
+        // Add the new order ID to the newOrders array for highlighting
+        setNewOrders(prev => [...prev, data.order.id]);
+
+        // Play sound notification if enabled
+        if (soundEnabled) {
+          audioRef.current.play().catch(error => console.error('Error playing audio:', error));
+        }
+
+        // Show visual notification
+        notification.open({
+          message: 'New Order Arrived',
+          description: `Order #${data.order.id} has been placed for Table ${data.order.tableNumber}`,
+          icon: <BellOutlined style={{ color: '#ff4d4f' }} />,
+          duration: 4.5,
+        });
+      } else if (data.type === 'statusUpdate' && data.orgId == orgId) {
+        setOrders(prevOrders =>
+          prevOrders.map(order =>
+            order.id == data.orderId ? { ...order, status: data.status, statusMessage: data.statusMessage } : order
+          )
+        );
+
+        if (soundEnabled) {
+          audioRef.current.play().catch(error => console.error('Error playing audio:', error));
+        }
+
+        notification.open({
+          message: 'Order Status Updated',
+          description: `Order #${data.orderId} status: ${data.status}`,
+          icon: data.status === 'cancelled' ? <CloseCircleOutlined style={{ color: '#ff4d4f' }} /> : <BellOutlined style={{ color: '#1890ff' }} />,
+        });
       }
-      return acc;
-    }, 0);
+    };
+    ws.current.onerror = (error) => {
+      console.error('WebSocket error:', error);
+    };
 
-    setRestaurantData(prevData => ({
-      ...prevData,
-      occupiedTables: occupiedTables
-    }));
+    return () => {
+      if (ws.current) {
+        ws.current.close();
+      }
+    };
+  }, [soundEnabled, orgId]);
+
+  const handleUpdateStatus = async (orderId, newStatus) => {
+    try {
+      const updatedOrder = orders.find(order => order.id === orderId);
+      const statusMessage = getStatusMessage(newStatus);
+
+      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus, statusMessage, orgId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update order status');
+      }
+
+      setOrders(prevOrders =>
+        prevOrders.map(order =>
+          order.id === orderId ? { ...order, status: newStatus, statusMessage } : order
+        )
+      );
+
+      // Send status update through WebSocket
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        const message = JSON.stringify({ 
+          type: 'statusUpdate', 
+          orderId: orderId, 
+          status: newStatus,
+          statusMessage: statusMessage,
+          orgId: orgId
+        });
+        console.log('Sending WebSocket message:', message);
+        ws.current.send(message);
+      } else {
+        console.error('WebSocket is not open. Status update not sent.');
+      }
+
+      message.success(`Order #${orderId} status updated to ${newStatus}`);
+
+      // Remove from newOrders if present
+      setNewOrders(prev => prev.filter(id => id !== orderId));
+    } catch (error) {
+      console.error('Failed to update order status', error);
+      message.error('Failed to update order status');
+    }
   };
 
-
-  const renderTableOccupancy = () => {
-    const { tableCount, occupiedTables } = restaurantData;
-    const tables = Array(tableCount).fill(null);
-    
-    return (
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', justifyContent: 'center' }}>
-        {tables.map((_, index) => {
-          const isOccupied = index < occupiedTables;
-          return (
-            <MdOutlineTableRestaurant
-              key={index}
-              style={{
-                fontSize: '24px',
-                color: isOccupied ? '#ff4d4f' : '#52c41a',
-              }}
-            />
-          );
-        })}
-      </div>
-    );
+  const getStatusMessage = (status) => {
+    switch (status) {
+      case 'pending': return 'Your order is being processed';
+      case 'preparing': return 'Your order is being prepared';
+      case 'ready': return 'Your order is ready for pickup';
+      case 'delayed': return 'Your order is delayed. We apologize for the inconvenience';
+      default: return 'Order status unknown';
+    }
   };
 
-  const renderDashboard = () => (
-    <>
-      <Row gutter={[16, 16]}>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic
-              title="Total Orders"
-              value={orders.length}
-              valueStyle={{ color: '#ff4d4f' }}
-              prefix={<ShoppingCartOutlined />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic
-              title="Tables Occupied"
-              value={`${restaurantData.occupiedTables}/${restaurantData.tableCount}`}
-              valueStyle={{ color: '#ff4d4f' }}
-              prefix={<MdOutlineTableRestaurant />}
-            />
-          </Card>
-        </Col>
-        <Col xs={24} sm={8}>
-          <Card>
-            <Statistic
-              title="Seating Capacity"
-              value={restaurantData.seatingCapacity}
-              valueStyle={{ color: '#ff4d4f' }}
-              prefix={<UserOutlined />}
-            />
-          </Card>
-        </Col>
-      </Row>
-      <Card style={{ marginTop: 16 }}>
-        <Title level={4}>Table Occupancy</Title>
-        {renderTableOccupancy()}
-        <Progress
-          percent={(restaurantData.occupiedTables / restaurantData.tableCount) * 100}
-          status="active"
-          strokeColor={{
-            '0%': '#52c41a',
-            '100%': '#ff4d4f',
-          }}
-          style={{ marginTop: 16 }}
-        />
-      </Card>
-    </>
-  );
+  const getStatusIcon = (status) => {
+    switch(status) {
+      case 'pending': return <ClockCircleOutlined />;
+      case 'preparing': return <SyncOutlined spin />;
+      case 'ready': return <CheckOutlined />;
+      case 'delayed': return <ExclamationCircleOutlined />;
+      case 'cancelled': return <CloseCircleOutlined />;
+      default: return null;
+    }
+  };
+
+  const getStatusColor = (status) => {
+    switch(status) {
+      case 'pending': return 'gold';
+      case 'preparing': return 'blue';
+      case 'ready': return 'green';
+      case 'delayed': return 'orange';
+      case 'cancelled': return 'red';
+      default: return 'default';
+    }
+  };
 
   if (loading) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" tip="Loading orders..." />
-      </div>
-    );
+    return <Spin size="large" />;
   }
 
   return (
-      <Layout className="site-layout" style={{marginTop: '95px'}}>
-        <Content style={{ margin: '0 16px' }}>
-          <div style={{ padding: 24, minHeight: 360, background: '#fff' }}>
-            <Title level={2} style={{ marginBottom: 24, marginTop: 48 }}>Restaurant Dashboard</Title>
-            {renderDashboard()}
-          </div>
-        </Content>
-    </Layout>
+    <div style={{ padding: '16px', backgroundColor: '#fff5f5', minHeight: '100vh', marginTop: '80px' }}>
+      <Title level={2} style={{ color: '#ff4d4f', marginBottom: '16px', textAlign: 'center' }}>Order Management</Title>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '16px' }}>
+          <Switch
+            checkedChildren={<SoundOutlined />}
+            unCheckedChildren={<SoundOutlined />}
+            checked={soundEnabled}
+            onChange={setSoundEnabled}
+          />
+          <Text style={{ marginLeft: '8px' }}>Sound Notifications</Text>
+        </div>
+        {orders.map(order => (
+          <Card 
+            key={order.id}
+            hoverable
+            style={{ 
+              backgroundColor: '#fff', 
+              borderRadius: '8px',
+              boxShadow: newOrders.some(newOrder => newOrder === order.id) ? '0 0 10px #ff4d4f' : 'none',
+              animation: newOrders.some(newOrder => newOrder === order.id) ? 'pulse 2s infinite' : 'none'
+            }}
+            bodyStyle={{ padding: '16px' }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+              <Title level={4} style={{ margin: 0 }}>Order #{order.id}</Title>
+              <Tag color="red">Table {order.tableNumber}</Tag>
+            </div>
+            <div style={{ marginBottom: '8px' }}>
+              <Text strong>Items: </Text>
+              {order.items.map((item, index) => (
+                <Tag key={index} color="red" style={{ margin: '2px' }}>
+                  {item.name} x{item.quantity}
+                </Tag>
+              ))}
+            </div>
+            <div style={{ marginBottom: '8px' }}>
+              <Text strong>Total: </Text>
+              <Text>₹{order.total}</Text>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Text type="secondary">{new Date(order.timestamp).toLocaleString()}</Text>
+    <Select
+      value={order.status || 'pending'}
+      style={{ width: 120 }}
+      onChange={(newStatus) => handleUpdateStatus(order.id, newStatus)}
+      disabled={order.status === 'cancelled'}
+    >
+      {['pending', 'preparing', 'ready', 'delayed', 'cancelled'].map((status) => (
+        <Option key={status} value={status}>
+          <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
+            {status.toUpperCase()}
+          </Tag>
+        </Option>
+      ))}
+    </Select>
+            </div>
+            <div style={{ marginTop: '8px' }}>
+              <Text type="secondary">{order.statusMessage || getStatusMessage(order.status || 'pending')}</Text>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };
 
