@@ -1354,7 +1354,7 @@ import {
   UserOutlined, TableOutlined, ShoppingOutlined, MenuOutlined, BarChartOutlined,
   SettingOutlined, CloseOutlined
 } from '@ant-design/icons';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 
 const { Content } = Layout;
@@ -1547,22 +1547,22 @@ export const RestaurantDashboard = () => {
     return Object.values(aggregated);
   };
 
-  const renderRevenueChart = () => {
-    const filteredData = filterDataByDateRange(history);
-    const chartData = aggregateData(filteredData);
+  // const renderRevenueChart = () => {
+  //   const filteredData = filterDataByDateRange(history);
+  //   const chartData = aggregateData(filteredData);
 
-    return (
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={chartData}>
-          <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="date" />
-          <YAxis />
-          <Tooltip />
-          <Line type="monotone" dataKey="revenue" stroke={themeColors.primary} activeDot={{ r: 8 }} />
-        </LineChart>
-      </ResponsiveContainer>
-    );
-  };
+  //   return (
+  //     <ResponsiveContainer width="100%" height={300}>
+  //       <LineChart data={chartData}>
+  //         <CartesianGrid strokeDasharray="3 3" />
+  //         <XAxis dataKey="date" />
+  //         <YAxis />
+  //         <Tooltip />
+  //         <Line type="monotone" dataKey="revenue" stroke={themeColors.primary} activeDot={{ r: 8 }} />
+  //       </LineChart>
+  //     </ResponsiveContainer>
+  //   );
+  // };
 
   const renderTopItems = () => {
     const filteredData = filterDataByDateRange(history);
@@ -1658,8 +1658,9 @@ export const RestaurantDashboard = () => {
               </Select>
               <RangePicker onChange={setDateRange} />
             </Space>
+            {/* {renderRevenueChart()} */}
           </div>
-          {renderRevenueChart()}
+       
         </Card>
         <Card style={styles.card}>
           <Title level={4} style={{ color: themeColors.primary }}>Top Selling Items</Title>
