@@ -17,7 +17,7 @@ function Cart() {
   };
 
   const handleAddMoreItems = () => {
-    navigate('/'); // Redirect to home page
+    navigate('/home'); // Redirect to home page
   };
 
   return (
