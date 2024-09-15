@@ -138,7 +138,7 @@ const WaitingScreen = () => {
 
       message.success('Order has been cancelled successfully');
       clearCart(); // Clear the cart when order is completed
-      // navigate(`/order-confirmation/${orderId}`);
+      navigate(`/home/`);
     } catch (error) {
       console.error('Failed to cancel the order', error);
       message.error('Failed to cancel the order. Please try again.');
