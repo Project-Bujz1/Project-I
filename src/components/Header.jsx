@@ -63,7 +63,7 @@ function Header({ toggleDrawer, onSearch }) {
   }, [role, navigate]);
 
   const handleOrderSummaryClick = () => {
-    navigate('/order-summary');
+    navigate('/summary-view');
   };
 
   const handleSignOut = () => {

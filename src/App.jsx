@@ -17,6 +17,7 @@ import LandingPage from './components/LandingPage';
 import RestaurantManagement from './components/RestaurantManagement';
 import BillSummary from './components/BillSummary';
 import RestaurantDashBoard from './components/RestaurantDashboard';
+import SummaryView from './components/SummaryView';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -64,6 +65,7 @@ function App() {
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/admin" element={<AdminPage/>} />
                         <Route path="/order-summary" element={<OrderSummary />} />
+                        <Route path="/summary-view" element={<SummaryView />} />
                         <Route path="/order-history" element={<OrderHistory />} />
                         <Route path="/order-confirmation" element={<OrderConfirmation />} />
                         <Route path="/menu-management" element={<MenuManagement />} />
