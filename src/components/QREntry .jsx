@@ -25,6 +25,12 @@ const QREntry = () => {
                     setRestaurant(restaurantData);
                     localStorage.setItem('role', 'customer');
                     localStorage.setItem('orgId', orgId);
+                    
+                    // Set a flag in sessionStorage to indicate that we've just set the orgId
+                    sessionStorage.setItem('justSetOrgId', 'true');
+                    
+                    // Reload the page
+                    window.location.reload();
                 } else {
                     throw new Error('Restaurant not found');
                 }
@@ -44,14 +50,15 @@ const QREntry = () => {
     }, [orgId]);
 
     useEffect(() => {
-        if (!loading && !error && restaurant) {
-            const timer = setTimeout(() => {
-                navigate('/home');
-            }, 1500); // Navigate after 1.5 seconds
-
-            return () => clearTimeout(timer);
+        // Check if we've just reloaded after setting the orgId
+        const justSetOrgId = sessionStorage.getItem('justSetOrgId');
+        if (justSetOrgId) {
+            // Clear the flag
+            sessionStorage.removeItem('justSetOrgId');
+            // Redirect to home page
+            window.location.href = '/home';
         }
-    }, [loading, error, restaurant, navigate]);
+    }, []);
 
     if (loading) {
         return (
@@ -69,8 +76,9 @@ const QREntry = () => {
         return <div>Restaurant not found</div>;
     }
 
+    // This return statement will only be reached if there's a problem with the reload
     return (
-        <div style={{ textAlign: 'center', padding: '20px' , marginTop: '75px'}}>
+        <div style={{ textAlign: 'center', padding: '20px' }}>
             <h2>Welcome to {restaurant.name}</h2>
             <img src={restaurant.logo} alt={restaurant.name} style={{ maxWidth: '200px', margin: '20px 0' }} />
         </div>

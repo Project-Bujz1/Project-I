@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
 import Drawer from './components/Drawer';
@@ -20,7 +20,7 @@ import RestaurantDashBoard from './components/RestaurantDashboard';
 import SummaryView from './components/SummaryView';
 import QREntry from './components/QREntry ';
 
-function App() {
+const App = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -35,15 +35,25 @@ function App() {
   const handleItemAdded = () => {
     // Logic for item added animation
   };
+  useEffect(() => {
+    const orgId = localStorage.getItem('orgId');
+    const role = localStorage.getItem('role');
+    
+    if (orgId && role === 'customer' && window.location.pathname === '/') {
+      // If orgId is set and we're on the landing page, redirect to home
+      window.location.href = '/home';
+    }
+  }, []);
 
   return (
     <Router>
       <CartProvider>
         <CartIconProvider>
           <div className="App">
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/qr-entry/:orgId" element={<QREntry />} />
+        <Route
                 path="*"
                 element={
                   <>
@@ -54,18 +64,17 @@ function App() {
                     <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
                     <div className="container">
                       <Routes>
-                        <Route 
-                          path="/home" 
-                          element={
-                            <Home 
-                              onItemAdded={handleItemAdded}
-                              searchTerm={searchTerm}
-                            />
-                          } 
-                        />
-                        <Route path="/cart" element={<Cart />} />
+        <Route 
+          path="/home" 
+          element={
+             <Home 
+            onItemAdded={handleItemAdded}
+            searchTerm={searchTerm}
+          />
+          } 
+        />
+        <Route path="/cart" element={<Cart />} />
                         <Route path="/admin" element={<AdminPage/>} />
-                        <Route path="/qr-entry/:orgId" element={<QREntry />} />
                         <Route path="/order-summary" element={<OrderSummary />} />
                         <Route path="/summary-view" element={<SummaryView />} />
                         <Route path="/order-history" element={<OrderHistory />} />
@@ -80,8 +89,8 @@ function App() {
                   </>
                 }
               />
-            </Routes>
-          </div>
+      </Routes>
+      </div>
         </CartIconProvider>
       </CartProvider>
     </Router>
