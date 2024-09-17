@@ -1,76 +1,78 @@
-// import React, { useEffect } from 'react';
-// import { useParams, useNavigate } from 'react-router-dom';
-
-// const QREntry = () => {
-//     const { orgId } = useParams();
-//     const navigate = useNavigate();
-
-//     useEffect(() => {
-//         if (orgId) {
-//             console.log("orgId from url is",orgId)
-//             console.log("orgId from url is")
-//             // Store the role and orgId in localStorage
-//             localStorage.setItem('role', 'customer');
-//             localStorage.setItem('orgId', orgId);
-
-//             // Navigate to the home page
-//             navigate('/home');
-//         } else {
-//             // If no orgId is provided, redirect to the landing page
-//             navigate('/');
-//         }
-//     }, [orgId, navigate]);
-
-//     return (
-//         <div>
-//             <p>Processing QR code...</p>
-//         </div>
-//     );
-// };
-
-// export default QREntry;
-
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import FoodLoader from './FoodLoader';
 
+const API_URL = 'https://smartserver-json-server.onrender.com/restaurants';
+
 const QREntry = () => {
     const { orgId } = useParams();
     const navigate = useNavigate();
-    const [debug, setDebug] = useState('');
+    const [restaurant, setRestaurant] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        setDebug(prev => prev + `\nParams orgId: ${orgId}`);
+        const fetchRestaurantData = async () => {
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch restaurant data');
+                }
+                const data = await response.json();
+                const restaurantData = data.find(r => r.orgId === orgId);
+                
+                if (restaurantData) {
+                    setRestaurant(restaurantData);
+                    localStorage.setItem('role', 'customer');
+                    localStorage.setItem('orgId', orgId);
+                } else {
+                    throw new Error('Restaurant not found');
+                }
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
 
         if (orgId) {
-            // Store the role and orgId in localStorage
-            localStorage.setItem('role', 'customer');
-            localStorage.setItem('orgId', orgId);
-            setDebug(prev => prev + '\nSet localStorage items');
-
-            // Log the values to verify they were set
-            const storedRole = localStorage.getItem('role');
-            const storedOrgId = localStorage.getItem('orgId');
-            setDebug(prev => prev + `\nStored role: ${storedRole}, Stored orgId: ${storedOrgId}`);
-
-            // Navigate to the home page after a short delay
-            setTimeout(() => {
-                setDebug(prev => prev + '\nNavigating to /home');
-                navigate('/home');
-            }, 2000); // 2-second delay for debugging
+            fetchRestaurantData();
         } else {
-            setDebug(prev => prev + '\nNo orgId found, navigating to /');
-            navigate('/');
+            setError('No orgId provided');
+            setLoading(false);
         }
-    }, [orgId, navigate]);
+    }, [orgId]);
+
+    useEffect(() => {
+        if (!loading && !error && restaurant) {
+            const timer = setTimeout(() => {
+                navigate('/home');
+            }, 1500); // Navigate after 1.5 seconds
+
+            return () => clearTimeout(timer);
+        }
+    }, [loading, error, restaurant, navigate]);
+
+    if (loading) {
+        return (
+            <div style={{marginTop: '75px'}}>
+                <FoodLoader />
+            </div>
+        );
+    }
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    }
+
+    if (!restaurant) {
+        return <div>Restaurant not found</div>;
+    }
 
     return (
-        <div style={{marginTop: '75px'}}>
-            {/* <h2>QR Entry Processing</h2>
-            <p>orgId from URL: {orgId}</p>
-            <p>Debug Info:</p>
-            <pre>{debug}</pre> */}
-            <FoodLoader />
+        <div style={{ textAlign: 'center', padding: '20px' , marginTop: '75px'}}>
+            <h2>Welcome to {restaurant.name}</h2>
+            <img src={restaurant.logo} alt={restaurant.name} style={{ maxWidth: '200px', margin: '20px 0' }} />
         </div>
     );
 };
