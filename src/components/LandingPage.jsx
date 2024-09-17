@@ -168,10 +168,11 @@
 
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Route, Routes } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { Modal, Card, Spin } from 'antd';
 import FoodLoader from './FoodLoader';
+import QREntry from './QREntry ';
 import './landing-page.css';
 
 const API_URL = process.env.REACT_APP_API_URL || 'https://smart-server-3.onrender.com';
@@ -255,108 +256,114 @@ const LandingPage = () => {
     };
 
     return (
-        <div className="landing-container">
-            <img 
-                src={process.env.PUBLIC_URL + '/assets/logo-transparent-png - Copy.png'} 
-                alt="Logo"
-                className="logo"
-            />
-            
-            <div className="login-container">
-                <h1 className="login-title">Welcome to Our Food Service</h1>
+        <Routes>
+            <Route path="/" element={
+                 <div className="landing-container">
+                 <img 
+                     src={process.env.PUBLIC_URL + '/assets/logo-transparent-png - Copy.png'} 
+                     alt="Logo"
+                     className="logo"
+                 />
+                 
+                 <div className="login-container">
+                     <h1 className="login-title">Welcome to Our Food Service</h1>
+                     
+                     {isAdminLogin ? (
+                         <form onSubmit={handleLogin}>
+                             <div className="input-group">
+                                 <input
+                                     type="text"
+                                     className="input-field"
+                                     placeholder="Username"
+                                     value={username}
+                                     onChange={(e) => setUsername(e.target.value)}
+                                     required
+                                 />
+                             </div>
+                             <div className="input-group">
+                                 <input
+                                     type={showPassword ? "text" : "password"}
+                                     className="input-field"
+                                     placeholder="Password"
+                                     value={password}
+                                     onChange={(e) => setPassword(e.target.value)}
+                                     required
+                                 />
+                                 <button 
+                                     type="button" 
+                                     className="password-toggle"
+                                     onClick={togglePasswordVisibility}
+                                 >
+                                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                                 </button>
+                             </div>
+                             <button type="submit" className="btn">
+                                 Admin Login
+                             </button>
+                         </form>
+                     ) : (
+                         <button onClick={handleLogin} className="btn">
+                             Enter as Customer
+                         </button>
+                     )}
+                     
+                     <button 
+                         onClick={() => setIsAdminLogin(!isAdminLogin)} 
+                         className="btn btn-outline"
+                         style={{ marginTop: '1rem' }}
+                     >
+                         {isAdminLogin ? 'Switch to Customer' : 'Switch to Admin Login'}
+                     </button>
+                     
+                     {error && <div className="error-message">{error}</div>}
+                     
+                     {isLoading && <FoodLoader />}
+     
+                     <div className="food-emojis">
+                         <span className="food-emoji">🍔</span>
+                         <span className="food-emoji">🍕</span>
+                         <span className="food-emoji">🌮</span>
+                         <span className="food-emoji">🍣</span>
+                         <span className="food-emoji">🍜</span>
+                     </div>
+                 </div>
+     
+                 <Modal
+                     title="Choose Your Restaurant"
+                     visible={isRestaurantModalVisible}
+                     onCancel={() => setIsRestaurantModalVisible(false)}
+                     footer={null}
+                     width={800}
+                 >
+                     {isLoadingRestaurants ? (
+                         <div style={{ textAlign: 'center', padding: '20px' }}>
+                             <Spin size="large" />
+                             <p>Loading restaurants...</p>
+                         </div>
+                     ) : (
+                         <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
+                             {restaurants.map((restaurant) => (
+                                 <Card
+                                     key={restaurant.id}
+                                     hoverable
+                                     style={{ width: 240, marginBottom: 16 }}
+                                     cover={<img alt={restaurant.name} src={restaurant.logo} />}
+                                     onClick={() => handleRestaurantSelection(restaurant.orgId)}
+                                 >
+                                     <Card.Meta 
+                                         title={restaurant.name} 
+                                         description={`Count: ${restaurant.peopleCount}`} 
+                                     />
+                                 </Card>
+                             ))}
+                         </div>
+                     )}
+                 </Modal>
+             </div>
                 
-                {isAdminLogin ? (
-                    <form onSubmit={handleLogin}>
-                        <div className="input-group">
-                            <input
-                                type="text"
-                                className="input-field"
-                                placeholder="Username"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
-                                required
-                            />
-                        </div>
-                        <div className="input-group">
-                            <input
-                                type={showPassword ? "text" : "password"}
-                                className="input-field"
-                                placeholder="Password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                required
-                            />
-                            <button 
-                                type="button" 
-                                className="password-toggle"
-                                onClick={togglePasswordVisibility}
-                            >
-                                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
-                        </div>
-                        <button type="submit" className="btn">
-                            Admin Login
-                        </button>
-                    </form>
-                ) : (
-                    <button onClick={handleLogin} className="btn">
-                        Enter as Customer
-                    </button>
-                )}
-                
-                <button 
-                    onClick={() => setIsAdminLogin(!isAdminLogin)} 
-                    className="btn btn-outline"
-                    style={{ marginTop: '1rem' }}
-                >
-                    {isAdminLogin ? 'Switch to Customer' : 'Switch to Admin Login'}
-                </button>
-                
-                {error && <div className="error-message">{error}</div>}
-                
-                {isLoading && <FoodLoader />}
-
-                <div className="food-emojis">
-                    <span className="food-emoji">🍔</span>
-                    <span className="food-emoji">🍕</span>
-                    <span className="food-emoji">🌮</span>
-                    <span className="food-emoji">🍣</span>
-                    <span className="food-emoji">🍜</span>
-                </div>
-            </div>
-
-            <Modal
-                title="Choose Your Restaurant"
-                visible={isRestaurantModalVisible}
-                onCancel={() => setIsRestaurantModalVisible(false)}
-                footer={null}
-                width={800}
-            >
-                {isLoadingRestaurants ? (
-                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                        <Spin size="large" />
-                        <p>Loading restaurants...</p>
-                    </div>
-                ) : (
-                    <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap' }}>
-                        {restaurants.map((restaurant) => (
-                            <Card
-                                key={restaurant.id}
-                                hoverable
-                                style={{ width: 240, marginBottom: 16 }}
-                                cover={<img alt={restaurant.name} src={restaurant.logo} />}
-                                onClick={() => handleRestaurantSelection(restaurant.orgId)}
-                            >
-                                <Card.Meta 
-                                    title={restaurant.name} 
-                                    description={`Count: ${restaurant.peopleCount}`} 
-                                />
-                            </Card>
-                        ))}
-                    </div>
-                )}
-            </Modal>
-        </div>
+            } />
+            <Route path="/qr-entry/:orgId" element={<QREntry />} />
+        </Routes>
     );
 };
 

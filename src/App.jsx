@@ -18,6 +18,7 @@ import RestaurantManagement from './components/RestaurantManagement';
 import BillSummary from './components/BillSummary';
 import RestaurantDashBoard from './components/RestaurantDashboard';
 import SummaryView from './components/SummaryView';
+import QREntry from './components/QREntry ';
 
 function App() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -64,6 +65,7 @@ function App() {
                         />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/admin" element={<AdminPage/>} />
+                        <Route path="/qr-entry/:orgId" element={<QREntry />} />
                         <Route path="/order-summary" element={<OrderSummary />} />
                         <Route path="/summary-view" element={<SummaryView />} />
                         <Route path="/order-history" element={<OrderHistory />} />
