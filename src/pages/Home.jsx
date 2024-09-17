@@ -19,7 +19,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     const orgId = localStorage.getItem('orgId');  // Retrieve the orgId from localStorage
     
     if (orgId) {
-      fetch('http://localhost:3001/categories')
+      fetch('https://smartserver-json-server.onrender.com/categories')
       .then((res) => res.json())
             .then((data) => {
                 const matchedCategories = data.filter(category => category.orgId === parseInt(orgId));  // Filter categories by orgId
@@ -27,7 +27,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
                 setLoading((prev) => ({ ...prev, categories: false }));
             });
 
-            fetch('http://localhost:3001/subcategories')
+            fetch('https://smartserver-json-server.onrender.com/subcategories')
             .then((res) => res.json())
             .then((data) => {
                 const matchedSubcategories = data.filter(subcategory => subcategory.orgId === parseInt(orgId));  // Filter subcategories by orgId
@@ -35,7 +35,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
                 setLoading((prev) => ({ ...prev, subcategories: false }));
             });
 
-            fetch('http://localhost:3001/menu_items')
+            fetch('https://smartserver-json-server.onrender.com/menu_items')
             .then((res) => res.json())
             .then((data) => {
                 const matchedMenuItems = data.filter(item => item.orgId === parseInt(orgId));  // Filter menu items by orgId
