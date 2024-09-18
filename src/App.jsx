@@ -53,8 +53,7 @@ const App = () => {
           <div className="App">
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route path="/qr-entry/:orgId" element={<QREntry />} />
-        <Route
+        <Route path="/qr-entry/:orgId/:tableNumber" element={<QREntry />} />        <Route
                 path="*"
                 element={
                   <>

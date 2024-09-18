@@ -14,7 +14,13 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const orgId = localStorage.getItem('orgId');
-        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}&status_ne=ready`);
+        const tableNumber = localStorage.getItem('tableNumber');
+        
+        if (!orgId || !tableNumber) {
+          throw new Error('Organization ID or Table Number not found in localStorage');
+        }
+
+        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}&status_ne=ready&tableNumber=${tableNumber}`);
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
@@ -57,7 +63,7 @@ const MyOrders = () => {
       <List
         loading={loading}
         dataSource={orders}
-        locale={{ emptyText: 'No active orders found' }}
+        locale={{ emptyText: 'No active orders found for your table' }}
         renderItem={(order) => (
           <List.Item>
             <Card style={{ width: '100%' }}>
@@ -69,6 +75,7 @@ const MyOrders = () => {
                   </Tag>
                 </Space>
                 <Text>{order.statusMessage}</Text>
+                <Text>Table Number: {order.tableNumber}</Text>
                 <Button 
                   onClick={() => navigate(`/waiting/${order.id}`)}
                   type="primary"

@@ -46,9 +46,23 @@ function OrderSummary() {
         console.error('Error fetching restaurant data:', error);
       }
     };
-  
+
+    // Check if a tableNumber is already in localStorage
+    const savedTableNumber = localStorage.getItem('tableNumber');
+    if (savedTableNumber) {
+      setTableNumber(savedTableNumber); // Set the table number from localStorage
+    }
+
     fetchSeatingCapacity();
   }, []);
+
+  const handleTableNumberChange = (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setTableNumber(value);
+      localStorage.setItem('tableNumber', value); // Save to localStorage
+    }
+  };
 
   const handlePayClick = async () => {
     if (!tableNumber) {
@@ -137,12 +151,7 @@ function OrderSummary() {
       <Input
         placeholder={`Enter Table Number (1-${seatingCapacity})`}
         value={tableNumber}
-        onChange={(e) => {
-          const value = e.target.value;
-          if (/^\d*$/.test(value)) {
-            setTableNumber(value);
-          }
-        }}
+        onChange={handleTableNumberChange}
         style={{ marginBottom: '10px' }}
       />
 

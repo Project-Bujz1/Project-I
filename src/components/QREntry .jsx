@@ -5,7 +5,7 @@ import FoodLoader from './FoodLoader';
 const API_URL = 'https://smartserver-json-server.onrender.com/restaurants';
 
 const QREntry = () => {
-    const { orgId } = useParams();
+    const { orgId, tableNumber } = useParams();
     const [restaurant, setRestaurant] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -25,12 +25,13 @@ const QREntry = () => {
                     setRestaurant(restaurantData);
                     localStorage.setItem('role', 'customer');
                     localStorage.setItem('orgId', orgId);
+                    localStorage.setItem('tableNumber', tableNumber);
                     
                     // Show logo for 3 seconds
                     setShowLogo(true);
                     setTimeout(() => {
-                        // Set a flag in sessionStorage to indicate that we've just set the orgId
-                        sessionStorage.setItem('justSetOrgId', 'true');
+                        // Set a flag in sessionStorage to indicate that we've just set the orgId and tableNumber
+                        sessionStorage.setItem('justSetOrgIdAndTable', 'true');
                         // Reload the page
                         window.location.reload();
                     }, 2000);
@@ -44,20 +45,20 @@ const QREntry = () => {
             }
         };
 
-        if (orgId) {
+        if (orgId && tableNumber) {
             fetchRestaurantData();
         } else {
-            setError('No orgId provided');
+            setError('No orgId or tableNumber provided');
             setLoading(false);
         }
-    }, [orgId]);
+    }, [orgId, tableNumber]);
 
     useEffect(() => {
-        // Check if we've just reloaded after setting the orgId
-        const justSetOrgId = sessionStorage.getItem('justSetOrgId');
-        if (justSetOrgId) {
+        // Check if we've just reloaded after setting the orgId and tableNumber
+        const justSetOrgIdAndTable = sessionStorage.getItem('justSetOrgIdAndTable');
+        if (justSetOrgIdAndTable) {
             // Clear the flag
-            sessionStorage.removeItem('justSetOrgId');
+            sessionStorage.removeItem('justSetOrgIdAndTable');
             // Redirect to home page
             window.location.href = '/home';
         }
@@ -95,11 +96,11 @@ const QREntry = () => {
                     style={{ 
                         maxWidth: '200px', 
                         maxHeight: '200px', 
-                        // objectFit: 'contain',
                         margin : '20px 0'  
                     }} 
                 />
                 <h2 style={{ marginTop: '20px', color: '#333' }}>Welcome to {restaurant.name}</h2>
+                <p>Table Number: {tableNumber}</p>
                 <p>Redirecting to home page...</p>
             </div>
         );
@@ -109,6 +110,7 @@ const QREntry = () => {
     return (
         <div style={{ textAlign: 'center', padding: '20px' }}>
             <h2>Welcome to {restaurant.name}</h2>
+            <p>Table Number: {tableNumber}</p>
             <p>Redirecting to home page...</p>
         </div>
     );
