@@ -1345,6 +1345,7 @@
 // };
 
 // export default RestaurantDashboard;
+
 import React, { useState, useEffect } from 'react';
 import { 
   Layout, Card, Typography, notification, Spin, Statistic, Row, Col, Progress, Switch,
@@ -1354,7 +1355,7 @@ import {
   UserOutlined, TableOutlined, ShoppingOutlined, MenuOutlined, BarChartOutlined,
   SettingOutlined, CloseOutlined
 } from '@ant-design/icons';
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import axios from 'axios';
 
 const { Content } = Layout;
@@ -1423,7 +1424,7 @@ const styles = {
   settingsCard: {
     background: themeColors.secondary,
     borderRadius: '10px',
-    padding: '20px',
+    padding: '0px',
   },
 };
 
@@ -1548,24 +1549,64 @@ export const RestaurantDashboard = () => {
     return Object.values(aggregated);
   };
 
-  // const renderRevenueChart = () => {
-  //   const filteredData = filterDataByDateRange(history);
-  //   const chartData = aggregateData(filteredData);
+  const renderRevenueChart = () => {
+    const filteredData = filterDataByDateRange(history);
+    const chartData = aggregateData(filteredData);
 
-  //   return (
-  //     <ResponsiveContainer width="100%" height={300}>
-  //       <LineChart data={chartData}>
-  //         <CartesianGrid strokeDasharray="3 3" />
-  //         <XAxis dataKey="date" />
-  //         <YAxis />
-  //         <Tooltip />
-  //         <Line type="monotone" dataKey="revenue" stroke={themeColors.primary} activeDot={{ r: 8 }} />
-  //       </LineChart>
-  //     </ResponsiveContainer>
-  //   );
-  // };
+    return (
+      <ResponsiveContainer width="100%" height={300}>
+        <LineChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" />
 
+          <XAxis dataKey="date" />
+          <YAxis />
+          <Tooltip />
+          <Line type="monotone" dataKey="revenue" stroke={themeColors.primary} activeDot={{ r: 8 }} />
+        </LineChart>
+      </ResponsiveContainer>
+    );
+  };
   const renderTopItems = () => {
+    const filteredData = filterDataByDateRange(history);
+    const itemSales = {};
+    filteredData.forEach(order => {
+      order.items.forEach(item => {
+        if (!itemSales[item.name]) itemSales[item.name] = 0;
+        itemSales[item.name] += item.quantity;
+      });
+    });
+    const sortedItems = Object.entries(itemSales).sort((a, b) => b[1] - a[1]);
+    
+    const data = sortedItems.slice(0, 5).map(([name, quantity]) => ({
+      name,
+      value: quantity,
+    }));
+
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
+
+    return (
+      <ResponsiveContainer width="100%" height={300}>
+        <PieChart>
+          <Pie
+            data={data}
+            cx="50%"
+            cy="50%"
+            labelLine={false}
+            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+            outerRadius={80}
+            fill="#8884d8"
+            dataKey="value"
+          >
+            {data.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip />
+        </PieChart>
+      </ResponsiveContainer>
+    );
+  };
+  const renderTopItemsList = () => {
     const filteredData = filterDataByDateRange(history);
     const itemSales = {};
     filteredData.forEach(order => {
@@ -1665,8 +1706,13 @@ export const RestaurantDashboard = () => {
         </Card>
         <Card style={styles.card}>
           <Title level={4} style={{ color: themeColors.primary }}>Top Selling Items</Title>
+          {renderTopItemsList()}
+        </Card>
+        <Card style={styles.card} title="Top Selling Items">
           {renderTopItems()}
         </Card>
+
+      
       </Space>
     );
   };
@@ -1678,14 +1724,26 @@ export const RestaurantDashboard = () => {
         <Col span={24}>
           <Switch
             checked={settings.enableRestaurantManagement}
-            onChange={(checked) => updateSettings('enableRestaurantManagement', checked)}
-          /> <Text style={{ color: themeColors.text }}>Enable Restaurant Management</Text>
+            onChange={(checked) => updateSettings('enableAdminManagement', checked)}
+          /> <Text style={{ color: themeColors.text }}>Admin Mnagenement</Text>
         </Col>
         <Col span={24}>
           <Switch
             checked={settings.enableHistory}
-            onChange={(checked) => updateSettings('enableHistory', checked)}
-          /> <Text style={{ color: themeColors.text }}>Enable History</Text>
+            onChange={(checked) => updateSettings('enableHistoryManagement', checked)}
+          /> <Text style={{ color: themeColors.text }}>History Management</Text>
+        </Col>
+        <Col span={24}>
+          <Switch
+            checked={settings.enableHistory}
+            onChange={(checked) => updateSettings('enableMenuManagement', checked)}
+          /> <Text style={{ color: themeColors.text }}>Menu Management</Text>
+        </Col>
+        <Col span={24}>
+          <Switch
+            checked={settings.enableHistory}
+            onChange={(checked) => updateSettings('enableRestaurantManagement', checked)}
+          /> <Text style={{ color: themeColors.text }}>Restaurant Management</Text>
         </Col>
       </Row>
     </Card>
@@ -1710,22 +1768,28 @@ export const RestaurantDashboard = () => {
         {renderSettings()}
       </Content>
       <Drawer
-        title="Dashboard Menu"
-        placement="right"
-        closable={false}
-        onClose={() => setDrawerVisible(false)}
-        visible={drawerVisible}
-        width={300}
-        bodyStyle={{ background: themeColors.background }}
-        headerStyle={{ background: themeColors.primary, color: themeColors.secondary }}
-      >
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <Button icon={<BarChartOutlined />} block>Analytics</Button>
-          <Button icon={<SettingOutlined />} block>Settings</Button>
-          <Button icon={<CloseOutlined />} onClick={() => setDrawerVisible(false)} block>Close Menu</Button>
-        </Space>
-        {renderSettings()}
-      </Drawer>
+  title="Dashboard Menu"
+  placement="right"
+  closable={false}
+  onClose={() => setDrawerVisible(false)}
+  visible={drawerVisible}
+  width={300}
+  bodyStyle={{ background: themeColors.background }}
+  headerStyle={{ background: themeColors.primary, color: themeColors.secondary }}
+  extra={
+    <Button
+      icon={<CloseOutlined />}
+      onClick={() => setDrawerVisible(false)}
+      style={{ color: themeColors.secondary, background: 'transparent', border: 'none' }}
+    />
+  }
+>
+  <Space direction="vertical" size="large" style={{ width: '100%' }}>
+    <Button  style={{marginBottom: '10px'}} icon={<SettingOutlined />} block>Settings</Button>
+  </Space>
+  {renderSettings()}
+</Drawer>
+
     </Layout>
   );
 };
