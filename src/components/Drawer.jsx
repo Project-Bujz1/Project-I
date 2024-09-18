@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { MdRestaurant } from "react-icons/md";
 import { HomeOutlined, ShoppingCartOutlined, FileTextOutlined, UnorderedListOutlined, HistoryOutlined, UserOutlined, SettingOutlined, AppstoreOutlined, BarsOutlined } from '@ant-design/icons';
 import { LuLayoutDashboard } from "react-icons/lu";
+import { IoFastFoodOutline } from "react-icons/io5";
 
 const RestaurantDrawer = ({ isOpen, onClose }) => {
   const [restaurantName, setRestaurantName] = useState('');
@@ -127,6 +128,14 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
               style={{margin:"20px"}}
             >
               <Link to="/order-summary" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
+            </Menu.Item>
+            <Menu.Item
+              key="my-orders"
+              icon={<IoFastFoodOutline style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              className="menu-item"
+              style={{margin:"20px"}}
+            >
+              <Link to="/my-orders" onClick={onClose} style={{ fontSize: "20px" }}>My Orders</Link>
             </Menu.Item>
           </>
         )}

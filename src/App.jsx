@@ -19,6 +19,7 @@ import BillSummary from './components/BillSummary';
 import RestaurantDashBoard from './components/RestaurantDashboard';
 import SummaryView from './components/SummaryView';
 import QREntry from './components/QREntry ';
+import MyOrders from './components/MyOrders';
 
 const App = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -82,7 +83,8 @@ const App = () => {
                         <Route path="/menu-management" element={<MenuManagement />} />
                         <Route path="/waiting/:orderId" element={<WaitingScreen />} /> 
                         <Route path="/management" element={<RestaurantManagement />} /> 
-                        <Route path="/dashboard" element={<RestaurantDashBoard />} /> 
+                        <Route path="/dashboard" element={<RestaurantDashBoard />} />
+                        <Route path="/my-orders" element={<MyOrders />} />
                       </Routes>
                     </div>
                     <BillSummary />
