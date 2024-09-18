@@ -21,7 +21,7 @@ function Cart() {
   };
 
   return (
-    <div className="cart-container" style={{ marginTop: '95px' }}>
+    <div className="cart-container" style={{ marginTop: '115px' }}>
       <h2 className="cart-title">Your Cart</h2>
       {cart.length === 0 ? (
         <p className="empty-cart-message">Your cart is empty.</p>

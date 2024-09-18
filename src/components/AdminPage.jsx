@@ -179,7 +179,7 @@ const AdminOrderComponent = () => {
   }
 
   return (
-    <div style={{ padding: '16px', backgroundColor: '#fff5f5', minHeight: '100vh', marginTop: '80px' }}>
+    <div style={{ padding: '16px', backgroundColor: '#fff5f5', minHeight: '100vh', marginTop: '110px' }}>
       <Title level={2} style={{ color: '#ff4d4f', marginBottom: '16px', textAlign: 'center' }}>Order Management</Title>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginBottom: '16px' }}>

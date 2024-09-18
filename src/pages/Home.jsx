@@ -98,7 +98,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     <div className="home-container" style={{ marginTop: '10px' }}>
       {searchTerm ? (
         <>
-          <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center' }}>
+          <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '55px' }}>
             Search Results for "{searchTerm}"
           </h2>
           {searchResults.length > 0 ? (
@@ -113,7 +113,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
         <>
           {!selectedCategory && (
             <>
-              <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '15px' }}>Menu Categories</h2>
+              <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '20px' }}>Menu Categories</h2>
               {loading.categories ? (
                 <FoodLoader />
               ) : (
@@ -132,7 +132,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
 
           {selectedCategory && !selectedSubcategory && (
             <>
-              <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '16px', marginBottom: '0px' }}>
+              <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px' }}>
                 ← Back to Categories
               </button>
               <h2 className="section-title">{selectedCategory.name}</h2>
@@ -154,7 +154,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
 
           {selectedSubcategory && (
             <>
-              <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '10px'}}>
+              <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '26px'}}>
                 ← Back to {selectedCategory.name}
               </button>
               <h2 className="section-title">{selectedSubcategory.name}</h2>

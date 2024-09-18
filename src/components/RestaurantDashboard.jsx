@@ -1381,9 +1381,10 @@ const styles = {
   layout: {
     background: themeColors.background,
     minHeight: '100vh',
+    marginTop: '115px'
   },
   header: {
-    position: 'fixed',
+    // position: 'fixed',
     zIndex: 1,
     width: '100%',
     background: themeColors.primary,

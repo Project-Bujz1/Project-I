@@ -118,7 +118,7 @@ function OrderSummary() {
   }
 
   return (
-    <div className="order-summary-container" style={{ marginTop: '95px' }}>
+    <div className="order-summary-container" style={{ marginTop: '115px' }}>
       <h2 className="order-summary-title">Confirm Order</h2>
       {cart.map((item) => (
         <div key={item.id} className="order-item">
