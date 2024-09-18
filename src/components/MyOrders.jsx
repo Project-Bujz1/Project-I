@@ -14,7 +14,7 @@ const MyOrders = () => {
     const fetchOrders = async () => {
       try {
         const orgId = localStorage.getItem('orgId');
-        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}&status_ne=completed`);
+        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}&status_ne=ready`);
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
