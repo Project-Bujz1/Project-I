@@ -352,7 +352,7 @@ const MenuManagement = () => {
   return (
     <StyledLayout style={{marginTop: "100px"}}>
       <StyledHeader>
-        <Title level={3} style={{ color: '#ffffff', margin: 0 }}>Menu Management</Title>
+        <Title level={3} style={{ color: '#ffffff', margin: 0 }}>Menu</Title>
         <StyledMenu mode="horizontal" defaultSelectedKeys={[activeTab]}>
           <Menu.Item key="1" onClick={() => setActiveTab('1')}>Categories</Menu.Item>
           <Menu.Item key="2" onClick={() => setActiveTab('2')}>Subcategories</Menu.Item>
