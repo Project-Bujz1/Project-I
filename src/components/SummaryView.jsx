@@ -189,7 +189,7 @@ function BillSummary() {
 //   };
 
   return (
-    <div className="bill-summary-container" style={{ marginTop: '95px' }}>
+    <div className="bill-summary-container" style={{ marginTop: '125px' }}>
       <h2 className="bill-summary-title">Bill Summary</h2>
       {cart.map((item) => (
         <div key={item.id} className="order-item">
