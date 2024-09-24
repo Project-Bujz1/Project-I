@@ -478,7 +478,7 @@ const RestaurantManagement = () => {
                 value={restaurant.peopleCount}
                 onChange={handleInputChange}
                 style={inputStyle}
-                placeholder="e.g. Italian, Asian Fusion"
+                placeholder="e.g. 20, 45"
               />
             </div>
           </div>

@@ -148,6 +148,7 @@ const AdminOrderComponent = () => {
       case 'preparing': return 'Your order is being prepared';
       case 'ready': return 'Your order is ready for pickup';
       case 'delayed': return 'Your order is delayed. We apologize for the inconvenience';
+      case 'completed': return 'Your order is completed.'
       default: return 'Order status unknown';
     }
   };
@@ -159,6 +160,7 @@ const AdminOrderComponent = () => {
       case 'ready': return <CheckOutlined />;
       case 'delayed': return <ExclamationCircleOutlined />;
       case 'cancelled': return <CloseCircleOutlined />;
+      case 'completed': return <CheckOutlined/>;
       default: return null;
     }
   };
@@ -170,6 +172,7 @@ const AdminOrderComponent = () => {
       case 'ready': return 'green';
       case 'delayed': return 'orange';
       case 'cancelled': return 'red';
+      case 'completed': return 'green';
       default: return 'default';
     }
   };
@@ -227,7 +230,7 @@ const AdminOrderComponent = () => {
       onChange={(newStatus) => handleUpdateStatus(order.id, newStatus)}
       disabled={order.status === 'cancelled'}
     >
-      {['pending', 'preparing', 'ready', 'delayed', 'cancelled'].map((status) => (
+      {['pending', 'preparing', 'ready', 'delayed', 'cancelled', 'completed'].map((status) => (
         <Option key={status} value={status}>
           <Tag color={getStatusColor(status)} icon={getStatusIcon(status)}>
             {status.toUpperCase()}

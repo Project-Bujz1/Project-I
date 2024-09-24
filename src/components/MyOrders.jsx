@@ -20,7 +20,7 @@ const MyOrders = () => {
           throw new Error('Organization ID or Table Number not found in localStorage');
         }
 
-        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}&status_ne=ready&tableNumber=${tableNumber}`);
+        const response = await fetch(`https://smartserver-json-server.onrender.com/history?orgId=${orgId}&status_ne=completed&tableNumber=${tableNumber}`);
         if (!response.ok) {
           throw new Error('Failed to fetch orders');
         }
