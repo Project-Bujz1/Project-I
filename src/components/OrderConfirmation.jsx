@@ -11,19 +11,24 @@ function OrderConfirmation() {
   useEffect(() => {
     const fetchOrderStatus = async () => {
       try {
-        const response = await fetch(`https://smartserver-json-server.onrender.com/${orderId}`);
+        const response = await fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history/${orderId}.json`);
+        
         if (!response.ok) {
           throw new Error('Failed to fetch order status');
         }
+    
         const order = await response.json();
-        setOrderStatus(order.status || 'Pending');
-        setStatusMessage(order.statusMessage || '');
+    
+        // Set the order status and status message, with fallback values
+        setOrderStatus(order?.status || 'Pending');
+        setStatusMessage(order?.statusMessage || '');
       } catch (error) {
         console.error('Failed to fetch order status', error);
       } finally {
         setLoading(false);
       }
     };
+    
 
     fetchOrderStatus();
 

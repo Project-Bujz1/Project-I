@@ -33,19 +33,30 @@ function Header({ toggleDrawer, onSearch }) {
   const fetchRestaurantDetails = async () => {
     try {
       const orgId = localStorage.getItem('orgId');
+      
       if (!orgId) {
         console.error("No orgId found in localStorage");
         return;
       }
-      const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
+  
+      // Add `.json` at the end of the Firebase Realtime Database URL
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json');
+      
       if (response.ok) {
         const data = await response.json();
-        const restaurant = data.find(restaurant => restaurant.orgId === orgId);
-        if (restaurant) {
-          setRestaurantDetails(restaurant);
-          setRestaurantLogo(restaurant.logo);
+  
+        // Convert the object returned by Firebase to an array
+        if (data) {
+          const restaurant = Object.values(data).find(restaurant => restaurant.orgId === orgId);
+          
+          if (restaurant) {
+            setRestaurantDetails(restaurant);
+            setRestaurantLogo(restaurant.logo);
+          } else {
+            console.error("No restaurant found with the given orgId");
+          }
         } else {
-          console.error("No restaurant found with the given orgId");
+          console.error("No data available in the database");
         }
       } else {
         console.error("Error fetching restaurant data:", response.status);
@@ -54,6 +65,7 @@ function Header({ toggleDrawer, onSearch }) {
       console.error("Error fetching restaurant details:", error);
     }
   };
+  
 
   // Detect role change and navigate when logged out
   useEffect(() => {

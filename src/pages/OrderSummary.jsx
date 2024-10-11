@@ -28,17 +28,20 @@ function OrderSummary() {
           console.error('No orgId found in localStorage');
           return;
         }
-  
-        const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
+    
+        const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json'); // Add .json
         if (!response.ok) {
           throw new Error('Failed to fetch restaurant data');
         }
-  
+    
         const restaurants = await response.json();
-        const restaurant = restaurants.find(r => r.orgId === orgId);
-  
+    
+        // Convert Firebase data object into an array
+        const restaurantsArray = Object.values(restaurants);
+        const restaurant = restaurantsArray.find(r => r.orgId === orgId);
+    
         if (restaurant) {
-          setSeatingCapacity(parseInt(restaurant.seatingCapacity));
+          setSeatingCapacity(parseInt(restaurant.seatingCapacity, 10)); // Parse seating capacity as integer
         } else {
           console.error('No restaurant found for the given orgId');
         }
@@ -46,6 +49,7 @@ function OrderSummary() {
         console.error('Error fetching restaurant data:', error);
       }
     };
+    
 
     // Check if a tableNumber is already in localStorage
     const savedTableNumber = localStorage.getItem('tableNumber');
@@ -69,47 +73,51 @@ function OrderSummary() {
       showErrorModal('Please enter your table number');
       return;
     }
-
+  
     const tableNum = parseInt(tableNumber);
     if (isNaN(tableNum) || tableNum < 1 || tableNum > seatingCapacity) {
       showErrorModal(`Please enter a valid table number between 1 and ${seatingCapacity}`);
       return;
     }
-
+  
     setLoading(true);
-
+  
     const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
-
+  
     const orderDetails = {
-      id: Date.now(),
-      orgId: orgId, // Include the orgId in the order details
+      id: Date.now(), // Use timestamp as order ID
+      orgId: orgId,   // Include orgId
       items: cart,
       total: total.toFixed(2),
       tableNumber,
       timestamp: new Date().toISOString(),
       status: 'pending',
-      statusMessage: 'Your order is being processed'
+      statusMessage: 'Your order is being processed',
     };
-
+  
     try {
-      const response = await fetch('https://smartserver-json-server.onrender.com/history', {
+      // Firebase requires the .json extension in the URL
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history.json', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderDetails),
       });
+  
       if (!response.ok) {
         throw new Error('Failed to save order');
       }
-      const savedOrder = await response.json();
-
+  
+      const savedOrder = await response.json(); // Firebase returns the order ID as part of the response
+  
+      // Initialize WebSocket connection to notify about the new order
       ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
       ws.current.onopen = () => {
-        ws.current.send(JSON.stringify({ type: 'newOrder', order: savedOrder }));
+        ws.current.send(JSON.stringify({ type: 'newOrder', order: { ...orderDetails, id: savedOrder.name } }));
       };
-
-      navigate(`/waiting/${savedOrder.id}`);
+  
+      navigate(`/waiting/${savedOrder.name}`); // Use Firebase's generated order ID
     } catch (error) {
       console.error('Failed to save order', error);
       showErrorModal('Failed to place order. Please try again.');
@@ -117,6 +125,7 @@ function OrderSummary() {
       setLoading(false);
     }
   };
+  
 
   const showErrorModal = (message) => {
     setErrorMessage(message);

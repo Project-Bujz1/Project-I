@@ -14,17 +14,28 @@ function OrderHistory() {
   const fetchOrders = async () => {
     try {
       setLoading(true);
-      const response = await fetch('https://smartserver-json-server.onrender.com/history');
+      
+      // Fetch all order history from Firebase
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history.json');
       if (!response.ok) {
         throw new Error('Failed to fetch order history');
       }
+      
       const data = await response.json();
       
       // Get the orgId from localStorage
       const orgId = localStorage.getItem('orgId');
       
-      // Filter orders based on the orgId
-      const filteredOrders = data.filter(order => order.orgId === orgId);
+      // If no orders, set an empty array
+      if (!data) {
+        setOrders([]);
+        return;
+      }
+      
+      // Convert the fetched object to an array and filter by orgId
+      const filteredOrders = Object.keys(data)
+        ?.map((key) => ({ id: key, ...data[key] }))
+        .filter((order) => order.orgId === orgId);
       
       setOrders(filteredOrders);
     } catch (error) {
@@ -34,22 +45,66 @@ function OrderHistory() {
       setLoading(false);
     }
   };
+  
 
   const handleDelete = async (orderId) => {
     try {
-      const response = await fetch(`https://smartserver-json-server.onrender.com/history/${orderId}`, {
+      // Fetch the current order history
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history.json');
+      if (!response.ok) {
+        throw new Error('Failed to fetch order history for deletion');
+      }
+      
+      const data = await response.json();
+      
+      // Loop through each Firebase-generated key and find the matching orderId
+      const firebaseKeyToDelete = Object.keys(data).find((firebaseKey) => data[firebaseKey].id === orderId);
+  
+      // If no matching order is found, throw an error
+      if (!firebaseKeyToDelete) {
+        throw new Error('Order not found in Firebase');
+      }
+  
+      // Delete the order at the found Firebase key
+      const deleteResponse = await fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history/${firebaseKeyToDelete}.json`, {
         method: 'DELETE',
       });
-      if (!response.ok) {
-        throw new Error('Failed to delete order');
+  
+      if (!deleteResponse.ok) {
+        throw new Error(`Failed to delete order. Status: ${deleteResponse.status}`);
       }
+  
+      // Notify success and remove order from local state
       message.success('Order deleted successfully');
       setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+  
     } catch (error) {
-      console.error('Failed to delete order', error);
+      console.error('Failed to delete order:', error);
       message.error('Failed to delete order. Please try again.');
     }
   };
+  
+
+  // const handleDelete = async (orderId) => {
+  //   try {
+  //     const response = await fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+  //       method: 'DELETE',
+  //     });
+      
+  //     if (!response.ok) {
+  //       throw new Error('Failed to delete order');
+  //     }
+      
+  //     message.success('Order deleted successfully');
+      
+  //     // Remove the deleted order from the current list of orders
+  //     setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+  //   } catch (error) {
+  //     console.error('Failed to delete order', error);
+  //     message.error('Failed to delete order. Please try again.');
+  //   }
+  // };
+  
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -57,6 +112,7 @@ function OrderHistory() {
       case 'preparing': return 'blue';
       case 'ready': return 'green';
       case 'delayed': return 'orange';
+      case 'completed': return 'green';
       default: return 'default';
     }
   };
@@ -91,7 +147,7 @@ function OrderHistory() {
             >
               <p><strong>Total:</strong> ₹{order.total}</p>
               <ul>
-                {order.items.map((item, index) => (
+                {order?.items?.map((item, index) => (
                   <li key={index}>
                     {item.name} x {item.quantity} - ₹{(item.price * item.quantity).toFixed(2)}
                   </li>

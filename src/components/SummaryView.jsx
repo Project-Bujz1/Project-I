@@ -16,16 +16,23 @@ function BillSummary() {
   // Fetch restaurant/organization details from the API
   useEffect(() => {
     if (orgId) {
-      fetch(`https://smartserver-json-server.onrender.com/restaurants/${orgId}`)
-        .then((response) => response.json())
+      fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants/${orgId}.json`) // Add .json at the end
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error('Failed to fetch restaurant details');
+          }
+          return response.json();
+        })
         .then((data) => {
           setRestaurantInfo(data);
         })
         .catch((error) => {
+          console.error(error);
           showErrorModal('Failed to fetch organization details.');
         });
     }
   }, [orgId]);
+  
 
   const showErrorModal = (message) => {
     setErrorMessage(message);

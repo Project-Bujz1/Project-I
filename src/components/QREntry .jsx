@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import FoodLoader from './FoodLoader';
 
-const API_URL = 'https://smartserver-json-server.onrender.com/restaurants';
+const API_URL = 'https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants';
 
 const QREntry = () => {
     const { orgId, tableNumber } = useParams();
@@ -14,36 +14,40 @@ const QREntry = () => {
     useEffect(() => {
         const fetchRestaurantData = async () => {
             try {
-                const response = await fetch(API_URL);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch restaurant data');
-                }
-                const data = await response.json();
-                const restaurantData = data.find(r => r.orgId === orgId);
-                
-                if (restaurantData) {
-                    setRestaurant(restaurantData);
-                    localStorage.setItem('role', 'customer');
-                    localStorage.setItem('orgId', orgId);
-                    localStorage.setItem('tableNumber', tableNumber);
-                    
-                    // Show logo for 3 seconds
-                    setShowLogo(true);
-                    setTimeout(() => {
-                        // Set a flag in sessionStorage to indicate that we've just set the orgId and tableNumber
-                        sessionStorage.setItem('justSetOrgIdAndTable', 'true');
-                        // Reload the page
-                        window.location.reload();
-                    }, 2000);
-                } else {
-                    throw new Error('Restaurant not found');
-                }
+              const response = await fetch(`${API_URL}.json`);  // Add `.json` at the end of the Firebase URL
+              if (!response.ok) {
+                throw new Error('Failed to fetch restaurant data');
+              }
+          
+              const data = await response.json();
+              // Convert data to an array if it's an object (Firebase returns data as objects)
+              const restaurantArray = Object.values(data);
+              const restaurantData = restaurantArray.find(r => r.orgId === orgId);
+          
+              if (restaurantData) {
+                setRestaurant(restaurantData);
+                localStorage.setItem('role', 'customer');
+                localStorage.setItem('orgId', orgId);
+                localStorage.setItem('tableNumber', tableNumber);
+          
+                // Show logo for 3 seconds
+                setShowLogo(true);
+                setTimeout(() => {
+                  // Set a flag in sessionStorage to indicate that we've just set the orgId and tableNumber
+                  sessionStorage.setItem('justSetOrgIdAndTable', 'true');
+                  // Reload the page
+                  window.location.reload();
+                }, 2000);
+              } else {
+                throw new Error('Restaurant not found');
+              }
             } catch (err) {
-                setError(err.message);
+              setError(err.message);
             } finally {
-                setLoading(false);
+              setLoading(false);
             }
-        };
+          };
+                    
 
         if (orgId && tableNumber) {
             fetchRestaurantData();

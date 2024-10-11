@@ -196,19 +196,32 @@ const LandingPage = () => {
     const fetchRestaurants = async () => {
         setIsLoadingRestaurants(true);
         try {
-            const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
-            if (!response.ok) {
-                throw new Error('Failed to fetch restaurants');
-            }
-            const data = await response.json();
-            setRestaurants(data);
+
+
+            // Add `.json` to the end of the Firebase URL
+          const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json');
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch restaurants');
+          }
+      
+          const data = await response.json();
+          
+          if (data) {
+            // Convert the Firebase object to an array (if needed)
+            const restaurantArray = Object.values(data);
+            setRestaurants(restaurantArray);
+          } else {
+            setRestaurants([]);  // Set an empty array if no data is returned
+          }
         } catch (error) {
-            console.error('Error fetching restaurants:', error);
-            setError('Failed to load restaurants. Please try again.');
+          console.error('Error fetching restaurants:', error);
+          setError('Failed to load restaurants. Please try again.');
         } finally {
-            setIsLoadingRestaurants(false);
+          setIsLoadingRestaurants(false);
         }
-    };
+      };
+      
 
     const handleLogin = async (e) => {
         e.preventDefault();

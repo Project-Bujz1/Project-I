@@ -6,7 +6,7 @@ import os
 from functools import wraps
 
 app = Flask(__name__)
-CORS(app)  # This enables CORS for all routes
+CORS(app)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
 
 # Mock credentials with different orgIds (replace with database in production)
@@ -25,7 +25,6 @@ def token_required(f):
             return jsonify({'message': 'Token is missing!'}), 401
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            request.orgId = data['orgId']  # Pass the orgId along with the request
         except Exception as e:
             return jsonify({'message': f'Token is invalid: {str(e)}'}), 401
         return f(*args, **kwargs)
@@ -42,8 +41,7 @@ def admin_login():
     if user and auth['password'] == user['password']:
         token = jwt.encode({
             'username': auth['username'],
-            'exp': datetime.utcnow() + timedelta(hours=24),
-            'orgId': user['orgId']  # Include orgId in the token
+            'exp': datetime.utcnow() + timedelta(hours=24)
         }, app.config['SECRET_KEY'])
         return jsonify({'token': token, 'orgId': user['orgId']})  # Return orgId along with token
     
@@ -52,7 +50,9 @@ def admin_login():
 @app.route('/api/admin/protected', methods=['GET'])
 @token_required
 def protected():
-    return jsonify({'message': 'This is a protected route for orgId: {}'.format(request.orgId)})
+    # Use the decoded token data to get the orgId
+    orgId = jwt.decode(request.headers.get('Authorization'), app.config['SECRET_KEY'], algorithms=["HS256"])['orgId']
+    return jsonify({'message': 'This is a protected route for orgId: {}'.format(orgId)})
 
 if __name__ == '__main__':
     app.run(debug=True)

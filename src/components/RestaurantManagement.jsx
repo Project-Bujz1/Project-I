@@ -30,20 +30,25 @@ const RestaurantManagement = () => {
   useEffect(() => {
     fetchRestaurantData();
   }, []);
-
+  
   const fetchRestaurantData = async () => {
     try {
       setLoading(true);
-      const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
-      const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
+      const orgId = localStorage.getItem('orgId');
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json');
+  
       if (response.ok) {
         const data = await response.json();
-        const restaurantData = data.find(r => r.orgId === orgId);
+        const restaurantsArray = Object.entries(data);
+        const [id, restaurantData] = restaurantsArray.find(([_, r]) => r.orgId === orgId) || [];
+  
         if (restaurantData) {
-          setRestaurant(restaurantData);
+          setRestaurant({ ...restaurantData, id });
         } else {
           console.error("No restaurant found for this orgId");
         }
+      } else {
+        console.error("Failed to fetch restaurant data:", response.status);
       }
     } catch (error) {
       console.error("Error fetching restaurant data:", error);
@@ -51,27 +56,32 @@ const RestaurantManagement = () => {
       setLoading(false);
     }
   };
-
+  
   const onSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      const response = await fetch(`https://smartserver-json-server.onrender.com/restaurants/${restaurant.id}`, {
-        method: 'PUT',
+      const { id, ...restaurantData } = restaurant;
+      const response = await fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants/${id}.json`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(restaurant),
+        body: JSON.stringify(restaurantData),
       });
+  
       if (response.ok) {
         console.log("Restaurant information updated successfully");
+        fetchRestaurantData(); // Refetch the data to ensure we have the latest version
       } else {
         console.error("Failed to update restaurant information");
       }
     } catch (error) {
       console.error("Error updating restaurant information:", error);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleInputChange = (e) => {

@@ -10,19 +10,31 @@ const Login = ({ onLogin }) => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch(`http://https://smartserver-json-server.onrender.com/users?username=${username}&password=${password}`);
+      // Correct the URL structure and add .json for Firebase compatibility
+      const response = await fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/users.json?orderBy="username"&equalTo="${username}"`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch user data');
+      }
+  
       const data = await response.json();
-      if (data.length > 0) {
-        onLogin(data[0]);
+  
+      // Firebase returns data as an object, so we need to check if there's a matching password
+      const users = Object.values(data);
+      const user = users.find(user => user.password === password);
+  
+      if (user) {
+        onLogin(user);
       } else {
         setError('Invalid credentials');
       }
     } catch (err) {
+      console.error('Error connecting to server', err);
       setError('Error connecting to server');
     } finally {
       setLoading(false);
     }
   };
+  
 
   return (
     <div style={styles.container}>

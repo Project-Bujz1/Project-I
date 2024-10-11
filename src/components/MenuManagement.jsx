@@ -7,7 +7,7 @@ const { Header, Content } = Layout;
 const { Option } = Select;
 const { Title } = Typography;
 
-const API_URL = 'https://smartserver-json-server.onrender.com';
+const API_URL = 'https://db-for-smart-serve-menu-default-rtdb.firebaseio.com';
 
 // Styled Components
 const StyledLayout = styled(Layout)`
@@ -138,24 +138,66 @@ const MenuManagement = () => {
     setLoading(true);
     try {
       const [categoriesRes, subcategoriesRes, menuItemsRes] = await Promise.all([
-        fetch(`${API_URL}/categories?orgId=${orgId}`),
-        fetch(`${API_URL}/subcategories?orgId=${orgId}`),
-        fetch(`${API_URL}/menu_items?orgId=${orgId}`)
+        fetch(`${API_URL}/categories.json?orgId=${orgId}`),
+        fetch(`${API_URL}/subcategories.json?orgId=${orgId}`),
+        fetch(`${API_URL}/menu_items.json?orgId=${orgId}`)
       ]);
       const [categoriesData, subcategoriesData, menuItemsData] = await Promise.all([
         categoriesRes.json(),
         subcategoriesRes.json(),
         menuItemsRes.json()
       ]);
-      setCategories(categoriesData);
-      setSubcategories(subcategoriesData);
-      setMenuItems(menuItemsData);
+  
+      // Convert objects to arrays
+      const categoriesArray = categoriesData ? Object.entries(categoriesData).map(([id, data]) => ({id, ...data})) : [];
+      const subcategoriesArray = subcategoriesData ? Object.entries(subcategoriesData).map(([id, data]) => ({id, ...data})) : [];
+      const menuItemsArray = menuItemsData ? Object.entries(menuItemsData).map(([id, data]) => ({id, ...data})) : [];
+  
+      setCategories(categoriesArray);
+      setSubcategories(subcategoriesArray);
+      setMenuItems(menuItemsArray);
     } catch (error) {
       console.error('Error fetching data:', error);
       message.error('Failed to fetch data');
     }
     setLoading(false);
   };
+
+  // const fetchData = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const [categoriesRes, subcategoriesRes, menuItemsRes] = await Promise.all([
+  //       // fetch(`${API_URL}/categories.json?orderBy="orgId"&equalTo="${orgId}"`),
+  //       // fetch(`${API_URL}/subcategories.json?orderBy="orgId"&equalTo="${orgId}"`),
+  //       // fetch(`${API_URL}/menu_items.json?orderBy="orgId"&equalTo="${orgId}"`)
+  //       fetch(`${API_URL}/categories.json?orgId=${orgId}`),
+  //       fetch(`${API_URL}/subcategories.json?orgId=${orgId}`),
+  //       fetch(`${API_URL}/menu_items.json?orgId=${orgId}`)
+
+  //     ]);
+  //     const [categoriesData, subcategoriesData, menuItemsData] = await Promise.all([
+  //       categoriesRes.json(),
+  //       subcategoriesRes.json(),
+  //       menuItemsRes.json()
+  //     ]);
+  
+  //     // Firebase returns data as objects, convert them to arrays if necessary
+  //     // const categoriesArray = categoriesData ? Object.values(categoriesData) : [];
+  //     // const subcategoriesArray = subcategoriesData ? Object.values(subcategoriesData) : [];
+  //     // const menuItemsArray = menuItemsData ? Object.values(menuItemsData) : [];
+  
+  //     // setCategories(categoriesArray);
+  //     // setSubcategories(subcategoriesArray);
+  //     // setMenuItems(menuItemsArray);
+  //     setCategories(categoriesData);
+  //     setSubcategories(subcategoriesData);
+  //     setMenuItems(menuItemsData);
+  //   } catch (error) {
+  //     console.error('Error fetching data:', error);
+  //     message.error('Failed to fetch data');
+  //   }
+  //   setLoading(false);
+  // };
 
   const handleCreate = async (values) => {
     const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
@@ -180,39 +222,145 @@ const MenuManagement = () => {
   const handleUpdate = async (values) => {
     const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
     try {
-      const response = await fetch(`${API_URL}/${type}/${editingItem.id}`, {
-        method: 'PUT',
+      if (!editingItem || !editingItem.id) {
+        throw new Error('No item selected for update');
+      }
+  
+      const response = await fetch(`${API_URL}/${type}/${editingItem.id}.json`, {
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
       });
-      if (response.ok) {
-        fetchData();
-        setIsModalVisible(false);
-        setEditingItem(null);
-        form.resetFields();
-        message.success('Item updated successfully');
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update item');
       }
+  
+      const updatedData = await response.json();
+      console.log('Update response:', updatedData);
+  
+      fetchData();
+      setIsModalVisible(false);
+      setEditingItem(null);
+      form.resetFields();
+      message.success('Item updated successfully');
     } catch (error) {
       console.error(`Error updating ${type}:`, error);
-      message.error('Failed to update item');
+      message.error(`Failed to update item: ${error.message}`);
     }
   };
 
   const handleDelete = async (id) => {
     const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
     try {
-      const response = await fetch(`${API_URL}/${type}/${id}`, {
+      const response = await fetch(`${API_URL}/${type}/${id}.json`, {
         method: 'DELETE'
       });
-      if (response.ok) {
-        fetchData();
-        message.success('Item deleted successfully');
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to delete item');
       }
+  
+      console.log('Delete response:', await response.json());
+  
+      fetchData();
+      message.success('Item deleted successfully');
     } catch (error) {
       console.error(`Error deleting ${type}:`, error);
-      message.error('Failed to delete item');
+      message.error(`Failed to delete item: ${error.message}`);
     }
   };
+
+  // const handleUpdate = async (values) => {
+  //   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
+  //   try {
+  //     const response = await fetch(`${API_URL}/${type}/${editingItem.id}.json`, {
+  //       method: 'PATCH',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
+  //     });
+  //     if (response.ok) {
+  //       fetchData();
+  //       setIsModalVisible(false);
+  //       setEditingItem(null);
+  //       form.resetFields();
+  //       message.success('Item updated successfully');
+  //     } else {
+  //       throw new Error('Failed to update item');
+  //     }
+  //   } catch (error) {
+  //     console.error(`Error updating ${type}:`, error);
+  //     message.error('Failed to update item');
+  //   }
+  // };
+
+// const handleDelete = async (id) => {
+//   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
+  
+//   Modal.confirm({
+//     title: 'Are you sure you want to delete this item?',
+//     content: 'This action cannot be undone.',
+//     okText: 'Yes',
+//     okType: 'danger',
+//     cancelText: 'No',
+//     onOk: async () => {
+//       try {
+//         const response = await fetch(`${API_URL}/${type}/${id}.json`, {
+//           method: 'DELETE'
+//         });
+//         if (response.ok) {
+//           fetchData();
+//           message.success('Item deleted successfully');
+//         } else {
+//           const errorData = await response.json();
+//           throw new Error(errorData.error || 'Failed to delete item');
+//         }
+//       } catch (error) {
+//         console.error(`Error deleting ${type}:`, error);
+//         message.error(`Failed to delete item: ${error.message}`);
+//       }
+//     },
+//   });
+// };
+
+  // const handleUpdate = async (values) => {
+  //   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
+  //   try {
+  //     const response = await fetch(`${API_URL}/${type}/${editingItem.id}`, {
+  //       method: 'PUT',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
+  //     });
+  //     if (response.ok) {
+  //       fetchData();
+  //       setIsModalVisible(false);
+  //       setEditingItem(null);
+  //       form.resetFields();
+  //       message.success('Item updated successfully');
+  //     }
+  //   } catch (error) {
+  //     console.error(`Error updating ${type}:`, error);
+  //     message.error('Failed to update item');
+  //   }
+  // };
+
+  // const handleDelete = async (id) => {
+  //   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
+  //   try {
+  //     const response = await fetch(`${API_URL}/${type}/${id}`, {
+  //       method: 'DELETE'
+  //     });
+  //     if (response.ok) {
+  //       fetchData();
+  //       message.success('Item deleted successfully');
+  //     }
+  //   } catch (error) {
+  //     console.error(`Error deleting ${type}:`, error);
+  //     message.error('Failed to delete item');
+  //   }
+  // };
 
   const columns = {
     categories: [

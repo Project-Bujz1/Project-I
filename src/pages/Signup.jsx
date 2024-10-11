@@ -10,7 +10,7 @@ const Signup = ({ onSignup }) => {
     setLoading(true);
     setError('');
     try {
-      const response = await fetch('https://smartserver-json-server.onrender.com/users', {
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, role: 'customer' }),

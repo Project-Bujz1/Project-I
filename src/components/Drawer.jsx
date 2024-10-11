@@ -39,16 +39,24 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
         return;
       }
   
-      const response = await fetch('https://smartserver-json-server.onrender.com/restaurants');
+      // Adding `.json` at the end of the Firebase Realtime Database URL
+      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json');
       
       if (response.ok) {
         const data = await response.json();
-        const restaurant = data.find(restaurant => restaurant.orgId === orgId);
         
-        if (restaurant) {
-          setRestaurantName(restaurant.name);
+        // Check if data exists and filter by `orgId`
+        if (data) {
+          // Firebase stores data in a key-value format, so `data` is an object not an array
+          const restaurant = Object.values(data).find(restaurant => restaurant.orgId === orgId);
+          
+          if (restaurant) {
+            setRestaurantName(restaurant.name);
+          } else {
+            console.error("No restaurant found with the given orgId");
+          }
         } else {
-          console.error("No restaurant found with the given orgId");
+          console.error("No data available in the database");
         }
       } else {
         console.error("Error fetching restaurant data:", response.status);
@@ -57,6 +65,7 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
       console.error("Error fetching restaurant data:", error);
     }
   };
+  
 
   return (
     <Drawer
