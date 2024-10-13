@@ -7,7 +7,7 @@ const { Header, Content } = Layout;
 const { Option } = Select;
 const { Title } = Typography;
 
-const API_URL = 'https://db-for-smart-serve-menu-default-rtdb.firebaseio.com';
+const API_URL = 'https://stage-smart-server-default-rtdb.firebaseio.com';
 
 // Styled Components
 const StyledLayout = styled(Layout)`

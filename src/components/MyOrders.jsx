@@ -21,7 +21,7 @@ const MyOrders = () => {
         }
     
         // Fetch all orders from Firebase
-        const response = await fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
+        const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch orders');

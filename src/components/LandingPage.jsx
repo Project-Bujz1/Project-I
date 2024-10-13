@@ -199,7 +199,7 @@ const LandingPage = () => {
 
 
             // Add `.json` to the end of the Firebase URL
-          const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json');
+          const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json');
           
           if (!response.ok) {
             throw new Error('Failed to fetch restaurants');

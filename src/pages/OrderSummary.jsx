@@ -29,7 +29,7 @@ function OrderSummary() {
           return;
         }
     
-        const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json'); // Add .json
+        const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json'); // Add .json
         if (!response.ok) {
           throw new Error('Failed to fetch restaurant data');
         }
@@ -97,7 +97,7 @@ function OrderSummary() {
   
     try {
       // Firebase requires the .json extension in the URL
-      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/history.json', {
+      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

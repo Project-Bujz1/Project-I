@@ -17,7 +17,7 @@ const AuthPage = () => {
       localStorage.setItem('user', JSON.stringify({ username, role }));
     } else {
       // In a real app, you'd send this to your backend to create a new user
-      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/users', {
+      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password, role }),

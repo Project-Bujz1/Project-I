@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import FoodLoader from './FoodLoader';
 
-const API_URL = 'https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants';
+const API_URL = 'https://stage-smart-server-default-rtdb.firebaseio.com/restaurants';
 
 const QREntry = () => {
     const { orgId, tableNumber } = useParams();

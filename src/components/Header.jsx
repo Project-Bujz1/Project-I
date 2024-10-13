@@ -40,7 +40,7 @@ function Header({ toggleDrawer, onSearch }) {
       }
   
       // Add `.json` at the end of the Firebase Realtime Database URL
-      const response = await fetch('https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants.json');
+      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json');
       
       if (response.ok) {
         const data = await response.json();

@@ -16,7 +16,7 @@ function BillSummary() {
   // Fetch restaurant/organization details from the API
   useEffect(() => {
     if (orgId) {
-      fetch(`https://db-for-smart-serve-menu-default-rtdb.firebaseio.com/restaurants/${orgId}.json`) // Add .json at the end
+      fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants/${orgId}.json`) // Add .json at the end
         .then((response) => {
           if (!response.ok) {
             throw new Error('Failed to fetch restaurant details');
