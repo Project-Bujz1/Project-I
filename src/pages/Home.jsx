@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { ref, get } from 'firebase/database';
+import { db } from './fireBaseConfig';
 import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
 import MenuItem from '../components/MenuItem';
@@ -16,36 +18,43 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const orgId = localStorage.getItem('orgId'); // Get orgId from localStorage
 
   useEffect(() => {
-    const orgId = localStorage.getItem('orgId');  // Retrieve the orgId from localStorage
-    
-    if (orgId) {
-      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
-      .then((res) => res.json())
-            .then((data) => {
-                const matchedCategories = data.filter(category => category.orgId === parseInt(orgId));  // Filter categories by orgId
-                setCategories(matchedCategories);
-                setLoading((prev) => ({ ...prev, categories: false }));
-            });
+    const fetchData = async () => {
+      if (orgId) {
+        try {
+          const categoriesRef = ref(db, 'categories');
+          const subcategoriesRef = ref(db, 'subcategories');
+          const menuItemsRef = ref(db, 'menu_items');
 
-            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json')
-            .then((res) => res.json())
-            .then((data) => {
-                const matchedSubcategories = data.filter(subcategory => subcategory.orgId === parseInt(orgId));  // Filter subcategories by orgId
-                setSubcategories(matchedSubcategories);
-                setLoading((prev) => ({ ...prev, subcategories: false }));
-            });
+          const [categoriesSnapshot, subcategoriesSnapshot, menuItemsSnapshot] = await Promise.all([
+            get(categoriesRef),
+            get(subcategoriesRef),
+            get(menuItemsRef)
+          ]);
 
-            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json')
-            .then((res) => res.json())
-            .then((data) => {
-                const matchedMenuItems = data.filter(item => item.orgId === parseInt(orgId));  // Filter menu items by orgId
-                setMenuItems(matchedMenuItems);
-                setLoading((prev) => ({ ...prev, menuItems: false }));
-            });
-    }
-}, []);
+          const categoriesData = categoriesSnapshot.val();
+          const subcategoriesData = subcategoriesSnapshot.val();
+          const menuItemsData = menuItemsSnapshot.val();
 
+          const matchedCategories = Object.values(categoriesData || {}).filter(category => category.orgId === parseInt(orgId));
+          const matchedSubcategories = Object.values(subcategoriesData || {}).filter(subcategory => subcategory.orgId === parseInt(orgId));
+          const matchedMenuItems = Object.values(menuItemsData || {}).filter(item => item.orgId === parseInt(orgId));
 
+          setCategories(matchedCategories);
+          setSubcategories(matchedSubcategories);
+          setMenuItems(matchedMenuItems);
+
+          setLoading({ categories: false, subcategories: false, menuItems: false });
+        } catch (error) {
+          console.error("Error fetching data:", error);
+          setLoading({ categories: false, subcategories: false, menuItems: false });
+        }
+      }
+    };
+
+    fetchData();
+  }, [orgId]);
+
+  // ... rest of the component remains the same ...
   useEffect(() => {
     if (searchTerm) {
       const filteredItems = menuItems.filter((item) =>
@@ -58,15 +67,13 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
       setSearchResults([]);
     }
   }, [searchTerm, menuItems]);
-
   const filteredSubcategories = selectedCategory
-    ? subcategories.filter((sub) => sub.categoryId === selectedCategory.id)
-    : [];
+  ? subcategories.filter((sub) => sub.categoryId === selectedCategory.id)
+  : [];
 
-  const filteredMenuItems = selectedSubcategory
-    ? menuItems.filter((item) => item.subcategoryId === selectedSubcategory.id)
-    : [];
-
+const filteredMenuItems = selectedSubcategory
+  ? menuItems.filter((item) => item.subcategoryId === selectedSubcategory.id)
+  : [];
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
     setSelectedSubcategory(null);
@@ -140,7 +147,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
                 <p>Loading subcategories...</p>
               ) : (
                 <div className="card-grid">
-                  {filteredSubcategories.map((subcategory) => (
+                  {filteredSubcategories?.map((subcategory) => (
                     <SubcategoryCard
                       key={subcategory.id}
                       subcategory={subcategory}
