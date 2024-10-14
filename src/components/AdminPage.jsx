@@ -416,10 +416,10 @@ const AdminOrderComponent = () => {
   
       const data = await response.json();
   
-      // Convert Firebase object to an array
-      const ordersArray = Object.entries(data).map(([id, order]) => ({
+      // Convert Firebase object to an array, using the key as the id
+      const ordersArray = Object.entries(data).map(([key, order]) => ({
         ...order,
-        id: id
+        id: order.id || key // Use the order's id if it exists, otherwise use the Firebase key
       })).filter(order => order.orgId === orgId);
   
       // Sort orders by timestamp

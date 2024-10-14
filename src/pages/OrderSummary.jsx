@@ -68,6 +68,75 @@ function OrderSummary() {
     }
   };
 
+  const generateOrderId = () => {
+    // Get the current date in YYYYMMDD format
+    const date = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    // Generate a random 4-digit number
+    const randomDigits = Math.floor(1000 + Math.random() * 9000);
+    // Combine to form the order ID
+    return `ORD-${date}-${randomDigits}`;
+  };
+  
+  // const handlePayClick = async () => {
+  //   if (!tableNumber) {
+  //     showErrorModal('Please enter your table number');
+  //     return;
+  //   }
+  
+  //   const tableNum = parseInt(tableNumber);
+  //   if (isNaN(tableNum) || tableNum < 1 || tableNum > seatingCapacity) {
+  //     showErrorModal(`Please enter a valid table number between 1 and ${seatingCapacity}`);
+  //     return;
+  //   }
+  
+  //   setLoading(true);
+  
+  //   const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
+  
+  //   const orderId = generateOrderId(); // Generate the custom order ID
+  
+  //   const orderDetails = {
+  //     id: orderId, // Use the generated order ID
+  //     orgId: orgId,   // Include orgId
+  //     items: cart,
+  //     total: total.toFixed(2),
+  //     tableNumber,
+  //     timestamp: new Date().toISOString(),
+  //     status: 'pending',
+  //     statusMessage: 'Your order is being processed',
+  //   };
+  
+  //   try {
+  //     // Firebase requires the .json extension in the URL
+  //     const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json', {
+  //       method: 'POST',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify(orderDetails),
+  //     });
+  
+  //     if (!response.ok) {
+  //       throw new Error('Failed to save order');
+  //     }
+  
+  //     const savedOrder = await response.json(); // Firebase returns the order ID as part of the response
+  
+  //     // Initialize WebSocket connection to notify about the new order
+  //     ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
+  //     ws.current.onopen = () => {
+  //       ws.current.send(JSON.stringify({ type: 'newOrder', order: { ...orderDetails, id: savedOrder.name } }));
+  //     };
+  
+  //     navigate(`/waiting/${savedOrder.name}`); // Use Firebase's generated order ID
+  //   } catch (error) {
+  //     console.error('Failed to save order', error);
+  //     showErrorModal('Failed to place order. Please try again.');
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
   const handlePayClick = async () => {
     if (!tableNumber) {
       showErrorModal('Please enter your table number');
@@ -82,11 +151,13 @@ function OrderSummary() {
   
     setLoading(true);
   
-    const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
+    const orgId = localStorage.getItem('orgId');
+  
+    const orderId = generateOrderId(); // Generate the custom order ID
   
     const orderDetails = {
-      id: Date.now(), // Use timestamp as order ID
-      orgId: orgId,   // Include orgId
+      id: orderId, // Use the generated order ID
+      orgId: orgId,
       items: cart,
       total: total.toFixed(2),
       tableNumber,
@@ -96,9 +167,9 @@ function OrderSummary() {
     };
   
     try {
-      // Firebase requires the .json extension in the URL
-      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json', {
-        method: 'POST',
+      // Use the generated orderId as the key when saving to Firebase
+      const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+        method: 'PUT', // Use PUT to set the data at the specific key
         headers: {
           'Content-Type': 'application/json',
         },
@@ -109,15 +180,13 @@ function OrderSummary() {
         throw new Error('Failed to save order');
       }
   
-      const savedOrder = await response.json(); // Firebase returns the order ID as part of the response
-  
       // Initialize WebSocket connection to notify about the new order
       ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
       ws.current.onopen = () => {
-        ws.current.send(JSON.stringify({ type: 'newOrder', order: { ...orderDetails, id: savedOrder.name } }));
+        ws.current.send(JSON.stringify({ type: 'newOrder', order: orderDetails }));
       };
   
-      navigate(`/waiting/${savedOrder.name}`); // Use Firebase's generated order ID
+      navigate(`/waiting/${orderId}`); // Use the generated orderId for navigation
     } catch (error) {
       console.error('Failed to save order', error);
       showErrorModal('Failed to place order. Please try again.');
@@ -125,7 +194,7 @@ function OrderSummary() {
       setLoading(false);
     }
   };
-  
+
 
   const showErrorModal = (message) => {
     setErrorMessage(message);

@@ -346,23 +346,22 @@ const WaitingScreen = () => {
     const fetchOrder = async () => {
       try {
         const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
-        // const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json?orderBy="id"&equalTo="${orderId}"&orgId="${orgId}"`);
         const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json?id=${orderId}&orgId=${orgId}`);
-
+  
         if (!response.ok) {
           throw new Error('Failed to fetch order');
         }
-    
+  
         const data = await response.json();
         const orderArray = Object.values(data); // Convert object to array
-
-        console.log('Fetched order data:', orderArray);
-
+  
         if (orderArray.length === 0) {
           throw new Error('Order not found');
         }
-
-        setOrder(orderArray[0]); // Set the first order in the result
+  
+        // Set the first order in the result, updating with the actual order number if different
+        const fetchedOrder = orderArray[0];
+        setOrder({ ...fetchedOrder, displayOrderId: fetchedOrder.orderNumber || orderId }); // Use fetched order number or fallback to URL parameter
       } catch (error) {
         console.error('Failed to fetch order', error);
         message.error('Failed to fetch order');
@@ -370,9 +369,9 @@ const WaitingScreen = () => {
         setLoading(false);
       }
     };
-    
+  
     fetchOrder();
-
+    
     // Set up WebSocket connection
     ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
 
@@ -413,6 +412,7 @@ const WaitingScreen = () => {
       }
     };
   }, [orderId, soundEnabled]);
+  
 
   const getStatusIcon = (status) => {
     switch(status) {
@@ -564,7 +564,8 @@ const WaitingScreen = () => {
           transition: 'transform 0.3s ease',
         }}
       >
-        <Title level={3} style={{ color: '#343a40' }}>Order #{orderId}</Title>
+        {/* <Title level={3} style={{ color: '#343a40' }}>Order #{orderId}</Title> */}
+        <Title level={3} style={{ color: '#343a40' }}>Order #{order.displayOrderId}</Title>
         <Progress
           type="circle"
           percent={getStatusProgress(order.status)}
