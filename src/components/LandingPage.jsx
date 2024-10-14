@@ -196,24 +196,12 @@ const LandingPage = () => {
     const fetchRestaurants = async () => {
         setIsLoadingRestaurants(true);
         try {
-
-
-            // Add `.json` to the end of the Firebase URL
           const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json');
-          
           if (!response.ok) {
             throw new Error('Failed to fetch restaurants');
           }
-      
           const data = await response.json();
-          
-          if (data) {
-            // Convert the Firebase object to an array (if needed)
-            const restaurantArray = Object.values(data);
-            setRestaurants(restaurantArray);
-          } else {
-            setRestaurants([]);  // Set an empty array if no data is returned
-          }
+            setRestaurants(data);
         } catch (error) {
           console.error('Error fetching restaurants:', error);
           setError('Failed to load restaurants. Please try again.');
