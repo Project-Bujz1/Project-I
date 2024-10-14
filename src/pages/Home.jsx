@@ -19,7 +19,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     const orgId = localStorage.getItem('orgId');  // Retrieve the orgId from localStorage
     
     if (orgId) {
-      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories')
+      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
       .then((res) => res.json())
             .then((data) => {
                 const matchedCategories = data.filter(category => category.orgId === parseInt(orgId));  // Filter categories by orgId
@@ -27,7 +27,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
                 setLoading((prev) => ({ ...prev, categories: false }));
             });
 
-            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories')
+            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json')
             .then((res) => res.json())
             .then((data) => {
                 const matchedSubcategories = data.filter(subcategory => subcategory.orgId === parseInt(orgId));  // Filter subcategories by orgId
@@ -35,7 +35,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
                 setLoading((prev) => ({ ...prev, subcategories: false }));
             });
 
-            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items')
+            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json')
             .then((res) => res.json())
             .then((data) => {
                 const matchedMenuItems = data.filter(item => item.orgId === parseInt(orgId));  // Filter menu items by orgId
