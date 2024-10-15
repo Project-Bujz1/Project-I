@@ -129,30 +129,30 @@ const MenuManagement = () => {
     fetchData();
   }, []);
 
-  const handleCategoryChange = (categoryId) => {
-    setSelectedCategory(categoryId);
-    form.setFieldsValue({ subcategoryId: null });
-  };
-
   const fetchData = async () => {
     setLoading(true);
     try {
       const [categoriesRes, subcategoriesRes, menuItemsRes] = await Promise.all([
-        fetch(`${API_URL}/categories.json?orgId=${orgId}`),
-        fetch(`${API_URL}/subcategories.json?orgId=${orgId}`),
-        fetch(`${API_URL}/menu_items.json?orgId=${orgId}`)
+        fetch(`${API_URL}/categories.json`),
+        fetch(`${API_URL}/subcategories.json`),
+        fetch(`${API_URL}/menu_items.json`)
       ]);
       const [categoriesData, subcategoriesData, menuItemsData] = await Promise.all([
         categoriesRes.json(),
         subcategoriesRes.json(),
         menuItemsRes.json()
       ]);
-  
-      // Convert objects to arrays
-      const categoriesArray = categoriesData ? Object.entries(categoriesData).map(([id, data]) => ({id, ...data})) : [];
-      const subcategoriesArray = subcategoriesData ? Object.entries(subcategoriesData).map(([id, data]) => ({id, ...data})) : [];
-      const menuItemsArray = menuItemsData ? Object.entries(menuItemsData).map(([id, data]) => ({id, ...data})) : [];
-  
+
+      const categoriesArray = categoriesData ? Object.entries(categoriesData)
+        .map(([id, data]) => ({ id, ...data }))
+        .filter(item => item.orgId === parseInt(orgId)) : [];
+      const subcategoriesArray = subcategoriesData ? Object.entries(subcategoriesData)
+        .map(([id, data]) => ({ id, ...data }))
+        .filter(item => item.orgId === parseInt(orgId)) : [];
+      const menuItemsArray = menuItemsData ? Object.entries(menuItemsData)
+        .map(([id, data]) => ({ id, ...data }))
+        .filter(item => item.orgId === parseInt(orgId)) : [];
+
       setCategories(categoriesArray);
       setSubcategories(subcategoriesArray);
       setMenuItems(menuItemsArray);
@@ -163,52 +163,18 @@ const MenuManagement = () => {
     setLoading(false);
   };
 
-  // const fetchData = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const [categoriesRes, subcategoriesRes, menuItemsRes] = await Promise.all([
-  //       // fetch(`${API_URL}/categories.json?orderBy="orgId"&equalTo="${orgId}"`),
-  //       // fetch(`${API_URL}/subcategories.json?orderBy="orgId"&equalTo="${orgId}"`),
-  //       // fetch(`${API_URL}/menu_items.json?orderBy="orgId"&equalTo="${orgId}"`)
-  //       fetch(`${API_URL}/categories.json?orgId=${orgId}`),
-  //       fetch(`${API_URL}/subcategories.json?orgId=${orgId}`),
-  //       fetch(`${API_URL}/menu_items.json?orgId=${orgId}`)
-
-  //     ]);
-  //     const [categoriesData, subcategoriesData, menuItemsData] = await Promise.all([
-  //       categoriesRes.json(),
-  //       subcategoriesRes.json(),
-  //       menuItemsRes.json()
-  //     ]);
-  
-  //     // Firebase returns data as objects, convert them to arrays if necessary
-  //     // const categoriesArray = categoriesData ? Object.values(categoriesData) : [];
-  //     // const subcategoriesArray = subcategoriesData ? Object.values(subcategoriesData) : [];
-  //     // const menuItemsArray = menuItemsData ? Object.values(menuItemsData) : [];
-  
-  //     // setCategories(categoriesArray);
-  //     // setSubcategories(subcategoriesArray);
-  //     // setMenuItems(menuItemsArray);
-  //     setCategories(categoriesData);
-  //     setSubcategories(subcategoriesData);
-  //     setMenuItems(menuItemsData);
-  //   } catch (error) {
-  //     console.error('Error fetching data:', error);
-  //     message.error('Failed to fetch data');
-  //   }
-  //   setLoading(false);
-  // };
-
   const handleCreate = async (values) => {
     const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
     try {
-      const response = await fetch(`${API_URL}/${type}`, {
+      const response = await fetch(`${API_URL}/${type}.json`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
       });
       if (response.ok) {
-        fetchData();
+        const data = await response.json();
+        const newItem = { id: data.name, ...values, orgId: parseInt(orgId) };
+        updateLocalState(type, 'add', newItem);
         setIsModalVisible(false);
         form.resetFields();
         message.success('Item created successfully');
@@ -225,22 +191,20 @@ const MenuManagement = () => {
       if (!editingItem || !editingItem.id) {
         throw new Error('No item selected for update');
       }
-  
+
       const response = await fetch(`${API_URL}/${type}/${editingItem.id}.json`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to update item');
       }
-  
-      const updatedData = await response.json();
-      console.log('Update response:', updatedData);
-  
-      fetchData();
+
+      const updatedItem = { ...editingItem, ...values };
+      updateLocalState(type, 'update', updatedItem);
       setIsModalVisible(false);
       setEditingItem(null);
       form.resetFields();
@@ -257,15 +221,13 @@ const MenuManagement = () => {
       const response = await fetch(`${API_URL}/${type}/${id}.json`, {
         method: 'DELETE'
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to delete item');
       }
-  
-      console.log('Delete response:', await response.json());
-  
-      fetchData();
+
+      updateLocalState(type, 'delete', { id });
       message.success('Item deleted successfully');
     } catch (error) {
       console.error(`Error deleting ${type}:`, error);
@@ -273,94 +235,30 @@ const MenuManagement = () => {
     }
   };
 
-  // const handleUpdate = async (values) => {
-  //   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
-  //   try {
-  //     const response = await fetch(`${API_URL}/${type}/${editingItem.id}.json`, {
-  //       method: 'PATCH',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
-  //     });
-  //     if (response.ok) {
-  //       fetchData();
-  //       setIsModalVisible(false);
-  //       setEditingItem(null);
-  //       form.resetFields();
-  //       message.success('Item updated successfully');
-  //     } else {
-  //       throw new Error('Failed to update item');
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error updating ${type}:`, error);
-  //     message.error('Failed to update item');
-  //   }
-  // };
+  const updateLocalState = (type, action, item) => {
+    switch (type) {
+      case 'categories':
+        if (action === 'add') setCategories(prev => [...prev, item]);
+        else if (action === 'update') setCategories(prev => prev.map(c => c.id === item.id ? item : c));
+        else if (action === 'delete') setCategories(prev => prev.filter(c => c.id !== item.id));
+        break;
+      case 'subcategories':
+        if (action === 'add') setSubcategories(prev => [...prev, item]);
+        else if (action === 'update') setSubcategories(prev => prev.map(s => s.id === item.id ? item : s));
+        else if (action === 'delete') setSubcategories(prev => prev.filter(s => s.id !== item.id));
+        break;
+      case 'menu_items':
+        if (action === 'add') setMenuItems(prev => [...prev, item]);
+        else if (action === 'update') setMenuItems(prev => prev.map(m => m.id === item.id ? item : m));
+        else if (action === 'delete') setMenuItems(prev => prev.filter(m => m.id !== item.id));
+        break;
+    }
+  };
 
-// const handleDelete = async (id) => {
-//   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
-  
-//   Modal.confirm({
-//     title: 'Are you sure you want to delete this item?',
-//     content: 'This action cannot be undone.',
-//     okText: 'Yes',
-//     okType: 'danger',
-//     cancelText: 'No',
-//     onOk: async () => {
-//       try {
-//         const response = await fetch(`${API_URL}/${type}/${id}.json`, {
-//           method: 'DELETE'
-//         });
-//         if (response.ok) {
-//           fetchData();
-//           message.success('Item deleted successfully');
-//         } else {
-//           const errorData = await response.json();
-//           throw new Error(errorData.error || 'Failed to delete item');
-//         }
-//       } catch (error) {
-//         console.error(`Error deleting ${type}:`, error);
-//         message.error(`Failed to delete item: ${error.message}`);
-//       }
-//     },
-//   });
-// };
-
-  // const handleUpdate = async (values) => {
-  //   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
-  //   try {
-  //     const response = await fetch(`${API_URL}/${type}/${editingItem.id}`, {
-  //       method: 'PUT',
-  //       headers: { 'Content-Type': 'application/json' },
-  //       body: JSON.stringify({ ...values, orgId: parseInt(orgId) })
-  //     });
-  //     if (response.ok) {
-  //       fetchData();
-  //       setIsModalVisible(false);
-  //       setEditingItem(null);
-  //       form.resetFields();
-  //       message.success('Item updated successfully');
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error updating ${type}:`, error);
-  //     message.error('Failed to update item');
-  //   }
-  // };
-
-  // const handleDelete = async (id) => {
-  //   const type = activeTab === '1' ? 'categories' : activeTab === '2' ? 'subcategories' : 'menu_items';
-  //   try {
-  //     const response = await fetch(`${API_URL}/${type}/${id}`, {
-  //       method: 'DELETE'
-  //     });
-  //     if (response.ok) {
-  //       fetchData();
-  //       message.success('Item deleted successfully');
-  //     }
-  //   } catch (error) {
-  //     console.error(`Error deleting ${type}:`, error);
-  //     message.error('Failed to delete item');
-  //   }
-  // };
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    form.setFieldsValue({ subcategoryId: null });
+  };
 
   const columns = {
     categories: [
@@ -500,11 +398,11 @@ const MenuManagement = () => {
   return (
     <StyledLayout style={{marginTop: "100px"}}>
       <StyledHeader>
-        <Title level={3} style={{ color: '#ffffff', margin: 0 }}>Menu</Title>
-        <StyledMenu mode="horizontal" defaultSelectedKeys={[activeTab]}>
-          <Menu.Item key="1" onClick={() => setActiveTab('1')}>Categories</Menu.Item>
-          <Menu.Item key="2" onClick={() => setActiveTab('2')}>Subcategories</Menu.Item>
-          <Menu.Item key="3" onClick={() => setActiveTab('3')}>Menu Items</Menu.Item>
+        <Title level={3} style={{ color: '#ffffff', margin: 0 }}>Menu Management</Title>
+        <StyledMenu mode="horizontal" defaultSelectedKeys={[activeTab]} onSelect={({ key }) => setActiveTab(key)}>
+          <Menu.Item key="1">Categories</Menu.Item>
+          <Menu.Item key="2">Subcategories</Menu.Item>
+          <Menu.Item key="3">Menu Items</Menu.Item>
         </StyledMenu>
       </StyledHeader>
       <StyledContent>
@@ -518,10 +416,10 @@ const MenuManagement = () => {
           }}
           style={{ marginTop: 16 }}
         >
-          Add New
+          Add New {activeTab === '1' ? 'Category' : activeTab === '2' ? 'Subcategory' : 'Menu Item'}
         </StyledButton>
         <StyledModal
-          title={editingItem ? "Edit Item" : "Add New Item"}
+          title={editingItem ? `Edit ${activeTab === '1' ? 'Category' : activeTab === '2' ? 'Subcategory' : 'Menu Item'}` : `Add New ${activeTab === '1' ? 'Category' : activeTab === '2' ? 'Subcategory' : 'Menu Item'}`}
           visible={isModalVisible}
           onOk={() => form.submit()}
           onCancel={() => {

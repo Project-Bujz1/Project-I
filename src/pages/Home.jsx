@@ -13,38 +13,47 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
   const [searchResults, setSearchResults] = useState([]);
   
-  const orgId = localStorage.getItem('orgId'); // Get orgId from localStorage
+  const orgId = localStorage.getItem('orgId');
 
   useEffect(() => {
-    const orgId = localStorage.getItem('orgId');  // Retrieve the orgId from localStorage
-    
     if (orgId) {
       fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
-      .then((res) => res.json())
-            .then((data) => {
-                const matchedCategories = data.filter(category => category.orgId === parseInt(orgId));  // Filter categories by orgId
-                setCategories(matchedCategories);
-                setLoading((prev) => ({ ...prev, categories: false }));
-            });
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            const matchedCategories = Object.entries(data)
+              .map(([id, category]) => ({ id, ...category }))
+              .filter(category => category.orgId === parseInt(orgId));
+            setCategories(matchedCategories);
+          }
+          setLoading((prev) => ({ ...prev, categories: false }));
+        });
 
-            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json')
-            .then((res) => res.json())
-            .then((data) => {
-                const matchedSubcategories = data.filter(subcategory => subcategory.orgId === parseInt(orgId));  // Filter subcategories by orgId
-                setSubcategories(matchedSubcategories);
-                setLoading((prev) => ({ ...prev, subcategories: false }));
-            });
+      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            const matchedSubcategories = Object.entries(data)
+              .map(([id, subcategory]) => ({ id, ...subcategory }))
+              .filter(subcategory => subcategory.orgId === parseInt(orgId));
+            setSubcategories(matchedSubcategories);
+          }
+          setLoading((prev) => ({ ...prev, subcategories: false }));
+        });
 
-            fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json')
-            .then((res) => res.json())
-            .then((data) => {
-                const matchedMenuItems = data.filter(item => item.orgId === parseInt(orgId));  // Filter menu items by orgId
-                setMenuItems(matchedMenuItems);
-                setLoading((prev) => ({ ...prev, menuItems: false }));
-            });
+      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json')
+        .then((res) => res.json())
+        .then((data) => {
+          if (data) {
+            const matchedMenuItems = Object.entries(data)
+              .map(([id, item]) => ({ id, ...item }))
+              .filter(item => item.orgId === parseInt(orgId));
+            setMenuItems(matchedMenuItems);
+          }
+          setLoading((prev) => ({ ...prev, menuItems: false }));
+        });
     }
-}, []);
-
+  }, [orgId]);
 
   useEffect(() => {
     if (searchTerm) {
