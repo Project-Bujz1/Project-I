@@ -131,12 +131,12 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
               <Link to="/cart" onClick={onClose} style={{ fontSize: "20px" }}>Cart</Link>
             </Menu.Item>
             <Menu.Item
-              key="order-summary"
+              key="summary-view"
               icon={<FileTextOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
               className="menu-item"
               style={{margin:"20px"}}
             >
-              <Link to="/order-summary" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
+              <Link to="/summary-view" onClick={onClose} style={{ fontSize: "20px" }}>Order Summary</Link>
             </Menu.Item>
             <Menu.Item
               key="my-orders"
