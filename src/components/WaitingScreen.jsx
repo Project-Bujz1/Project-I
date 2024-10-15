@@ -345,23 +345,22 @@ const WaitingScreen = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
-        const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json?id=${orderId}&orgId=${orgId}`);
+        const orgId = localStorage.getItem('orgId');
+        const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
   
         if (!response.ok) {
           throw new Error('Failed to fetch order');
         }
   
         const data = await response.json();
-        const orderArray = Object.values(data); // Convert object to array
+        const ordersArray = Object.values(data || {});
+        const fetchedOrder = ordersArray.find(order => order.id === orderId);
   
-        if (orderArray.length === 0) {
+        if (!fetchedOrder) {
           throw new Error('Order not found');
         }
   
-        // Set the first order in the result, updating with the actual order number if different
-        const fetchedOrder = orderArray[0];
-        setOrder({ ...fetchedOrder, displayOrderId: fetchedOrder.orderNumber || orderId }); // Use fetched order number or fallback to URL parameter
+        setOrder({ ...fetchedOrder, displayOrderId: fetchedOrder.id || orderId });
       } catch (error) {
         console.error('Failed to fetch order', error);
         message.error('Failed to fetch order');
@@ -385,7 +384,7 @@ const WaitingScreen = () => {
       console.log('Received message:', event.data);
       const data = JSON.parse(event.data);
       if (data.type === 'statusUpdate' && data.orderId === orderId && data.orgId === localStorage.getItem('orgId')) {
-        const newStatus = data.status.toLowerCase().trim(); // Normalize status
+        const newStatus = data.status.toLowerCase().trim();
         const newStatusMessage = data.statusMessage;
         setOrder(prevOrder => ({ ...prevOrder, status: newStatus, statusMessage: newStatusMessage }));
         
@@ -412,6 +411,7 @@ const WaitingScreen = () => {
       }
     };
   }, [orderId, soundEnabled]);
+
   
 
   const getStatusIcon = (status) => {
