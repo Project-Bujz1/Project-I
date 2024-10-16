@@ -155,15 +155,27 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           <>
             <Menu.Item
               key="admin"
-              icon={<UserOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              icon={
+                <img 
+                src={process.env.PUBLIC_URL + '/assets/restaurant.png'} 
+                alt="Orders Icon" 
+                  style={{ width: "30px", height: "30px" }} 
+                />
+              }
               className="menu-item"
               style={{ margin: "20px" }}
             >
-              <Link to="/admin" onClick={onClose} style={{ fontSize: "20px" }}>Admin</Link>
+              <Link to="/admin" onClick={onClose} style={{ fontSize: "20px" }}>Order Management</Link>
             </Menu.Item>
             <Menu.Item
               key="menu-management"
-              icon={<AppstoreOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              icon={
+                <img 
+                src={process.env.PUBLIC_URL + '/assets/menu.png'} 
+                alt="Orders Icon" 
+                  style={{ width: "30px", height: "30px" }} 
+                />
+              }    
               className="menu-item"
               style={{ margin: "20px" }}
             >
@@ -171,7 +183,13 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
             </Menu.Item>
             <Menu.Item
               key="management"
-              icon={<MdRestaurant style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              icon={
+                <img 
+                src={process.env.PUBLIC_URL + '/assets/menu-management.png'} 
+                alt="Orders Icon" 
+                  style={{ width: "30px", height: "30px" }} 
+                />
+              } 
               className="menu-item"
               style={{ margin: "20px" }}
             >
@@ -179,7 +197,13 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
             </Menu.Item>
             <Menu.Item
           key="dashboard"
-          icon={<LuLayoutDashboard style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          icon={
+            <img 
+            src={process.env.PUBLIC_URL + '/assets/business.png'} 
+            alt="Orders Icon" 
+              style={{ width: "30px", height: "30px" }} 
+            />
+          } 
           className="menu-item"
           style={{ margin: "20px" }}
         >
@@ -188,7 +212,13 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
 
             <Menu.Item
           key="order-history"
-          icon={<HistoryOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+          icon={
+            <img 
+            src={process.env.PUBLIC_URL + '/assets/time.png'} 
+            alt="Orders Icon" 
+              style={{ width: "30px", height: "30px" }} 
+            />
+          } 
           className="menu-item"
           style={{ margin: "20px" }}
         >
