@@ -60,20 +60,20 @@ function BillSummary() {
     }
 
     const doc = new jsPDF();
-    
+
     // Styling constants
     const pageWidth = doc.internal.pageSize.width;
     const margin = 15;
     const col1 = margin;
     const col2 = pageWidth - margin;
     let yPos = margin;
-
+    
     // Add restaurant logo
     if (restaurantInfo.logo) {
       doc.addImage(restaurantInfo.logo, 'PNG', margin, yPos, 50, 20);
       yPos += 25;
     }
-
+    
     // Header
     doc.setFontSize(24);
     doc.setFont('helvetica', 'bold');
@@ -92,7 +92,7 @@ function BillSummary() {
     doc.text(`Tel: ${restaurantInfo.phone || 'N/A'}`, pageWidth / 2, yPos, { align: 'center' });
     yPos += 5;
     doc.text(`Email: ${restaurantInfo.email || 'N/A'}`, pageWidth / 2, yPos, { align: 'center' });
-
+    
     // Bill details
     yPos += 15;
     doc.setDrawColor(0); // Black lines
@@ -104,12 +104,15 @@ function BillSummary() {
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString();
     const formattedTime = currentDate.toLocaleTimeString();
-    doc.text(`Invoice No: ${invoiceNumber}`, col1, yPos);
-    yPos += 7;
     const tableNumber = localStorage.getItem('tableNumber') || 'N/A'; // Fetch tableNumber from localStorage, default to 'N/A' if not found
-    doc.text(`Table No: ${tableNumber}`, col1, yPos);
-        doc.text(`Date: ${formattedDate}`, col2, yPos, { align: 'right' });
+    
+    // Align Invoice No, Date, and Payment Status on the same row
+    doc.text(`Invoice No: ${invoiceNumber}`, col1, yPos);
+    doc.text(`Date: ${formattedDate}`, pageWidth / 2, yPos, { align: 'center' });
+    doc.text('Payment Status: Unpaid', col2, yPos, { align: 'right' });
+    
     yPos += 7;
+    doc.text(`Table No: ${tableNumber}`, col1, yPos);
     doc.text(`Time: ${formattedTime}`, col2, yPos, { align: 'right' });
     
     // Items table
@@ -121,7 +124,7 @@ function BillSummary() {
       `₹${item.price.toFixed(2)}`,
       `₹${(item.price * item.quantity).toFixed(2)}`
     ]);
-
+    
     doc.autoTable({
       startY: yPos,
       head: headers,
@@ -146,13 +149,13 @@ function BillSummary() {
         3: { cellWidth: 40, halign: 'right' }
       }
     });
-
+    
     // Total
     yPos = doc.lastAutoTable.finalY + 10;
     doc.setFont('helvetica', 'bold');
     doc.text('Total:', col2 - 60, yPos);
     doc.text(`₹${total.toFixed(2)}`, col2, yPos, { align: 'right' });
-
+    
     // Footer
     yPos = doc.internal.pageSize.height - 30;
     doc.setFont('helvetica', 'normal');
@@ -160,15 +163,14 @@ function BillSummary() {
     doc.text('Thank you for your business!', pageWidth / 2, yPos, { align: 'center' });
     yPos += 5;
     doc.text('This is a computer-generated document. No signature required.', pageWidth / 2, yPos, { align: 'center' });
-
+    
     // Generate filename with restaurant name, date and time
     const dateStr = currentDate.toISOString().split('T')[0];
     const timeStr = currentDate.toTimeString().split(' ')[0].replace(/:/g, '-');
     const fileName = `${restaurantInfo.name.replace(/\s+/g, '_')}_${dateStr}_${timeStr}.pdf`;
-
+    
     doc.save(fileName);
-  };
-
+  }; 
   return (
     <Card 
       className="bill-summary-container"
