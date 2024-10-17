@@ -3,9 +3,10 @@ import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
 import FoodLoader from './FoodLoader';
+import { Tooltip } from 'antd';
 
 function MenuItem({ item, onItemAdded }) {
-  const { cart, addToCart, updateQuantity, removeFromCart,  } = useCart();
+  const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartIconRef = useCartIcon();
   const [quantity, setQuantity] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
@@ -49,11 +50,10 @@ function MenuItem({ item, onItemAdded }) {
       updateQuantity(item.id, quantity - 1);
       setQuantity(quantity - 1);
     } else if (quantity === 1) {
-      removeFromCart(item.id);  // Remove item from cart if quantity is 0
+      removeFromCart(item.id);
       setQuantity(0);
     }
   };
-  
 
   const handleAnimationComplete = () => {
     setShowAnimation(false);
@@ -64,7 +64,7 @@ function MenuItem({ item, onItemAdded }) {
       const rect = cartIconRef.current.getBoundingClientRect();
       return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
     }
-    return { x: window.innerWidth - 60, y: 40 }; // Fallback position
+    return { x: window.innerWidth - 60, y: 40 };
   };
 
   const handleImageLoad = () => {
@@ -132,11 +132,11 @@ function MenuItem({ item, onItemAdded }) {
     },
     addToCartBtn: {
       padding: '8px 15px',
-      background: 'red',
+      background: item.isAvailable ? 'red' : '#ccc',
       color: 'white',
       border: 'none',
       borderRadius: '4px',
-      cursor: 'pointer',
+      cursor: item.isAvailable ? 'pointer' : 'not-allowed',
       fontSize: '14px',
     },
   };
@@ -164,9 +164,15 @@ function MenuItem({ item, onItemAdded }) {
               <button onClick={handleIncreaseQuantity} style={styles.quantityBtn}>+</button>
             </div>
           ) : (
-            <button onClick={handleAddToCart} style={styles.addToCartBtn}>
-              Add to Cart
-            </button>
+            <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
+              <button
+                onClick={item.isAvailable ? handleAddToCart : undefined}
+                style={styles.addToCartBtn}
+                disabled={!item.isAvailable}
+              >
+                Add to Cart
+              </button>
+            </Tooltip>
           )}
         </div>
       </div>
