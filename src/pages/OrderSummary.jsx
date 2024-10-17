@@ -226,12 +226,12 @@ function OrderSummary() {
           <span>₹{total.toFixed(2)}</span>
         </div>
       </div>
-      <Input
+      {/* <Input
         placeholder={`Enter Table Number (1-${seatingCapacity})`}
         value={tableNumber}
         onChange={handleTableNumberChange}
         style={{ marginBottom: '10px' }}
-      />
+      /> */}
 
       <button className="pay-button" onClick={handlePayClick}>
         Confirm Order
