@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { useCart } from '../contexts/CartContext';
-import OrderConfirmation from '../components/OrderConfirmation';
 import { useNavigate } from 'react-router-dom';
 
 function Cart() {
@@ -11,20 +10,47 @@ function Cart() {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handlePlaceOrder = () => {
-    // Simulate saving the order and redirecting to the confirmation page
     setOrderPlaced(true);
-    navigate('/order-summary'); // Redirect to order summary page
+    navigate('/order-summary');
   };
 
-  const handleAddMoreItems = () => {
-    navigate('/home'); // Redirect to home page
+  const handleBrowseMenu = () => {
+    navigate('/home');
   };
 
   return (
     <div className="cart-container" style={{ marginTop: '115px' }}>
       <h2 className="cart-title">Your Cart</h2>
       {cart.length === 0 ? (
-        <p className="empty-cart-message">Your cart is empty.</p>
+        <div
+  className="empty-cart"
+  style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '200px', // You can adjust the height as needed
+    textAlign: 'center'
+  }}
+>
+  <p className="empty-cart-message">Your cart is empty.</p>
+  <button
+    onClick={handleBrowseMenu}
+    className="browse-menu-button"
+    style={{
+      backgroundColor: 'red',
+      color: '#fff',
+      padding: '10px 20px',
+      border: 'none',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      marginTop: '10px'
+    }}
+  >
+    Browse Menu
+  </button>
+</div>
+
       ) : (
         <>
           {cart.map((item) => (
@@ -36,7 +62,7 @@ function Cart() {
               </div>
               <div className="item-actions" style={{ marginLeft: 'auto' }}>
                 <button
-                  onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
                   className="quantity-button"
                   style={{ marginRight: '10px' }}
                 >
@@ -86,7 +112,7 @@ function Cart() {
                 Place Order
               </button>
               <button
-                onClick={handleAddMoreItems}
+                onClick={() => navigate('/home')}
                 className="cart-button"
                 style={{
                   backgroundColor: 'red',
