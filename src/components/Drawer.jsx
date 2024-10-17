@@ -116,11 +116,17 @@ const RestaurantDrawer = ({ isOpen, onClose }) => {
           <>
             <Menu.Item
               key="home"
-              icon={<HomeOutlined style={{ fontWeight: 'bold', fontSize: "24px" }} />}
+              icon={
+                <img 
+                src={process.env.PUBLIC_URL + '/assets/menu.png'} 
+                alt="Orders Icon" 
+                  style={{ width: "24px", height: "24px" }} 
+                />
+              }  
               className="menu-item"
               style={{ margin: "20px" }}
             >
-              <Link to="/home" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Home</Link>
+              <Link to="/home" onClick={onClose} style={{ fontWeight: 'bold', fontSize: "20px" }}>Menu</Link>
             </Menu.Item>
             <Menu.Item
               key="cart"
