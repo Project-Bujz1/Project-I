@@ -467,7 +467,7 @@
 
 
     return (
-      <Layout style={{ minHeight: '100vh', backgroundColor: '#f0f2f5' }}>
+      <Layout style={{ minHeight: '100vh', backgroundColor: '#f0f2f5', marginTop : "100PX" }}>
         <Sider
           width={250}
           style={{
