@@ -664,9 +664,10 @@ const WaitingScreen = () => {
   const { clearCart } = useCart();
   const [order, setOrder] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [confirmCancelVisible, setConfirmCancelVisible] = useState(false); // State for confirmation modal
   const ws = useRef(null);
@@ -745,18 +746,18 @@ const WaitingScreen = () => {
   
 
   const getStatusIcon = (status) => {
-    switch(status) {
-      case 'pending': 
+    switch (status) {
+      case 'pending':
         return <ClockCircleOutlined style={{ fontSize: '48px', color: '#faad14' }} />;
-      case 'preparing': 
+      case 'preparing':
         return <SyncOutlined spin style={{ fontSize: '48px', color: '#1890ff' }} />;
-      case 'ready': 
+      case 'ready':
         return <CheckOutlined style={{ fontSize: '48px', color: '#52c41a' }} />;
-      case 'delayed': 
+      case 'delayed':
         return <ExclamationCircleOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />;
-        case 'completed': 
+      case 'completed':
         return <CheckOutlined style={{ fontSize: '48px', color: '#52c41a' }} />;
-      default: 
+      default:
         console.warn(`Unknown status: ${status}`);
         return <QuestionOutlined style={{ fontSize: '48px', color: '#8c8c8c' }} />;
     }
@@ -786,19 +787,19 @@ const WaitingScreen = () => {
       const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history/${orderId}.json`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           status: 'cancelled',
           statusMessage: 'Your order has been cancelled',
           orgId: orgId,
         }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to cancel the order');
       }
-  
+
       setOrder(prevOrder => ({ ...prevOrder, status: 'cancelled', statusMessage: 'Your order has been cancelled' }));
-  
+
       // Send WebSocket message to notify admin
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
         const message = JSON.stringify({
@@ -810,16 +811,14 @@ const WaitingScreen = () => {
         });
         ws.current.send(message);
       }
-  
-      message.success('Order has been cancelled successfully');
+
       clearCart(); // Clear the cart when order is cancelled
-      navigate(`/home/`);
+      setCancelModalVisible(true); // Show cancel modal
     } catch (error) {
       console.error('Failed to cancel the order', error);
       message.error('Failed to cancel the order. Please try again.');
     }
   };
-
   const handleCompleteOrder = () => {
     clearCart(); // Clear the cart when order is completed
     setIsModalVisible(true);
@@ -857,6 +856,10 @@ const WaitingScreen = () => {
       console.error('Failed to save feedback', error);
       message.error('Failed to submit feedback. Please try again.');
     }
+  }
+  const handleCancelModalClose = () => {
+    setCancelModalVisible(false);
+    navigate(`/home/`);
   };
 
   if (loading) {
@@ -912,7 +915,7 @@ const WaitingScreen = () => {
         <Title level={4} style={{ marginTop: '16px', color: '#343a40' }}>{order.statusMessage}</Title>
         <Text type="secondary" style={{ color: '#6c757d' }}>We'll notify you when your order status changes</Text>
         <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <Tooltip title="Cancel your order" placement="bottom">
+        <Tooltip title="Cancel your order" placement="bottom">
             <Button
               icon={<CloseOutlined />}
               onClick={handleCancelOrder} // Show confirmation modal
@@ -999,6 +1002,34 @@ const WaitingScreen = () => {
         bodyStyle={{ backgroundColor: '#fff5f5', color: '#ff4d4f', textAlign: 'center' }}
       >
                 <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>Are you sure you want to cancel your order?</p>
+      </Modal>
+      {/* Modal for cancellation confirmation */}
+      <Modal
+                title={
+                  <div style={{ display: 'flex', alignItems: 'center', color: '#ff4d4f' }}>
+                    <CheckCircleOutlined style={{ marginRight: '8px' }} />
+                    Cancellation Confirmation
+                  </div>
+                }
+        visible={cancelModalVisible}
+        onOk={handleCancelModalClose}
+        onCancel={handleCancelModalClose}
+        footer={null}
+        centered
+        closable={false}
+        style={{ backdropFilter: 'blur(5px)' }} // Optional for blurred background
+      >
+        <div style={{ textAlign: 'center' }}>
+          <CheckCircleOutlined style={{ fontSize: '48px', color: '#52c41a' }} />
+          <Title level={4} style={{ marginTop: '16px' }}>Cancelled successfully</Title>
+          <Text>Your order has been cancelled successfully.</Text>
+          <div style={{ marginTop: '20px' }}>
+            <Button type="primary" onClick={handleCancelModalClose}             style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
+ >
+              Go to Home
+            </Button>
+          </div>
+        </div>
       </Modal>
     </div>
   );
