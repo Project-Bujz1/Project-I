@@ -59,6 +59,7 @@ const MenuManagement = () => {
   const [siderCollapsed, setSiderCollapsed] = useState(window.innerWidth <= 768);
   const [drawerVisible, setDrawerVisible] = useState(false);
     const [imageInputType, setImageInputType] = useState('url');
+    const [showFilters, setShowFilters] = useState(false); // State to manage filter visibility
   
   // Add new state variables for search and filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -1228,12 +1229,11 @@ const CategoryCard = ({ item, type }) => (
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
+      {/* Sider and Drawer Implementation */}
       {window.innerWidth > 768 ? (
         <Sider
           width={250}
-          // collapsible
           collapsed={siderCollapsed}
-          // onCollapse={setSiderCollapsed}
           style={{
             background: '#fff',
             boxShadow: '2px 0 8px rgba(0,0,0,0.06)',
@@ -1257,11 +1257,10 @@ const CategoryCard = ({ item, type }) => (
         </Drawer>
       )}
 
-      <Layout style={{ marginLeft: window.innerWidth > 768 ? (siderCollapsed ? 80 : 250) : 0, marginTop: '100px' }}>
+      <Layout style={{ marginLeft: window.innerWidth > 768 ? (siderCollapsed ? 80 : 250) : 0, marginTop: '70px' }}>
         <Content style={{ margin: '24px', overflow: 'initial' }}>
-          {/* Add SearchAndFilters component when viewing menu items */}
-          {activeTab === 'menu_items' && <SearchAndFilters />}
-          
+          {activeTab === 'menu_items' && showFilters && <SearchAndFilters />}
+
           <Card
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1269,28 +1268,29 @@ const CategoryCard = ({ item, type }) => (
                   <Button icon={<MenuOutlined />} onClick={() => setDrawerVisible(true)} />
                 )}
                 <Title level={4} style={{ margin: 0 }}>
-                  {activeTab === 'menu_items'
-                    ? 'Menu Items'
-                    : activeTab === 'categories'
-                    ? 'Categories'
-                    : 'Subcategories'}
+                  {activeTab === 'menu_items' ? 'Menu Items' : activeTab === 'categories' ? 'Categories' : 'Subcategories'}
                 </Title>
-                <Button
-                  type='primary'
-                  icon={<PlusOutlined />}
-                  onClick={() => {
-                    setEditingItem(null);
-                    form.resetFields();
-                    setIsModalVisible(true);
-                  }}
-                  style={{
-                    backgroundColor: '#ff4d4f',
-                    borderColor: '#ff4d4f',
-                    borderRadius: '6px',
-                  }}
-                >
-                  Add New
-                </Button>
+                <div>
+                  <Button onClick={() => setShowFilters(!showFilters)} style={{ marginRight: 10 }}>
+                    {showFilters ? 'Hide Filters' : 'Show Filters'}
+                  </Button>
+                  <Button
+                    type='primary'
+                    icon={<PlusOutlined />}
+                    onClick={() => {
+                      setEditingItem(null);
+                      form.resetFields();
+                      setIsModalVisible(true);
+                    }}
+                    style={{
+                      backgroundColor: '#ff4d4f',
+                      borderColor: '#ff4d4f',
+                      borderRadius: '6px',
+                    }}
+                  >
+                    Add New
+                  </Button>
+                </div>
               </div>
             }
             style={{ borderRadius: '12px', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}
@@ -1373,5 +1373,6 @@ const CategoryCard = ({ item, type }) => (
     </Layout>
   );
 };
+
 
 export default MenuManagement;
