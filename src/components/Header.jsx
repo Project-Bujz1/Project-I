@@ -183,12 +183,12 @@ function Header({ toggleDrawer, onSearch }) {
                 </Tooltip>
               </>
             )}
-            <Tooltip title="Sign Out">
+           {role !== 'customer' && <Tooltip title="Sign Out">
               <IoPowerSharp
                 onClick={handleSignOut} 
                 className="header__icon"
               />
-            </Tooltip>
+            </Tooltip>}
           </div>
         </div>
       </div>
