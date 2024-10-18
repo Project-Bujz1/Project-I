@@ -17,7 +17,9 @@ import {
   Row,
   Col,
   Empty,
+  Radio,
   Drawer,
+  Upload
 } from 'antd';
 import {
   PlusOutlined,
@@ -51,6 +53,8 @@ const MenuManagement = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [siderCollapsed, setSiderCollapsed] = useState(window.innerWidth <= 768);
   const [drawerVisible, setDrawerVisible] = useState(false);
+    const [imageInputType, setImageInputType] = useState('url'); // 'url' or 'upload'
+
 
   // Get orgId from localStorage
   const orgId = localStorage.getItem('orgId');
@@ -148,145 +152,202 @@ const MenuManagement = () => {
 
   };
 
-
-
-  const handleCreate = async values => {
-
-    const type =
-
-      activeTab === 'categories'
-
-        ? 'categories'
-
-        : activeTab === 'subcategories'
-
-        ? 'subcategories'
-
-        : 'menu_items';
-
-    try {
-
-      const response = await fetch(`${API_URL}/${type}.json`, {
-
-        method: 'POST',
-
-        headers: { 'Content-Type': 'application/json' },
-
-        body: JSON.stringify({ ...values, orgId: parseInt(orgId) }),
-
-      });
-
-      if (response.ok) {
-
-        const data = await response.json();
-
-        const newItem = {
-
-          firebaseId: data.name,
-
-          ...values,
-
-          orgId: parseInt(orgId),
-
+// Also update the handleCreate function to properly handle both image types
+const handleCreate = async values => {
+  const type = activeTab === 'categories'
+    ? 'categories'
+    : activeTab === 'subcategories'
+    ? 'subcategories'
+    : 'menu_items';
+    
+  try {
+    // Handle image data for menu items
+    let imageData;
+    if (type === 'menu_items') {
+      if (imageInputType === 'url') {
+        imageData = values.imageUrl;
+      } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
+        imageData = {
+          file: {
+            url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
+            name: values.imageUpload[0].name
+          }
         };
-
-        updateLocalState(type, 'add', newItem);
-
-        setIsModalVisible(false);
-
-        form.resetFields();
-
-        message.success('Item created successfully');
-
       }
-
-    } catch (error) {
-
-      console.error(`Error creating ${type}:`, error);
-
-      message.error('Failed to create item');
-
     }
 
-  };
+    const dataToCreate = {
+      ...values,
+      image: imageData,
+      orgId: parseInt(orgId)
+    };
+
+    // Remove unnecessary fields
+    delete dataToCreate.imageUrl;
+    delete dataToCreate.imageUpload;
+
+    const response = await fetch(`${API_URL}/${type}.json`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dataToCreate),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const newItem = {
+        firebaseId: data.name,
+        ...dataToCreate,
+      };
+      updateLocalState(type, 'add', newItem);
+      setIsModalVisible(false);
+      form.resetFields();
+      message.success('Item created successfully');
+    }
+  } catch (error) {
+    console.error(`Error creating ${type}:`, error);
+    message.error('Failed to create item');
+  }
+};
+
+  // const handleCreate = async values => {
+
+  //   const type =
+
+  //     activeTab === 'categories'
+
+  //       ? 'categories'
+
+  //       : activeTab === 'subcategories'
+
+  //       ? 'subcategories'
+
+  //       : 'menu_items';
+
+  //   try {
+
+  //     const response = await fetch(`${API_URL}/${type}.json`, {
+
+  //       method: 'POST',
+
+  //       headers: { 'Content-Type': 'application/json' },
+
+  //       body: JSON.stringify({ ...values, orgId: parseInt(orgId) }),
+
+  //     });
+
+  //     if (response.ok) {
+
+  //       const data = await response.json();
+
+  //       const newItem = {
+
+  //         firebaseId: data.name,
+
+  //         ...values,
+
+  //         orgId: parseInt(orgId),
+
+  //       };
+
+  //       updateLocalState(type, 'add', newItem);
+
+  //       setIsModalVisible(false);
+
+  //       form.resetFields();
+
+  //       message.success('Item created successfully');
+
+  //     }
+
+  //   } catch (error) {
+
+  //     console.error(`Error creating ${type}:`, error);
+
+  //     message.error('Failed to create item');
+
+  //   }
+
+  // };
 
 
 
   const handleUpdate = async values => {
-
-    const type =
-
-      activeTab === 'categories'
-
-        ? 'categories'
-
-        : activeTab === 'subcategories'
-
-        ? 'subcategories'
-
-        : 'menu_items';
-
+    const type = activeTab === 'categories'
+      ? 'categories'
+      : activeTab === 'subcategories'
+      ? 'subcategories'
+      : 'menu_items';
+      
     try {
-
       if (!editingItem || !editingItem.firebaseId) {
-
         throw new Error('No item selected for update');
-
       }
-
-
-
-      const response = await fetch(
-
-        `${API_URL}/${type}/${editingItem.firebaseId}.json`,
-
-        {
-
-          method: 'PATCH',
-
-          headers: { 'Content-Type': 'application/json' },
-
-          body: JSON.stringify({ ...values, orgId: parseInt(orgId) }),
-
+  
+      // Handle image data based on input type
+      let imageData;
+      if (type === 'menu_items') {
+        if (imageInputType === 'url') {
+          imageData = values.imageUrl;
+        } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
+          imageData = {
+            file: {
+              url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
+              name: values.imageUpload[0].name
+            }
+          };
         }
-
-      );
-
-
-
-      if (!response.ok) {
-
-        const errorData = await response.json();
-
-        throw new Error(errorData.error || 'Failed to update item');
-
       }
-
-
-
-      const updatedItem = { ...editingItem, ...values, orgId: parseInt(orgId) };
-
+  
+      const dataToUpdate = {
+        ...values,
+        image: imageData,
+        orgId: parseInt(orgId)
+      };
+  
+      // Remove unnecessary fields
+      delete dataToUpdate.imageUrl;
+      delete dataToUpdate.imageUpload;
+  
+      const response = await fetch(
+        `${API_URL}/${type}/${editingItem.firebaseId}.json`,
+        {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dataToUpdate),
+        }
+      );
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to update item');
+      }
+  
+      const updatedItem = { ...editingItem, ...dataToUpdate };
       updateLocalState(type, 'update', updatedItem);
-
       setIsModalVisible(false);
-
       setEditingItem(null);
-
       form.resetFields();
-
       message.success('Item updated successfully');
-
     } catch (error) {
-
       console.error(`Error updating ${type}:`, error);
-
       message.error(`Failed to update item: ${error.message}`);
-
     }
-
   };
 
-
+  // Helper function to get the correct image URL
+  const getImageUrl = (imageData) => {
+    if (!imageData) return '/api/placeholder/80/80';
+    
+    if (typeof imageData === 'string') {
+      return imageData; // Direct URL
+    }
+    
+    if (imageData.file && imageData.file.url) {
+      return imageData.file.url; // Uploaded file URL
+    }
+    
+    return '/api/placeholder/80/80'; // Fallback
+  };
 
   const handleDelete = async firebaseId => {
 
@@ -692,88 +753,122 @@ const MenuManagement = () => {
 
 
   const MenuItem = ({ item }) => (
-    <Card
-      hoverable
-      className='menu-item-card'
-      style={{
-        marginBottom: '16px',
-        borderRadius: '12px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-      }}
-      actions={[
-        <Tooltip title='Edit'>
-          <EditOutlined
-            key='edit'
-            onClick={(e) => {
-              e.stopPropagation();
-              setEditingItem(item);
-              form.setFieldsValue(item);
-              setIsModalVisible(true);
-            }}
-            style={{ color: '#1890ff' }}
-          />
-        </Tooltip>,
-        <Tooltip title='Delete'>
-          <DeleteOutlined
-            key='delete'
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDelete(item.firebaseId);
-            }}
-            style={{ color: '#ff4d4f' }}
-          />
-        </Tooltip>,
-      ]}
-    >
-      <div style={{ padding: '12px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-            <img
-              src={item.image || '/api/placeholder/80/80'}
-              alt={item.name}
-              style={{
-                width: '80px',
-                height: '80px',
-                objectFit: 'cover',
-                borderRadius: '8px',
-                border: '1px solid #f0f0f0',
-              }}
-            />
-            <div style={{ flex: 1 }}>
-              <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>
-                {item.name}
-              </Text>
-              <Text type='secondary' style={{ fontSize: '14px' }}>
-                {categories.find((c) => c.firebaseId === item.categoryId)?.name} →{' '}
-                {subcategories.find((s) => s.firebaseId === item.subcategoryId)?.name}
-              </Text>
-            </div>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={{ color: '#ff4d4f', fontSize: '18px', fontWeight: 'bold' }}>
-              ₹{item.price}
-            </Text>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Switch
-                checked={item.isAvailable}
-                onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
-                style={{ backgroundColor: item.isAvailable ? '#52c41a' : '#f5f5f5' }}
-              />
-              <Badge
-                status={item.isAvailable ? 'success' : 'error'}
-                text={item.isAvailable ? 'Available' : 'Unavailable'}
-              />
-            </div>
-          </div>
-        </div>
-        {item.description && (
-          <Text type='secondary' style={{ display: 'block', marginTop: '8px' }}>
-            {item.description}
+<Card
+  hoverable
+  className="menu-item-card"
+  style={{
+    marginBottom: '16px',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+  }}
+  actions={[
+    <Tooltip title="Edit">
+      <EditOutlined
+        key="edit"
+        onClick={(e) => {
+          e.stopPropagation();
+          setEditingItem(item);
+          if (typeof item.image === 'string') {
+            setImageInputType('url');
+            form.setFieldsValue({
+              ...item,
+              imageUrl: item.image // Set the URL in the imageUrl field
+            });
+          } else if (item.image?.file) {
+            setImageInputType('upload');
+            form.setFieldsValue({
+              ...item,
+              imageUpload: [{
+                uid: '-1',
+                name: 'current-image',
+                status: 'done',
+                url: item.image.file.url
+              }]
+            });
+          }
+          else {
+            // No image case
+            setImageInputType('url');
+            form.setFieldsValue({
+              ...item,
+              imageUrl: ''
+            });
+          }
+          setIsModalVisible(true);
+        }}
+        style={{ color: '#1890ff' }}
+      />
+    </Tooltip>,
+    <Tooltip title="Delete">
+      <DeleteOutlined
+        key="delete"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleDelete(item.firebaseId);
+        }}
+        style={{ color: '#ff4d4f' }}
+      />
+    </Tooltip>,
+  ]}
+>
+  <div style={{ padding: '12px' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+        <img
+          // src={
+          //   typeof item.image === 'string'
+          //     ? item.image // Image is a URL
+          //     : item.image?.file?.url || '/api/placeholder/80/80' // Image is a file object or fallback
+          // }
+          src={getImageUrl(item.image)}
+          alt={item.name}
+          style={{
+            width: '80px',
+            height: '80px',
+            objectFit: 'cover',
+            borderRadius: '8px',
+            border: '1px solid #f0f0f0',
+          }}
+          onError={(e) => {
+            e.target.src = '/api/placeholder/80/80';
+          }}
+        />
+        <div style={{ flex: 1 }}>
+          <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>
+            {item.name}
           </Text>
-        )}
+          <Text type="secondary" style={{ fontSize: '14px' }}>
+            {categories.find((c) => c.firebaseId === item.categoryId)?.name} →{' '}
+            {subcategories.find((s) => s.firebaseId === item.subcategoryId)?.name}
+          </Text>
+        </div>
       </div>
-    </Card>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Text style={{ color: '#ff4d4f', fontSize: '18px', fontWeight: 'bold' }}>
+          ₹{item.price}
+        </Text>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Switch
+            checked={item.isAvailable}
+            onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
+            style={{ backgroundColor: item.isAvailable ? '#52c41a' : '#f5f5f5' }}
+          />
+          <Badge
+            status={item.isAvailable ? 'success' : 'error'}
+            text={item.isAvailable ? 'Available' : 'Unavailable'}
+          />
+        </div>
+      </div>
+    </div>
+    {item.description && (
+      <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
+        {item.description}
+      </Text>
+    )}
+  </div>
+</Card>
+
   );
 
   const CategoryCard = ({ item, type }) => (
@@ -824,18 +919,20 @@ const MenuManagement = () => {
       </div>
     </Card>
   );
-
-  const renderFormItems = () => {
+  
+  const renderFormItems = () => {  
+    const handleImageInputTypeChange = (e) => {
+      setImageInputType(e.target.value);
+    };
+  
     switch (activeTab) {
       case 'categories':
         return (
           <>
             <Form.Item
-              name='name'
-              label='Category Name'
-              rules={[
-                { required: true, message: 'Please input the category name!' },
-              ]}
+              name="name"
+              label="Category Name"
+              rules={[{ required: true, message: 'Please input the category name!' }]}
             >
               <Input />
             </Form.Item>
@@ -845,25 +942,20 @@ const MenuManagement = () => {
         return (
           <>
             <Form.Item
-              name='name'
-              label='Subcategory Name'
-              rules={[
-                {
-                  required: true,
-                  message: 'Please input the subcategory name!',
-                },
-              ]}
+              name="name"
+              label="Subcategory Name"
+              rules={[{ required: true, message: 'Please input the subcategory name!' }]}
             >
               <Input />
             </Form.Item>
             <Form.Item
-              name='categoryId'
-              label='Category'
+              name="categoryId"
+              label="Category"
               rules={[{ required: true, message: 'Please select a category!' }]}
             >
               <Select onChange={handleCategoryChange}>
-                {categories.map(category => (
-                  <Option key={category.firebaseId} value={category.firebaseId}>
+                {categories.map((category) => (
+                  <Option key={category.id} value={category.id}>
                     {category.name}
                   </Option>
                 ))}
@@ -875,61 +967,90 @@ const MenuManagement = () => {
         return (
           <>
             <Form.Item
-              name='name'
-              label='Item Name'
-              rules={[
-                { required: true, message: 'Please input the item name!' },
-              ]}
+              name="name"
+              label="Item Name"
+              rules={[{ required: true, message: 'Please input the item name!' }]}
             >
               <Input />
             </Form.Item>
-            <Form.Item name='description' label='Description'>
-              <TextArea rows={4} />
+            <Form.Item
+              name="description"
+              label="Description"
+            >
+              <Input.TextArea rows={4} />
             </Form.Item>
             <Form.Item
-              name='price'
-              label='Price'
+              name="price"
+              label="Price"
               rules={[{ required: true, message: 'Please input the price!' }]}
             >
-              <Input type='number' prefix='₹' />
+              <Input type="number" prefix="₹" />
             </Form.Item>
+            {/* Image Input Type Selection */}
+            <Form.Item label="Image Input Type">
+              <Radio.Group onChange={handleImageInputTypeChange} value={imageInputType}>
+                <Radio value="url">Provide URL</Radio>
+                <Radio value="upload">Upload from System</Radio>
+              </Radio.Group>
+            </Form.Item>
+            {/* Conditional Rendering Based on Image Input Type */}
+            {imageInputType === 'url' ? (
+              <Form.Item
+                name="imageUrl"
+                label="Image URL"
+                rules={[{ required: true, message: 'Please provide the image URL!' }]}
+              >
+                <Input />
+              </Form.Item>
+            ) : (
+              <Form.Item
+                name="imageUpload"
+                label="Upload Image"
+                valuePropName="fileList"
+                getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+                rules={[{ required: true, message: 'Please upload the image!' }]}
+              >
+                <Upload
+                  name="image"
+                  listType="picture"
+                  beforeUpload={() => false} // Prevent automatic upload
+                >
+                  <Button>Click to Upload</Button>
+                </Upload>
+              </Form.Item>
+            )}
             <Form.Item
-              name='categoryId'
-              label='Category'
+              name="categoryId"
+              label="Category"
               rules={[{ required: true, message: 'Please select a category!' }]}
             >
               <Select onChange={handleCategoryChange}>
-                {categories.map(category => (
-                  <Option key={category.firebaseId} value={category.firebaseId}>
+                {categories.map((category) => (
+                  <Option key={category.id} value={category.id}>
                     {category.name}
                   </Option>
                 ))}
               </Select>
             </Form.Item>
             <Form.Item
-              name='subcategoryId'
-              label='Subcategory'
-              rules={[
-                { required: true, message: 'Please select a subcategory!' },
-              ]}
+              name="subcategoryId"
+              label="Subcategory"
+              rules={[{ required: true, message: 'Please select a subcategory!' }]}
             >
               <Select disabled={!selectedCategory}>
                 {subcategories
-                  .filter(subcat => subcat.categoryId === selectedCategory)
-                  .map(subcategory => (
-                    <Option
-                      key={subcategory.firebaseId}
-                      value={subcategory.firebaseId}
-                    >
+                  .filter((subcat) => subcat.categoryId === selectedCategory)
+                  .map((subcategory) => (
+                    <Option key={subcategory.id} value={subcategory.id}>
                       {subcategory.name}
                     </Option>
                   ))}
               </Select>
             </Form.Item>
             <Form.Item
-              name='isAvailable'
-              label='Available'
-              valuePropName='checked'
+              name="isAvailable"
+              label="Available"
+              valuePropName="checked"
             >
               <Switch />
             </Form.Item>
@@ -939,6 +1060,8 @@ const MenuManagement = () => {
         return null;
     }
   };
+  
+  
   const renderSiderContent = () => (
     <>
       <div style={{ padding: '24px 16px', borderBottom: '1px solid #f0f0f0', textAlign: 'center' }}>
