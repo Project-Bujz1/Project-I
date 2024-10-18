@@ -20,6 +20,7 @@ import RestaurantDashBoard from './components/RestaurantDashboard';
 import SummaryView from './components/SummaryView';
 import QREntry from './components/QREntry ';
 import MyOrders from './components/MyOrders';
+import MenuItem from './components/MenuItem';
 
 const App = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -36,6 +37,7 @@ const App = () => {
   const handleItemAdded = () => {
     // Logic for item added animation
   };
+
   useEffect(() => {
     const orgId = localStorage.getItem('orgId');
     const role = localStorage.getItem('role');
@@ -64,16 +66,16 @@ const App = () => {
                     <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
                     <div className="container">
                       <Routes>
-        <Route 
-          path="/home" 
-          element={
-             <Home 
-            onItemAdded={handleItemAdded}
-            searchTerm={searchTerm}
-          />
-          } 
-        />
-        <Route path="/cart" element={<Cart />} />
+                        <Route 
+                          path="/home" 
+                          element={
+                            <Home 
+                              onItemAdded={handleItemAdded}
+                              searchTerm={searchTerm}
+                            />
+                          } 
+                        />
+                        <Route path="/cart" element={<Cart />} />
                         <Route path="/admin" element={<AdminPage/>} />
                         <Route path="/order-summary" element={<OrderSummary />} />
                         <Route path="/summary-view" element={<SummaryView />} />

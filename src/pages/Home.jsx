@@ -3,6 +3,8 @@ import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
 import MenuItem from '../components/MenuItem';
 import FoodLoader from '../components/FoodLoader';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+
 
 function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [categories, setCategories] = useState([]);
@@ -14,7 +16,9 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [searchResults, setSearchResults] = useState([]);
   
   const orgId = localStorage.getItem('orgId');
+  const navigate = useNavigate(); // Initialize useNavigate
 
+  
   useEffect(() => {
     if (orgId) {
       fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
@@ -81,6 +85,7 @@ const filteredMenuItems = selectedSubcategory
 
   const handleSubcategoryClick = (subcategory) => {
     setSelectedSubcategory(subcategory);
+    navigate(`?subcategoryId=${subcategory.id}`); // Update the URL with the subcategory ID
   };
 
   const handleBackToCategories = () => {
@@ -100,6 +105,19 @@ const filteredMenuItems = selectedSubcategory
       onItemAdded={onItemAdded} 
     />
   );
+
+  // Add this useEffect to handle changes in URL
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const subcategoryId = queryParams.get('subcategoryId');
+    if (subcategoryId) {
+      const subcategory = subcategories.find((sub) => sub.id === subcategoryId);
+      if (subcategory) {
+        setSelectedSubcategory(subcategory);
+        setSelectedCategory(categories.find((cat) => cat.id === subcategory.categoryId)); // Set selected category based on subcategory
+      }
+    }
+  }, [subcategories, categories]);
 
   return (
     <div className="home-container" style={{ marginTop: '10px' }}>
