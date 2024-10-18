@@ -130,14 +130,18 @@ function Header({ toggleDrawer, onSearch }) {
             </Link>
           </div>
           <div className="header__center">
-            <Search
+            {localStorage.getItem('role') !== "admin" && <Search
               placeholder="Search menu..."
               className="header__search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onSearch={handleSearch}
-            />
-            {restaurantLogo && (
+            />}
+
+          </div>
+
+          <div className="header__right">
+          {restaurantLogo && (
               <div className="header__restaurant-logo-container">
                 <img 
                   src={restaurantLogo}
@@ -147,9 +151,6 @@ function Header({ toggleDrawer, onSearch }) {
                 />
               </div>
             )}
-          </div>
-
-          <div className="header__right">
             {role === 'customer' && (
               <>
                 <Tooltip title="Order Summary">
