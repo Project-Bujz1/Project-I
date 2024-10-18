@@ -19,7 +19,8 @@ import {
   Empty,
   Radio,
   Drawer,
-  Upload
+  Upload,
+  Dropdown
 } from 'antd';
 import {
   PlusOutlined,
@@ -30,6 +31,10 @@ import {
   TagsOutlined,
   TagOutlined,
   MenuOutlined,
+  SearchOutlined,
+  FilterOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined
 } from '@ant-design/icons';
 
 const { Content, Sider } = Layout;
@@ -53,10 +58,201 @@ const MenuManagement = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [siderCollapsed, setSiderCollapsed] = useState(window.innerWidth <= 768);
   const [drawerVisible, setDrawerVisible] = useState(false);
-    const [imageInputType, setImageInputType] = useState('url'); // 'url' or 'upload'
+    const [imageInputType, setImageInputType] = useState('url');
+  
+  // Add new state variables for search and filters
+  const [searchTerm, setSearchTerm] = useState('');
+  const [priceRange, setPriceRange] = useState([0, 10000]);
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [selectedSubcategories, setSelectedSubcategories] = useState([]);
+  const [availabilityFilter, setAvailabilityFilter] = useState('all');
+  const [sortBy, setSortBy] = useState('name');
+  const [sortOrder, setSortOrder] = useState('asc');
+
+  // Filter and sort functions
+  const filterAndSortItems = (items) => {
+    let filteredItems = [...items];
+
+    // Search filter
+    if (searchTerm) {
+      filteredItems = filteredItems.filter(item =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.description?.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Category filter
+    if (selectedCategories.length > 0) {
+      filteredItems = filteredItems.filter(item =>
+        selectedCategories.includes(item.categoryId)
+      );
+    }
+
+    // Subcategory filter
+    if (selectedSubcategories.length > 0) {
+      filteredItems = filteredItems.filter(item =>
+        selectedSubcategories.includes(item.subcategoryId)
+      );
+    }
+
+    // Availability filter
+    if (availabilityFilter !== 'all') {
+      filteredItems = filteredItems.filter(item =>
+        availabilityFilter === 'available' ? item.isAvailable : !item.isAvailable
+      );
+    }
+
+    // Price range filter
+    filteredItems = filteredItems.filter(item =>
+      item.price >= priceRange[0] && item.price <= priceRange[1]
+    );
+
+    // Sorting
+    filteredItems.sort((a, b) => {
+      let comparison = 0;
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'price':
+          comparison = a.price - b.price;
+          break;
+        case 'category':
+          comparison = categories.find(c => c.id === a.categoryId)?.name.localeCompare(
+            categories.find(c => c.id === b.categoryId)?.name
+          ) || 0;
+          break;
+        default:
+          comparison = 0;
+      }
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    return filteredItems;
+  };
 
 
-  // Get orgId from localStorage
+  // Search and Filter component
+  const SearchAndFilters = () => (
+    <Card style={{ marginBottom: 16, borderRadius: '12px' }}>
+      <Row gutter={[16, 16]} align="middle">
+        <Col xs={24} sm={24} md={8}>
+          <Input
+            placeholder="Search items..."
+            prefix={<SearchOutlined />}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            allowClear
+          />
+        </Col>
+        
+        <Col xs={24} sm={12} md={8}>
+          <Select
+            mode="multiple"
+            placeholder="Filter by category"
+            value={selectedCategories}
+            onChange={setSelectedCategories}
+            style={{ width: '100%' }}
+            maxTagCount="responsive"
+          >
+            {categories.map(category => (
+              <Select.Option key={category.id} value={category.id}>
+                {category.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Col>
+
+        <Col xs={24} sm={12} md={8}>
+          <Select
+            mode="multiple"
+            placeholder="Filter by subcategory"
+            value={selectedSubcategories}
+            onChange={setSelectedSubcategories}
+            style={{ width: '100%' }}
+            maxTagCount="responsive"
+          >
+            {subcategories.map(subcategory => (
+              <Select.Option key={subcategory.id} value={subcategory.id}>
+                {subcategory.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Col>
+
+        <Col xs={24} sm={12} md={8}>
+          <Select
+            placeholder="Filter by availability"
+            value={availabilityFilter}
+            onChange={setAvailabilityFilter}
+            style={{ width: '100%' }}
+          >
+            <Select.Option value="all">All Items</Select.Option>
+            <Select.Option value="available">Available Only</Select.Option>
+            <Select.Option value="unavailable">Unavailable Only</Select.Option>
+          </Select>
+        </Col>
+
+        <Col xs={24} sm={12} md={8}>
+          <Select
+            placeholder="Sort by"
+            value={sortBy}
+            onChange={setSortBy}
+            style={{ width: '100%' }}
+            dropdownRender={menu => (
+              <div>
+                {menu}
+                <div style={{ padding: '8px', borderTop: '1px solid #f0f0f0' }}>
+                  <Space>
+                    <Button
+                      type={sortOrder === 'asc' ? 'primary' : 'text'}
+                      icon={<SortAscendingOutlined />}
+                      onClick={() => setSortOrder('asc')}
+                      size="small"
+                    >
+                      Ascending
+                    </Button>
+                    <Button
+                      type={sortOrder === 'desc' ? 'primary' : 'text'}
+                      icon={<SortDescendingOutlined />}
+                      onClick={() => setSortOrder('desc')}
+                      size="small"
+                    >
+                      Descending
+                    </Button>
+                  </Space>
+                </div>
+              </div>
+            )}
+          >
+            <Select.Option value="name">Name</Select.Option>
+            <Select.Option value="price">Price</Select.Option>
+            <Select.Option value="category">Category</Select.Option>
+          </Select>
+        </Col>
+
+        <Col xs={24} sm={12} md={8}>
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => {
+                setSearchTerm('');
+                setSelectedCategories([]);
+                setSelectedSubcategories([]);
+                setAvailabilityFilter('all');
+                setPriceRange([0, 10000]);
+                setSortBy('name');
+                setSortOrder('asc');
+              }}
+            >
+              Reset Filters
+            </Button>
+          </Space>
+        </Col>
+      </Row>
+    </Card>
+  );
+   // Get orgId from localStorage
   const orgId = localStorage.getItem('orgId');
 
   useEffect(() => {
@@ -208,292 +404,159 @@ const handleCreate = async values => {
     message.error('Failed to create item');
   }
 };
-
-  // const handleCreate = async values => {
-
-  //   const type =
-
-  //     activeTab === 'categories'
-
-  //       ? 'categories'
-
-  //       : activeTab === 'subcategories'
-
-  //       ? 'subcategories'
-
-  //       : 'menu_items';
-
-  //   try {
-
-  //     const response = await fetch(`${API_URL}/${type}.json`, {
-
-  //       method: 'POST',
-
-  //       headers: { 'Content-Type': 'application/json' },
-
-  //       body: JSON.stringify({ ...values, orgId: parseInt(orgId) }),
-
-  //     });
-
-  //     if (response.ok) {
-
-  //       const data = await response.json();
-
-  //       const newItem = {
-
-  //         firebaseId: data.name,
-
-  //         ...values,
-
-  //         orgId: parseInt(orgId),
-
-  //       };
-
-  //       updateLocalState(type, 'add', newItem);
-
-  //       setIsModalVisible(false);
-
-  //       form.resetFields();
-
-  //       message.success('Item created successfully');
-
-  //     }
-
-  //   } catch (error) {
-
-  //     console.error(`Error creating ${type}:`, error);
-
-  //     message.error('Failed to create item');
-
-  //   }
-
-  // };
-
-
-
-  const handleUpdate = async values => {
-    const type = activeTab === 'categories'
-      ? 'categories'
-      : activeTab === 'subcategories'
-      ? 'subcategories'
-      : 'menu_items';
-      
-    try {
-      if (!editingItem || !editingItem.firebaseId) {
-        throw new Error('No item selected for update');
-      }
-  
-      // Handle image data based on input type
-      let imageData;
-      if (type === 'menu_items') {
-        if (imageInputType === 'url') {
-          imageData = values.imageUrl;
-        } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
-          imageData = {
-            file: {
-              url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
-              name: values.imageUpload[0].name
-            }
-          };
-        }
-      }
-  
-      const dataToUpdate = {
-        ...values,
-        image: imageData,
-        orgId: parseInt(orgId)
-      };
-  
-      // Remove unnecessary fields
-      delete dataToUpdate.imageUrl;
-      delete dataToUpdate.imageUpload;
-  
-      const response = await fetch(
-        `${API_URL}/${type}/${editingItem.firebaseId}.json`,
-        {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(dataToUpdate),
-        }
-      );
-  
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to update item');
-      }
-  
-      const updatedItem = { ...editingItem, ...dataToUpdate };
-      updateLocalState(type, 'update', updatedItem);
-      setIsModalVisible(false);
-      setEditingItem(null);
-      form.resetFields();
-      message.success('Item updated successfully');
-    } catch (error) {
-      console.error(`Error updating ${type}:`, error);
-      message.error(`Failed to update item: ${error.message}`);
-    }
-  };
-
-  // Helper function to get the correct image URL
-  const getImageUrl = (imageData) => {
-    if (!imageData) return '/api/placeholder/80/80';
+const handleUpdate = async values => {
+  const type = activeTab === 'categories'
+    ? 'categories'
+    : activeTab === 'subcategories'
+    ? 'subcategories'
+    : 'menu_items';
     
-    if (typeof imageData === 'string') {
-      return imageData; // Direct URL
+  try {
+    if (!editingItem || !editingItem.firebaseId) {
+      throw new Error('No item selected for update');
     }
-    
-    if (imageData.file && imageData.file.url) {
-      return imageData.file.url; // Uploaded file URL
-    }
-    
-    return '/api/placeholder/80/80'; // Fallback
-  };
 
-  const handleDelete = async firebaseId => {
-
-    const type =
-
-      activeTab === 'categories'
-
-        ? 'categories'
-
-        : activeTab === 'subcategories'
-
-        ? 'subcategories'
-
-        : 'menu_items';
-
-    try {
-
-      const response = await fetch(`${API_URL}/${type}/${firebaseId}.json`, {
-
-        method: 'DELETE',
-
-      });
-
-
-
-      if (!response.ok) {
-
-        const errorData = await response.json();
-
-        throw new Error(errorData.error || 'Failed to delete item');
-
+    // Handle image data based on input type
+    let imageData;
+    if (type === 'menu_items') {
+      if (imageInputType === 'url') {
+        imageData = values.imageUrl;
+      } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
+        imageData = {
+          file: {
+            url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
+            name: values.imageUpload[0].name
+          }
+        };
       }
-
-
-
-      updateLocalState(type, 'delete', { firebaseId });
-
-      message.success('Item deleted successfully');
-
-    } catch (error) {
-
-      console.error(`Error deleting ${type}:`, error);
-
-      message.error(`Failed to delete item: ${error.message}`);
-
     }
 
-  };
-
-
-
-  const updateLocalState = (type, action, item) => {
-
-    const updateState = prevState => {
-
-      switch (action) {
-
-        case 'add':
-
-          return [...prevState, item];
-
-        case 'update':
-
-          return prevState.map(i =>
-
-            i.firebaseId === item.firebaseId ? { ...i, ...item } : i
-
-          );
-
-        case 'delete':
-
-          return prevState.filter(i => i.firebaseId !== item.firebaseId);
-
-        default:
-
-          return prevState;
-
-      }
-
+    const dataToUpdate = {
+      ...values,
+      image: imageData,
+      orgId: parseInt(orgId)
     };
 
+    // Remove unnecessary fields
+    delete dataToUpdate.imageUrl;
+    delete dataToUpdate.imageUpload;
 
-
-    switch (type) {
-
-      case 'categories':
-
-        setCategories(updateState);
-
-        break;
-
-      case 'subcategories':
-
-        setSubcategories(updateState);
-
-        break;
-
-      case 'menu_items':
-
-        setMenuItems(updateState);
-
-        break;
-
-    }
-
-  };
-
-
-
-  const handleAvailabilityChange = async (firebaseId, isAvailable) => {
-
-    try {
-
-      await fetch(`${API_URL}/menu_items/${firebaseId}.json`, {
-
+    const response = await fetch(
+      `${API_URL}/${type}/${editingItem.firebaseId}.json`,
+      {
         method: 'PATCH',
-
         headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToUpdate),
+      }
+    );
 
-        body: JSON.stringify({ isAvailable }),
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to update item');
+    }
 
-      });
+    const updatedItem = { ...editingItem, ...dataToUpdate };
+    updateLocalState(type, 'update', updatedItem);
+    setIsModalVisible(false);
+    setEditingItem(null);
+    form.resetFields();
+    message.success('Item updated successfully');
+  } catch (error) {
+    console.error(`Error updating ${type}:`, error);
+    message.error(`Failed to update item: ${error.message}`);
+  }
+};
+
+// Helper function to get the correct image URL
+const getImageUrl = (imageData) => {
+  if (!imageData) return '/api/placeholder/80/80';
+  
+  if (typeof imageData === 'string') {
+    return imageData; // Direct URL
+  }
+  
+  if (imageData.file && imageData.file.url) {
+    return imageData.file.url; // Uploaded file URL
+  }
+  
+  return '/api/placeholder/80/80'; // Fallback
+};
+
+const handleDelete = async firebaseId => {
+
+  const type =
+
+    activeTab === 'categories'
+
+      ? 'categories'
+
+      : activeTab === 'subcategories'
+
+      ? 'subcategories'
+
+      : 'menu_items';
+
+  try {
+
+    const response = await fetch(`${API_URL}/${type}/${firebaseId}.json`, {
+
+      method: 'DELETE',
+
+    });
 
 
 
-      setMenuItems(prev =>
+    if (!response.ok) {
 
-        prev.map(item =>
+      const errorData = await response.json();
 
-          item.firebaseId === firebaseId ? { ...item, isAvailable } : item
+      throw new Error(errorData.error || 'Failed to delete item');
 
-        )
-
-      );
+    }
 
 
 
-      message.success(
+    updateLocalState(type, 'delete', { firebaseId });
 
-        `Item ${isAvailable ? 'available' : 'unavailable'} status updated`
+    message.success('Item deleted successfully');
 
-      );
+  } catch (error) {
 
-    } catch (error) {
+    console.error(`Error deleting ${type}:`, error);
 
-      message.error('Failed to update availability status');
+    message.error(`Failed to delete item: ${error.message}`);
+
+  }
+
+};
+
+
+
+const updateLocalState = (type, action, item) => {
+
+  const updateState = prevState => {
+
+    switch (action) {
+
+      case 'add':
+
+        return [...prevState, item];
+
+      case 'update':
+
+        return prevState.map(i =>
+
+          i.firebaseId === item.firebaseId ? { ...i, ...item } : i
+
+        );
+
+      case 'delete':
+
+        return prevState.filter(i => i.firebaseId !== item.firebaseId);
+
+      default:
+
+        return prevState;
 
     }
 
@@ -501,425 +564,495 @@ const handleCreate = async values => {
 
 
 
-  const handleSaveAvailability = async firebaseId => {
+  switch (type) {
 
-    try {
+    case 'categories':
 
-      const values = await form.validateFields();
+      setCategories(updateState);
 
-      await fetch(`${API_URL}/menu_items/${firebaseId}.json`, {
+      break;
 
-        method: 'PATCH',
+    case 'subcategories':
 
-        headers: { 'Content-Type': 'application/json' },
+      setSubcategories(updateState);
 
-        body: JSON.stringify(values),
+      break;
 
-      });
+    case 'menu_items':
 
+      setMenuItems(updateState);
 
+      break;
 
-      setMenuItems(prev =>
+  }
 
-        prev.map(item =>
+};
 
-          item.firebaseId === firebaseId ? { ...item, ...values } : item
 
-        )
 
-      );
+const handleAvailabilityChange = async (firebaseId, isAvailable) => {
 
+  try {
 
+    await fetch(`${API_URL}/menu_items/${firebaseId}.json`, {
 
-      setAvailabilityDrawer(false);
+      method: 'PATCH',
 
-      message.success('Availability details updated successfully');
+      headers: { 'Content-Type': 'application/json' },
 
-    } catch (error) {
+      body: JSON.stringify({ isAvailable }),
 
-      console.error('Error saving availability:', error);
+    });
 
-      message.error('Failed to update availability details');
 
-    }
 
-  };
+    setMenuItems(prev =>
 
+      prev.map(item =>
 
+        item.firebaseId === firebaseId ? { ...item, isAvailable } : item
 
-  const handleCategoryChange = categoryId => {
+      )
 
-    setSelectedCategory(categoryId);
+    );
 
-    form.setFieldsValue({ subcategoryId: null });
 
-  };
 
+    message.success(
 
+      `Item ${isAvailable ? 'available' : 'unavailable'} status updated`
 
-  const columns = {
+    );
 
-    categories: [
+  } catch (error) {
 
-      { title: 'Name', dataIndex: 'name', key: 'name' },
+    message.error('Failed to update availability status');
 
-      {
+  }
 
-        title: 'Actions',
+};
 
-        key: 'actions',
 
-        width: 150,
 
-        render: (_, record) => (
+const handleSaveAvailability = async firebaseId => {
 
-          <>
+  try {
 
-            <Button
+    const values = await form.validateFields();
 
-              icon={<EditOutlined />}
+    await fetch(`${API_URL}/menu_items/${firebaseId}.json`, {
 
-              onClick={() => {
+      method: 'PATCH',
 
-                setEditingItem(record);
+      headers: { 'Content-Type': 'application/json' },
 
-                form.setFieldsValue(record);
+      body: JSON.stringify(values),
 
-                setIsModalVisible(true);
+    });
 
-              }}
 
-            />
 
-            <Button
+    setMenuItems(prev =>
 
-              icon={<DeleteOutlined />}
+      prev.map(item =>
 
-              onClick={() => handleDelete(record.firebaseId)}
+        item.firebaseId === firebaseId ? { ...item, ...values } : item
 
-              style={{ marginLeft: 8 }}
+      )
 
-            />
+    );
 
-          </>
 
-        ),
 
-      },
+    setAvailabilityDrawer(false);
 
-    ],
+    message.success('Availability details updated successfully');
 
-    subcategories: [
+  } catch (error) {
 
-      { title: 'Name', dataIndex: 'name', key: 'name' },
+    console.error('Error saving availability:', error);
 
-      {
+    message.error('Failed to update availability details');
 
-        title: 'Category',
+  }
 
-        dataIndex: 'categoryId',
+};
 
-        key: 'categoryId',
 
-        render: categoryId => categories.find(c => c.id === categoryId)?.name,
 
-      },
+const handleCategoryChange = categoryId => {
 
-      {
+  setSelectedCategory(categoryId);
 
-        title: 'Actions',
+  form.setFieldsValue({ subcategoryId: null });
 
-        key: 'actions',
+};
 
-        render: (_, record) => (
 
-          <>
 
-            <Button
+const columns = {
 
-              icon={<EditOutlined />}
+  categories: [
 
-              onClick={() => {
+    { title: 'Name', dataIndex: 'name', key: 'name' },
 
-                setEditingItem(record);
+    {
 
-                form.setFieldsValue(record);
+      title: 'Actions',
 
-                setIsModalVisible(true);
+      key: 'actions',
 
-              }}
+      width: 150,
 
-            />
+      render: (_, record) => (
 
-            <Button
+        <>
 
-              icon={<DeleteOutlined />}
+          <Button
 
-              onClick={() => handleDelete(record.firebaseId)}
+            icon={<EditOutlined />}
 
-              style={{ marginLeft: 8 }}
+            onClick={() => {
 
-            />
+              setEditingItem(record);
 
-          </>
+              form.setFieldsValue(record);
 
-        ),
+              setIsModalVisible(true);
 
-      },
+            }}
 
-    ],
+          />
 
-    menuItems: [
+          <Button
 
-      { title: 'Name', dataIndex: 'name', key: 'name' },
+            icon={<DeleteOutlined />}
 
-      { title: 'Description', dataIndex: 'description', key: 'description' },
+            onClick={() => handleDelete(record.firebaseId)}
 
-      { title: 'Price', dataIndex: 'price', key: 'price' },
+            style={{ marginLeft: 8 }}
 
-      {
+          />
 
-        title: 'Category',
+        </>
 
-        dataIndex: 'categoryId',
+      ),
 
-        key: 'categoryId',
+    },
 
-        render: categoryId => categories.find(c => c.id === categoryId)?.name,
+  ],
 
-      },
+  subcategories: [
 
-      {
+    { title: 'Name', dataIndex: 'name', key: 'name' },
 
-        title: 'Subcategory',
+    {
 
-        dataIndex: 'subcategoryId',
+      title: 'Category',
 
-        key: 'subcategoryId',
+      dataIndex: 'categoryId',
 
-        render: subcategoryId =>
+      key: 'categoryId',
 
-          subcategories.find(s => s.id === subcategoryId)?.name,
+      render: categoryId => categories.find(c => c.id === categoryId)?.name,
 
-      },
+    },
 
-      {
+    {
 
-        title: 'Actions',
+      title: 'Actions',
 
-        key: 'actions',
+      key: 'actions',
 
-        width: 150,
+      render: (_, record) => (
 
-        render: (_, record) => (
+        <>
 
-          <>
+          <Button
 
-            <Button
+            icon={<EditOutlined />}
 
-              icon={<EditOutlined />}
+            onClick={() => {
 
-              onClick={() => {
+              setEditingItem(record);
 
-                setEditingItem(record);
+              form.setFieldsValue(record);
 
-                form.setFieldsValue(record);
+              setIsModalVisible(true);
 
-                setIsModalVisible(true);
+            }}
 
-              }}
+          />
 
-            />
+          <Button
 
-            <Button
+            icon={<DeleteOutlined />}
 
-              icon={<DeleteOutlined />}
+            onClick={() => handleDelete(record.firebaseId)}
 
-              onClick={() => handleDelete(record.firebaseId)}
+            style={{ marginLeft: 8 }}
 
-              style={{ marginLeft: 8 }}
+          />
 
-            />
+        </>
 
-          </>
+      ),
 
-        ),
+    },
 
-      },
+  ],
 
-    ],
+  menuItems: [
 
-  };
+    { title: 'Name', dataIndex: 'name', key: 'name' },
 
+    { title: 'Description', dataIndex: 'description', key: 'description' },
 
-  const MenuItem = ({ item }) => (
+    { title: 'Price', dataIndex: 'price', key: 'price' },
+
+    {
+
+      title: 'Category',
+
+      dataIndex: 'categoryId',
+
+      key: 'categoryId',
+
+      render: categoryId => categories.find(c => c.id === categoryId)?.name,
+
+    },
+
+    {
+
+      title: 'Subcategory',
+
+      dataIndex: 'subcategoryId',
+
+      key: 'subcategoryId',
+
+      render: subcategoryId =>
+
+        subcategories.find(s => s.id === subcategoryId)?.name,
+
+    },
+
+    {
+
+      title: 'Actions',
+
+      key: 'actions',
+
+      width: 150,
+
+      render: (_, record) => (
+
+        <>
+
+          <Button
+
+            icon={<EditOutlined />}
+
+            onClick={() => {
+
+              setEditingItem(record);
+
+              form.setFieldsValue(record);
+
+              setIsModalVisible(true);
+
+            }}
+
+          />
+
+          <Button
+
+            icon={<DeleteOutlined />}
+
+            onClick={() => handleDelete(record.firebaseId)}
+
+            style={{ marginLeft: 8 }}
+
+          />
+
+        </>
+
+      ),
+
+    },
+
+  ],
+
+};
+
+
+const MenuItem = ({ item }) => (
 <Card
-  hoverable
-  className="menu-item-card"
-  style={{
-    marginBottom: '16px',
-    borderRadius: '12px',
-    overflow: 'hidden',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-  }}
-  actions={[
-    <Tooltip title="Edit">
-      <EditOutlined
-        key="edit"
-        onClick={(e) => {
-          e.stopPropagation();
-          setEditingItem(item);
-          if (typeof item.image === 'string') {
-            setImageInputType('url');
-            form.setFieldsValue({
-              ...item,
-              imageUrl: item.image // Set the URL in the imageUrl field
-            });
-          } else if (item.image?.file) {
-            setImageInputType('upload');
-            form.setFieldsValue({
-              ...item,
-              imageUpload: [{
-                uid: '-1',
-                name: 'current-image',
-                status: 'done',
-                url: item.image.file.url
-              }]
-            });
-          }
-          else {
-            // No image case
-            setImageInputType('url');
-            form.setFieldsValue({
-              ...item,
-              imageUrl: ''
-            });
-          }
-          setIsModalVisible(true);
-        }}
-        style={{ color: '#1890ff' }}
-      />
-    </Tooltip>,
-    <Tooltip title="Delete">
-      <DeleteOutlined
-        key="delete"
-        onClick={(e) => {
-          e.stopPropagation();
-          handleDelete(item.firebaseId);
-        }}
-        style={{ color: '#ff4d4f' }}
-      />
-    </Tooltip>,
-  ]}
+hoverable
+className="menu-item-card"
+style={{
+  marginBottom: '16px',
+  borderRadius: '12px',
+  overflow: 'hidden',
+  boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+}}
+actions={[
+  <Tooltip title="Edit">
+    <EditOutlined
+      key="edit"
+      onClick={(e) => {
+        e.stopPropagation();
+        setEditingItem(item);
+        if (typeof item.image === 'string') {
+          setImageInputType('url');
+          form.setFieldsValue({
+            ...item,
+            imageUrl: item.image // Set the URL in the imageUrl field
+          });
+        } else if (item.image?.file) {
+          setImageInputType('upload');
+          form.setFieldsValue({
+            ...item,
+            imageUpload: [{
+              uid: '-1',
+              name: 'current-image',
+              status: 'done',
+              url: item.image.file.url
+            }]
+          });
+        }
+        else {
+          // No image case
+          setImageInputType('url');
+          form.setFieldsValue({
+            ...item,
+            imageUrl: ''
+          });
+        }
+        setIsModalVisible(true);
+      }}
+      style={{ color: '#1890ff' }}
+    />
+  </Tooltip>,
+  <Tooltip title="Delete">
+    <DeleteOutlined
+      key="delete"
+      onClick={(e) => {
+        e.stopPropagation();
+        handleDelete(item.firebaseId);
+      }}
+      style={{ color: '#ff4d4f' }}
+    />
+  </Tooltip>,
+]}
 >
-  <div style={{ padding: '12px' }}>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-      <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-        <img
-          // src={
-          //   typeof item.image === 'string'
-          //     ? item.image // Image is a URL
-          //     : item.image?.file?.url || '/api/placeholder/80/80' // Image is a file object or fallback
-          // }
-          src={getImageUrl(item.image)}
-          alt={item.name}
-          style={{
-            width: '80px',
-            height: '80px',
-            objectFit: 'cover',
-            borderRadius: '8px',
-            border: '1px solid #f0f0f0',
-          }}
-          onError={(e) => {
-            e.target.src = '/api/placeholder/80/80';
-          }}
-        />
-        <div style={{ flex: 1 }}>
-          <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>
-            {item.name}
-          </Text>
-          <Text type="secondary" style={{ fontSize: '14px' }}>
-            {categories.find((c) => c.firebaseId === item.categoryId)?.name} →{' '}
-            {subcategories.find((s) => s.firebaseId === item.subcategoryId)?.name}
-          </Text>
-        </div>
-      </div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Text style={{ color: '#ff4d4f', fontSize: '18px', fontWeight: 'bold' }}>
-          ₹{item.price}
+<div style={{ padding: '12px' }}>
+  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+      <img
+        // src={
+        //   typeof item.image === 'string'
+        //     ? item.image // Image is a URL
+        //     : item.image?.file?.url || '/api/placeholder/80/80' // Image is a file object or fallback
+        // }
+        src={getImageUrl(item.image)}
+        alt={item.name}
+        style={{
+          width: '80px',
+          height: '80px',
+          objectFit: 'cover',
+          borderRadius: '8px',
+          border: '1px solid #f0f0f0',
+        }}
+        onError={(e) => {
+          e.target.src = '/api/placeholder/80/80';
+        }}
+      />
+      <div style={{ flex: 1 }}>
+        <Text strong style={{ fontSize: '16px', display: 'block', marginBottom: '4px' }}>
+          {item.name}
         </Text>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Switch
-            checked={item.isAvailable}
-            onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
-            style={{ backgroundColor: item.isAvailable ? '#52c41a' : '#f5f5f5' }}
-          />
-          <Badge
-            status={item.isAvailable ? 'success' : 'error'}
-            text={item.isAvailable ? 'Available' : 'Unavailable'}
-          />
-        </div>
+        <Text type="secondary" style={{ fontSize: '14px' }}>
+          {categories.find((c) => c.firebaseId === item.categoryId)?.name} →{' '}
+          {subcategories.find((s) => s.firebaseId === item.subcategoryId)?.name}
+        </Text>
       </div>
     </div>
-    {item.description && (
-      <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
-        {item.description}
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Text style={{ color: '#ff4d4f', fontSize: '18px', fontWeight: 'bold' }}>
+        ₹{item.price}
       </Text>
-    )}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Switch
+          checked={item.isAvailable}
+          onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
+          style={{ backgroundColor: item.isAvailable ? '#52c41a' : '#f5f5f5' }}
+        />
+        <Badge
+          status={item.isAvailable ? 'success' : 'error'}
+          text={item.isAvailable ? 'Available' : 'Unavailable'}
+        />
+      </div>
+    </div>
   </div>
+  {item.description && (
+    <Text type="secondary" style={{ display: 'block', marginTop: '8px' }}>
+      {item.description}
+    </Text>
+  )}
+</div>
 </Card>
 
-  );
+);
 
-  const CategoryCard = ({ item, type }) => (
-    <Card
-      hoverable
-      className='category-card'
-      style={{
-        marginBottom: '16px',
-        borderRadius: '12px',
-        backgroundColor: type === 'category' ? '#fff0f6' : '#f6ffed',
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space>
-          {type === 'category' ? (
-            <TagsOutlined style={{ fontSize: '20px', color: '#eb2f96' }} />
-          ) : (
-            <TagOutlined style={{ fontSize: '20px', color: '#52c41a' }} />
-          )}
-          <div>
-            <Text strong style={{ fontSize: '16px', display: 'block' }}>
-              {item.name}
+const CategoryCard = ({ item, type }) => (
+  <Card
+    hoverable
+    className='category-card'
+    style={{
+      marginBottom: '16px',
+      borderRadius: '12px',
+      backgroundColor: type === 'category' ? '#fff0f6' : '#f6ffed',
+    }}
+  >
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <Space>
+        {type === 'category' ? (
+          <TagsOutlined style={{ fontSize: '20px', color: '#eb2f96' }} />
+        ) : (
+          <TagOutlined style={{ fontSize: '20px', color: '#52c41a' }} />
+        )}
+        <div>
+          <Text strong style={{ fontSize: '16px', display: 'block' }}>
+            {item.name}
+          </Text>
+          {type === 'subcategory' && (
+            <Text type='secondary' style={{ fontSize: '12px' }}>
+              {categories.find((c) => c.firebaseId === item.categoryId)?.name}
             </Text>
-            {type === 'subcategory' && (
-              <Text type='secondary' style={{ fontSize: '12px' }}>
-                {categories.find((c) => c.firebaseId === item.categoryId)?.name}
-              </Text>
-            )}
-          </div>
-        </Space>
-        <Space>
-          <Button
-            type='text'
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditingItem(item);
-              form.setFieldsValue(item);
-              setIsModalVisible(true);
-            }}
-          />
-          <Button
-            type='text'
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(item.firebaseId)}
-          />
-        </Space>
-      </div>
-    </Card>
-  );
-  
+          )}
+        </div>
+      </Space>
+      <Space>
+        <Button
+          type='text'
+          icon={<EditOutlined />}
+          onClick={() => {
+            setEditingItem(item);
+            form.setFieldsValue(item);
+            setIsModalVisible(true);
+          }}
+        />
+        <Button
+          type='text'
+          danger
+          icon={<DeleteOutlined />}
+          onClick={() => handleDelete(item.firebaseId)}
+        />
+      </Space>
+    </div>
+  </Card>
+);
+
   const renderFormItems = () => {  
     const handleImageInputTypeChange = (e) => {
       setImageInputType(e.target.value);
@@ -1124,8 +1257,11 @@ const handleCreate = async values => {
         </Drawer>
       )}
 
-      <Layout style={{ marginLeft: window.innerWidth > 768 ? (siderCollapsed ? 80 : 250) : 0 , marginTop : '100px'}}>
+      <Layout style={{ marginLeft: window.innerWidth > 768 ? (siderCollapsed ? 80 : 250) : 0, marginTop: '100px' }}>
         <Content style={{ margin: '24px', overflow: 'initial' }}>
+          {/* Add SearchAndFilters component when viewing menu items */}
+          {activeTab === 'menu_items' && <SearchAndFilters />}
+          
           <Card
             title={
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -1162,7 +1298,7 @@ const handleCreate = async values => {
             <Row gutter={[16, 16]}>
               {activeTab === 'menu_items' ? (
                 menuItems.length > 0 ? (
-                  menuItems.map((item) => (
+                  filterAndSortItems(menuItems).map((item) => (
                     <Col xs={24} sm={24} md={24} lg={12} xl={12} key={item.firebaseId}>
                       <MenuItem item={item} />
                     </Col>
