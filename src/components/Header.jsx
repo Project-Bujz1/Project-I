@@ -120,14 +120,26 @@ function Header({ toggleDrawer, onSearch }) {
         <div className="header__content">
           <div className="header__left">
             <TiThMenu className="header__menu-button" onClick={toggleDrawer} />
-            <Link to="/home" className="header__logo">
-              <img 
-                src={process.env.PUBLIC_URL + '/assets/logo-transparent-png.png'} 
-                alt="Smart Server" 
-                className="header__logo-image" 
-              />
-              <span className="header__logo-text">Smart Server</span>
-            </Link>
+            {localStorage.role === 'customer' ? (
+  <Link to="/home" className="header__logo">
+    <img 
+      src={process.env.PUBLIC_URL + '/assets/logo-transparent-png.png'} 
+      alt="Smart Server" 
+      className="header__logo-image" 
+    />
+    <span className="header__logo-text">Smart Server</span>
+  </Link>
+) : (
+  <div className="header__logo">
+    <img 
+      src={process.env.PUBLIC_URL + '/assets/logo-transparent-png.png'} 
+      alt="Smart Server" 
+      className="header__logo-image" 
+    />
+    <span className="header__logo-text">Smart Server</span>
+  </div>
+)}
+
           </div>
           <div className="header__center">
             {localStorage.getItem('role') !== "admin" && <Search
