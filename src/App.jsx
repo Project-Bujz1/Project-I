@@ -21,6 +21,8 @@ import SummaryView from './components/SummaryView';
 import MyOrders from './components/MyOrders';
 import MenuItem from './components/MenuItem';
 import QREntry from './components/QREntry ';
+import CartFooter from './components/CartFooter';
+import CategoryNavigator from './components/BillSummary';
 
 const App = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -89,7 +91,8 @@ const App = () => {
                         <Route path="/my-orders" element={<MyOrders />} />
                       </Routes>
                     </div>
-                    <BillSummary />
+                    <CartFooter />
+                    <CategoryNavigator />
                   </>
                 }
               />

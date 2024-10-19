@@ -6,6 +6,7 @@ import MenuItem from '../components/MenuItem';
 import FoodLoader from '../components/FoodLoader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryNavigator from '../components/BillSummary';
+import CartFooter from '../components/CartFooter';
 
 function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [categories, setCategories] = useState([]);
@@ -145,6 +146,7 @@ const filteredMenuItems = selectedSubcategory
           setSelectedSubcategory(subcategory);
         }}
       />
+      <CartFooter />
       
       {searchTerm ? (
         <>
