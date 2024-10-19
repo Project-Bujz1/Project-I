@@ -137,7 +137,10 @@ const filteredMenuItems = selectedSubcategory
     }
   }, [subcategories, categories]);
   return (
-    <div className="home-container" style={{ marginTop: '10px' }}>
+    <div className="home-container" style={{  marginTop: '10px',
+      paddingBottom: '70px', // Reduced padding to match new footer height
+      minHeight: '100vh',    // Ensure full viewport height
+      position: 'relative'  }}>
       <CategoryNavigator
         onCategorySelect={setSelectedCategory}
         onSubcategorySelect={(subcategory) => {

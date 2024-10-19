@@ -769,7 +769,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
       <motion.button
         style={{
           position: 'fixed',
-          bottom: '24px',
+          bottom: '100px',
           right: '24px',
           zIndex: 50,
           border: 'none',
@@ -782,7 +782,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
         onClick={() => setIsOpen(!isOpen)}
       >
         <div style={{
-          background: 'linear-gradient(to right top, #ef4444, #f87171)',
+          background: 'linear-gradient(to right top, #ef4444, red)',
           color: 'white',
           padding: '16px',
           borderRadius: '50%',
@@ -807,7 +807,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
             variants={menuVariants}
             style={{
               position: 'fixed',
-              bottom: '24px',
+              bottom: '100px',
               right: '40px',
               zIndex: 40,
               backgroundColor: 'white',
