@@ -18,9 +18,9 @@ import RestaurantManagement from './components/RestaurantManagement';
 import BillSummary from './components/BillSummary';
 import RestaurantDashBoard from './components/RestaurantDashboard';
 import SummaryView from './components/SummaryView';
-import QREntry from './components/QREntry ';
 import MyOrders from './components/MyOrders';
 import MenuItem from './components/MenuItem';
+import QREntry from './components/QREntry ';
 
 const App = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -38,24 +38,15 @@ const App = () => {
     // Logic for item added animation
   };
 
-  // useEffect(() => {
-  //   const orgId = localStorage.getItem('orgId');
-  //   const role = localStorage.getItem('role');
-    
-  //   if (orgId && role === 'customer' && window.location.pathname === '/') {
-  //     // If orgId is set and we're on the landing page, redirect to home
-  //     window.location.href = '/home';
-  //   }
-  // }, []);
-
   return (
     <Router>
       <CartProvider>
         <CartIconProvider>
           <div className="App">
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/qr-entry/:orgId/:tableNumber" element={<QREntry />} />        <Route
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/qr-entry/:orgId/:tableNumber" element={<QREntry />} />
+              <Route
                 path="*"
                 element={
                   <>
@@ -74,6 +65,16 @@ const App = () => {
                               searchTerm={searchTerm}
                             />
                           } 
+                        />
+                        {/* Add MenuItem route inside the layout */}
+                        <Route 
+                          path="/home/menu/:subcategoryId" 
+                          element={
+                            <MenuItem 
+                              onItemAdded={handleItemAdded}
+                              searchTerm={searchTerm}
+                            />
+                          }
                         />
                         <Route path="/cart" element={<Cart />} />
                         <Route path="/admin" element={<AdminPage/>} />
