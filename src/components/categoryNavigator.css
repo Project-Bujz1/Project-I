@@ -1,0 +1,55 @@
+/* Custom styles for the CategoryNavigator component */
+.category-navigator {
+  position: fixed;
+  bottom: 20px;
+  right: 90px;
+  background-color: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+/* Custom scrollbar styles */
+.category-navigator::-webkit-scrollbar {
+  width: 8px;
+}
+
+.category-navigator::-webkit-scrollbar-thumb {
+  background: #f44336;
+  border-radius: 4px;
+}
+
+.category-navigator::-webkit-scrollbar-track {
+  background: #f0f0f0;
+}
+.category-navigator {
+    overflow-y: auto;
+    max-height: 80vh;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: white;
+  }
+  
+  /* Stylish scroll bar */
+  .category-navigator::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .category-navigator::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  .category-navigator::-webkit-scrollbar-thumb {
+    background: #ff6347;
+    border-radius: 10px;
+  }
+  
+  .category-navigator::-webkit-scrollbar-thumb:hover {
+    background: #ff4500;
+  }
+  
