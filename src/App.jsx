@@ -38,15 +38,15 @@ const App = () => {
     // Logic for item added animation
   };
 
-  useEffect(() => {
-    const orgId = localStorage.getItem('orgId');
-    const role = localStorage.getItem('role');
+  // useEffect(() => {
+  //   const orgId = localStorage.getItem('orgId');
+  //   const role = localStorage.getItem('role');
     
-    if (orgId && role === 'customer' && window.location.pathname === '/') {
-      // If orgId is set and we're on the landing page, redirect to home
-      window.location.href = '/home';
-    }
-  }, []);
+  //   if (orgId && role === 'customer' && window.location.pathname === '/') {
+  //     // If orgId is set and we're on the landing page, redirect to home
+  //     window.location.href = '/home';
+  //   }
+  // }, []);
 
   return (
     <Router>
