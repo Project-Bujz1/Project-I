@@ -1089,7 +1089,7 @@ const CategoryCard = ({ item, type }) => (
             >
               <Select onChange={handleCategoryChange}>
                 {categories.map((category) => (
-                  <Option key={category.id} value={category.id}>
+    <Option key={category.firebaseId} value={category.firebaseId}>
                     {category.name}
                   </Option>
                 ))}
@@ -1160,7 +1160,7 @@ const CategoryCard = ({ item, type }) => (
             >
               <Select onChange={handleCategoryChange}>
                 {categories.map((category) => (
-                  <Option key={category.id} value={category.id}>
+    <Option key={category.firebaseId} value={category.firebaseId}>
                     {category.name}
                   </Option>
                 ))}
@@ -1175,7 +1175,7 @@ const CategoryCard = ({ item, type }) => (
                 {subcategories
                   .filter((subcat) => subcat.categoryId === selectedCategory)
                   .map((subcategory) => (
-                    <Option key={subcategory.id} value={subcategory.id}>
+                    <Option key={subcategory.firebaseId} value={subcategory.firebaseId}>
                       {subcategory.name}
                     </Option>
                   ))}
