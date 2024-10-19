@@ -1,10 +1,11 @@
+// Home.jsx
 import React, { useState, useEffect } from 'react';
 import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
 import MenuItem from '../components/MenuItem';
 import FoodLoader from '../components/FoodLoader';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
-
+import { useLocation, useNavigate } from 'react-router-dom';
+import CategoryNavigator from '../components/BillSummary';
 
 function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [categories, setCategories] = useState([]);
@@ -16,9 +17,10 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [searchResults, setSearchResults] = useState([]);
   
   const orgId = localStorage.getItem('orgId');
-  const navigate = useNavigate(); // Initialize useNavigate
 
-  
+  const location = useLocation();
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (orgId) {
       fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
@@ -87,16 +89,31 @@ const filteredMenuItems = selectedSubcategory
     setSelectedSubcategory(subcategory);
     navigate(`?subcategoryId=${subcategory.id}`); // Update the URL with the subcategory ID
   };
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const subcategoryId = queryParams.get('subcategoryId');
+    
+    if (subcategoryId && subcategories.length > 0 && categories.length > 0) {
+      const subcategory = subcategories.find(sub => sub.id === subcategoryId);
+      if (subcategory) {
+        const category = categories.find(cat => cat.id === subcategory.categoryId);
+        setSelectedCategory(category);
+        setSelectedSubcategory(subcategory);
+      }
+    }
+  }, [location.search, subcategories, categories]);
 
+  // Modify the back button handlers to update URL
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setSelectedSubcategory(null);
+    navigate('/home');
   };
 
   const handleBackToSubcategories = () => {
     setSelectedSubcategory(null);
+    navigate(`/home`);
   };
-
   const renderMenuItem = (item) => (
     <MenuItem 
       key={item.id} 
@@ -118,9 +135,17 @@ const filteredMenuItems = selectedSubcategory
       }
     }
   }, [subcategories, categories]);
-
   return (
     <div className="home-container" style={{ marginTop: '10px' }}>
+      <CategoryNavigator
+        onCategorySelect={setSelectedCategory}
+        onSubcategorySelect={(subcategory) => {
+          const category = categories.find(cat => cat.id === subcategory.categoryId);
+          setSelectedCategory(category);
+          setSelectedSubcategory(subcategory);
+        }}
+      />
+      
       {searchTerm ? (
         <>
           <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '55px' }}>

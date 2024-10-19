@@ -551,8 +551,9 @@
 // };
 
 // export default CategoryNavigator;
+// CategoryNavigator.jsx
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CloseOutlined, MenuOutlined, PlusOutlined, MinusOutlined } from '@ant-design/icons';
 import './categoryNavigator.css';
@@ -564,6 +565,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
   const [menuItems, setMenuItems] = useState([]);
   const [expandedCategories, setExpandedCategories] = useState({});
   const location = useLocation();
+  const navigate = useNavigate();
   const orgId = localStorage.getItem('orgId');
 
   useEffect(() => {
@@ -624,11 +626,32 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
   };
 
   const handleSubcategoryClick = (subcategory) => {
+    // Update URL and close navigator
+    navigate(`/home?subcategoryId=${subcategory.id}`);
+    setIsOpen(false);
+    
+    // Call the callback if provided
     if (onSubcategorySelect) {
       onSubcategorySelect(subcategory);
     }
   };
 
+  // Add this useEffect to handle URL params
+  useEffect(() => {
+    const queryParams = new URLSearchParams(location.search);
+    const subcategoryId = queryParams.get('subcategoryId');
+    
+    if (subcategoryId) {
+      const subcategory = subcategories.find(sub => sub.id === subcategoryId);
+      if (subcategory) {
+        // Expand the parent category
+        setExpandedCategories(prev => ({
+          ...prev,
+          [subcategory.categoryId]: true
+        }));
+      }
+    }
+  }, [location.search, subcategories]);
   const renderSubcategories = (categoryId) => {
     const filteredSubs = subcategories.filter(sub => sub.categoryId === categoryId);
     return filteredSubs.map(sub => (
