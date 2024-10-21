@@ -21,7 +21,8 @@ import {
   Drawer,
   Upload,
   Dropdown,
-  Divider
+  Divider,
+  Popover
 } from 'antd';
 import {
   PlusOutlined,
@@ -937,81 +938,131 @@ const columns = {
 
 
 
-  const ModernMenuItem = ({ item }) => (
-    <Card
-      hoverable
-      className="menu-item-card"
-      style={{
-        marginBottom: '16px',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-        backgroundColor: theme.cardBg
-      }}
-    >
-      <div style={{ display: 'flex', gap: '16px' }}>
-        <img
-          src={getImageUrl(item.image)}
-          alt={item.name}
+const ModernMenuItem = ({ item }) => (
+  <Card
+    hoverable
+    className="menu-item-card"
+    style={{
+      marginBottom: '16px',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+      backgroundColor: theme.cardBg,
+    }}
+  >
+    <div style={{ display: 'flex', gap: '16px', overflow: 'hidden' }}>
+      <img
+        src={getImageUrl(item.image)}
+        alt={item.name}
+        style={{
+          width: '100px',
+          height: '100px',
+          objectFit: 'cover',
+          borderRadius: '12px',
+        }}
+        onError={(e) => {
+          e.target.src = '/api/placeholder/100/100';
+        }}
+      />
+      <div style={{ flex: 1, overflow: 'hidden' }}>
+        <div
           style={{
-            width: '100px',
-            height: '100px',
-            objectFit: 'cover',
-            borderRadius: '12px'
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            overflow: 'hidden',
           }}
-          onError={(e) => {
-            e.target.src = '/api/placeholder/100/100';
-          }}
-        />
-        <div style={{ flex: 1 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Text strong style={{ fontSize: '18px' }}>{item.name}</Text>
-            <Text style={{ color: theme.primary, fontSize: '18px', fontWeight: 'bold' }}>
-              ₹{item.price}
+        >
+          <Popover content={item.name} placement="topLeft">
+            <Text
+              strong
+              style={{
+                fontSize: '18px',
+                maxWidth: '70%',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                cursor: 'pointer',
+              }}
+            >
+              {item.name}
             </Text>
-          </div>
-          <Text type="secondary" style={{ fontSize: '14px', display: 'block', marginTop: '4px' }}>
+          </Popover>
+          <Text
+            style={{
+              color: theme.primary,
+              fontSize: '18px',
+              fontWeight: 'bold',
+              marginLeft: '8px',
+            }}
+          >
+            ₹{item.price}
+          </Text>
+        </div>
+        <Popover content={item.description} placement="topLeft">
+          <Text
+            type="secondary"
+            style={{
+              fontSize: '14px',
+              display: 'block',
+              marginTop: '4px',
+              maxWidth: '100%',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              whiteSpace: 'nowrap',
+              cursor: 'pointer',
+            }}
+          >
             {item.description}
           </Text>
-          <div style={{ 
-            display: 'flex', 
-            justifyContent: 'space-between', 
+        </Popover>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
             alignItems: 'center',
-            marginTop: '12px' 
-          }}>
-            <Space>
-              <Switch
-                checked={item.isAvailable}
-                onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
-                style={{ backgroundColor: item.isAvailable ? theme.primary : '#f5f5f5' }}
-              />
-              <Badge
-                status={item.isAvailable ? 'success' : 'error'}
-                text={item.isAvailable ? 'Available' : 'Unavailable'}
-              />
-            </Space>
-            <Space>
-              <Button
-                type="text"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  setEditingItem(item);
-                  form.setFieldsValue(item);
-                  setIsModalVisible(true);
-                }}
-              />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => handleDelete(item.firebaseId)}
-              />
-            </Space>
-          </div>
+            marginTop: '12px',
+            overflow: 'hidden',
+          }}
+        >
+          <Space>
+            <Switch
+              checked={item.isAvailable}
+              onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
+              style={{
+                backgroundColor: item.isAvailable ? theme.primary : '#f5f5f5',
+              }}
+            />
+            <Badge
+              status={item.isAvailable ? 'success' : 'error'}
+              text={item.isAvailable ? 'Available' : 'Unavailable'}
+            />
+          </Space>
+          <Space>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setEditingItem(item);
+                form.setFieldsValue(item);
+                setIsModalVisible(true);
+              }}
+            />
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(item.firebaseId)}
+            />
+          </Space>
         </div>
       </div>
-    </Card>
-  );
+    </div>
+  </Card>
+);
+
+
+
 
   const ModernCategoryCard = ({ item, type }) => (
     <Card
