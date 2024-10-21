@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Spin, Typography, Layout } from 'antd';
+import { Spin, Typography } from 'antd';
 import { LoadingOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -13,48 +13,21 @@ const QREntry = () => {
     const [animationPhase, setAnimationPhase] = useState('initial');
     const API_URL = 'https://stage-smart-server-default-rtdb.firebaseio.com/restaurants';
 
-    // Animation keyframes as styles
-    const pulseAnimation = {
-        animation: 'pulse 2s infinite',
-    };
-
-    const fadeInUpAnimation = {
-        animation: 'fadeInUp 0.8s forwards',
-    };
-
-    const rotateAnimation = {
-        animation: 'rotate360 1s forwards',
-    };
-
-    // CSS animations
     const animationStyles = `
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.1); }
             100% { transform: scale(1); }
         }
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(30px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-        @keyframes rotate360 {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        @keyframes shimmer {
-            0% { background-position: -1000px 0; }
-            100% { background-position: 1000px 0; }
         }
     `;
 
@@ -63,27 +36,29 @@ const QREntry = () => {
             try {
                 const response = await fetch(`${API_URL}.json`);
                 if (!response.ok) throw new Error('Failed to fetch restaurant data');
-                
+
                 const data = await response.json();
                 const restaurantArray = Object.values(data);
                 const restaurantData = restaurantArray.find(r => r.orgId === orgId);
-                
+
                 if (restaurantData) {
                     setRestaurant(restaurantData);
                     localStorage.setItem('role', 'customer');
                     localStorage.setItem('orgId', orgId);
                     localStorage.setItem('tableNumber', tableNumber);
-                    
-                    // Extended animation sequence
+
+                    // Animation sequence
                     const sequence = async () => {
                         setAnimationPhase('appLogoEnter');
-                        await new Promise(r => setTimeout(r, 1500));
+                        await new Promise(r => setTimeout(r, 1200));
                         setAnimationPhase('restaurantLogoEnter');
-                        await new Promise(r => setTimeout(r, 1500));
+                        await new Promise(r => setTimeout(r, 1200));
                         setAnimationPhase('infoAppear');
-                        await new Promise(r => setTimeout(r, 2000));
+                        await new Promise(r => setTimeout(r, 1800));
+
+                        // Redirect to /home
                         sessionStorage.setItem('justSetOrgIdAndTable', 'true');
-                        window.location.reload();
+                        window.location.href = '/home';
                     };
                     sequence();
                 } else {
@@ -118,11 +93,7 @@ const QREntry = () => {
         left: 0,
         right: 0,
         bottom: 0,
-        background: `
-            linear-gradient(135deg, #fff5f5 0%, #fff 100%),
-            radial-gradient(circle at 50% 0%, #ffeded 0%, transparent 75%),
-            repeating-linear-gradient(45deg, #ff000008 0px, #ff000008 2px, transparent 2px, transparent 8px)
-        `,
+        background: 'linear-gradient(135deg, #ff4d4f, #ff7875)',
         zIndex: -1,
     };
 
@@ -134,44 +105,39 @@ const QREntry = () => {
         minHeight: '100vh',
         padding: '20px',
         position: 'relative',
+        textAlign: 'center',
         overflow: 'hidden',
     };
 
+    const cardStyle = {
+        padding: '25px',
+        borderRadius: '20px',
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        boxShadow: '0 8px 30px rgba(0, 0, 0, 0.2)',
+        width: '90%',
+        maxWidth: '400px',
+        textAlign: 'center',
+        opacity: animationPhase !== 'initial' ? 1 : 0,
+        transition: 'opacity 0.8s ease-out',
+        animation: animationPhase === 'infoAppear' ? 'fadeInUp 1.2s ease-in-out' : 'none',
+    };
+
     const appLogoStyle = {
-        width: '120px',
+        width: '80px',
         height: 'auto',
-        opacity: animationPhase === 'initial' ? 0 : 1,
-        transform: `translateY(${animationPhase === 'appLogoEnter' ? '0' : '-50px'})`,
-        transition: 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        animation: animationPhase === 'appLogoEnter' ? 'float 3s infinite ease-in-out' : 'none',
         marginBottom: '20px',
+        opacity: animationPhase === 'appLogoEnter' ? 1 : 0,
+        transform: animationPhase === 'appLogoEnter' ? 'translateY(0)' : 'translateY(-50px)',
+        transition: 'all 0.8s ease-out',
     };
 
     const restaurantLogoStyle = {
-        maxWidth: '200px',
-        width: '80%',
+        width: '70%',
+        maxWidth: '120px',
         opacity: animationPhase === 'restaurantLogoEnter' || animationPhase === 'infoAppear' ? 1 : 0,
-        transform: `scale(${animationPhase === 'restaurantLogoEnter' || animationPhase === 'infoAppear' ? 1 : 0.8})`,
-        transition: 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        animation: animationPhase === 'restaurantLogoEnter' ? 'pulse 2s infinite ease-in-out' : 'none',
-    };
-
-    const cardStyle = {
-        padding: '40px',
-        borderRadius: '20px',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        boxShadow: '0 10px 40px rgba(0, 0, 0, 0.1), 0 0 20px rgba(255, 77, 79, 0.1)',
-        width: '90%',
-        maxWidth: '450px',
-        transform: `translateY(${animationPhase !== 'initial' ? '0' : '20px'})`,
-        opacity: animationPhase !== 'initial' ? 1 : 0,
-        transition: 'all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)',
-    };
-
-    const infoStyle = {
-        opacity: animationPhase === 'infoAppear' ? 1 : 0,
-        transform: `translateY(${animationPhase === 'infoAppear' ? '0' : '20px'})`,
+        transform: animationPhase === 'restaurantLogoEnter' ? 'scale(1)' : 'scale(0.8)',
         transition: 'all 0.8s ease-out',
+        animation: animationPhase === 'restaurantLogoEnter' ? 'pulse 2s infinite' : 'none',
     };
 
     if (loading) {
@@ -179,28 +145,16 @@ const QREntry = () => {
             <div style={containerStyle}>
                 <style>{animationStyles}</style>
                 <div style={backgroundStyle} />
-                <div style={{ ...cardStyle, textAlign: 'center' }}>
-                    <Spin 
-                        indicator={
-                            <LoadingOutlined 
-                                style={{ 
-                                    fontSize: 48, 
-                                    color: '#ff4d4f',
-                                    ...rotateAnimation 
-                                }} 
-                            />
-                        } 
-                    />
-                    <Text style={{ 
-                        marginTop: '20px', 
-                        display: 'block',
-                        color: '#ff4d4f',
-                        fontSize: '1.1rem',
-                        ...fadeInUpAnimation 
-                    }}>
-                        Preparing your experience...
-                    </Text>
-                </div>
+                <Spin
+                    indicator={
+                        <LoadingOutlined
+                            style={{ fontSize: 50, color: '#fff' }}
+                        />
+                    }
+                />
+                <Text style={{ marginTop: '20px', color: '#fff', fontSize: '1.2rem' }}>
+                    Loading, please wait...
+                </Text>
             </div>
         );
     }
@@ -210,7 +164,7 @@ const QREntry = () => {
             <div style={containerStyle}>
                 <div style={backgroundStyle} />
                 <div style={cardStyle}>
-                    <Title level={4} style={{ color: '#ff4d4f', textAlign: 'center' }}>
+                    <Title level={4} style={{ color: '#ff4d4f' }}>
                         {error}
                     </Title>
                 </div>
@@ -222,13 +176,11 @@ const QREntry = () => {
         <div style={containerStyle}>
             <style>{animationStyles}</style>
             <div style={backgroundStyle} />
-            
-            <img 
+            <img
                 src="/assets/logo-png_1.png"
                 alt="App Logo"
                 style={appLogoStyle}
             />
-            
             <div style={cardStyle}>
                 {restaurant && (
                     <>
@@ -237,57 +189,12 @@ const QREntry = () => {
                             alt={restaurant.name}
                             style={restaurantLogoStyle}
                         />
-                        
-                        <div style={infoStyle}>
-                            <Title 
-                                level={2} 
-                                style={{ 
-                                    color: '#ff4d4f',
-                                    margin: '20px 0',
-                                    fontSize: 'calc(1.5rem + 1vw)',
-                                    textAlign: 'center',
-                                    fontWeight: 600,
-                                }}
-                            >
-                                Welcome to {restaurant.name}
-                            </Title>
-                            
-                            <div style={{
-                                background: 'linear-gradient(45deg, #ff4d4f, #ff7875)',
-                                padding: '15px 25px',
-                                borderRadius: '12px',
-                                marginTop: '20px',
-                            }}>
-                                <Text 
-                                    style={{ 
-                                        fontSize: '1.2rem',
-                                        color: 'white',
-                                        display: 'block',
-                                        textAlign: 'center',
-                                    }}
-                                >
-                                    Table {tableNumber}
-                                </Text>
-                            </div>
-                            
-                            <div 
-                                style={{ 
-                                    marginTop: '30px',
-                                    display: 'flex',
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    gap: '12px',
-                                    background: 'rgba(255, 77, 79, 0.1)',
-                                    padding: '12px',
-                                    borderRadius: '8px',
-                                }}
-                            >
-                                <Spin size="small" />
-                                <Text style={{ color: '#ff4d4f' }}>
-                                    Preparing your menu...
-                                </Text>
-                            </div>
-                        </div>
+                        <Title level={3} style={{ color: '#ff4d4f', margin: '20px 0' }}>
+                            Welcome to {restaurant.name}
+                        </Title>
+                        <Text style={{ fontSize: '1.2rem', color: '#555' }}>
+                            Table {tableNumber}
+                        </Text>
                     </>
                 )}
             </div>
