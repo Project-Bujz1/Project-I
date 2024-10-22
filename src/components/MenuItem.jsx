@@ -14,6 +14,24 @@ function MenuItem({ item, onItemAdded }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const itemRef = useRef(null);
 
+  // Get the correct image URL based on the image data structure
+  const getImageUrl = (imageData) => {
+    if (!imageData) return ''; // Return empty string or a default image URL
+    
+    // If imageData is a string, it's a direct URL
+    if (typeof imageData === 'string') {
+      return imageData;
+    }
+    
+    // If imageData is an object with file.url, use that
+    if (imageData.file && imageData.file.url) {
+      return imageData.file.url;
+    }
+    
+    // Return empty string or default image if no valid image data
+    return '';
+  };
+
   useEffect(() => {
     const cartItem = cart.find((cartItem) => cartItem.id === item.id);
     if (cartItem) {
@@ -69,6 +87,12 @@ function MenuItem({ item, onItemAdded }) {
 
   const handleImageLoad = () => {
     setImageLoaded(true);
+  };
+
+  const handleImageError = (e) => {
+    // Handle image loading errors
+    console.error('Error loading image:', e);
+    e.target.src = '/path-to-your-fallback-image.jpg'; // Add a fallback image
   };
 
   const styles = {
@@ -140,18 +164,21 @@ function MenuItem({ item, onItemAdded }) {
       fontSize: '14px',
     },
   };
+  const imageUrl = getImageUrl(item.image);
 
   return (
     <div style={styles.menuItem} ref={itemRef}>
       <div style={styles.imageContainer}>
         {!imageLoaded && <FoodLoader />}
         <img
-          src={item.image}
+          src={imageUrl}
           alt={item.name}
           style={styles.image}
           onLoad={handleImageLoad}
+          onError={handleImageError}
         />
       </div>
+      {/* Rest of the component remains the same */}
       <div style={styles.content}>
         <h3 style={styles.title}>{item.name}</h3>
         <p style={styles.description}>{item.description}</p>
@@ -178,7 +205,7 @@ function MenuItem({ item, onItemAdded }) {
       </div>
       {showAnimation && (
         <FlyingItemAnimation
-          itemImage={item.image}
+          itemImage={imageUrl} // Use the processed imageUrl here as well
           startPosition={animationStartPosition}
           endPosition={getCartIconPosition()}
           onAnimationComplete={handleAnimationComplete}
