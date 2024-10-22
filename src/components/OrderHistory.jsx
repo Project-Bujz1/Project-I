@@ -302,7 +302,8 @@ function OrderHistory() {
     `,
     minHeight: '100vh',
     padding: '15px',
-    fontFamily: "'Poppins', sans-serif"
+    fontFamily: "'Poppins', sans-serif",
+    marginTop : '25px'
   };
 
   useEffect(() => {
@@ -496,6 +497,7 @@ function OrderHistory() {
                   color={getStatusInfo(order.status).color}
                 >
                   <Card
+                  hoverable
                     style={{
                       borderRadius: '15px',
                       boxShadow: '0 4px 15px rgba(0,0,0,0.1)',

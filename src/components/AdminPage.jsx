@@ -277,7 +277,8 @@ import {
   SoundOutlined,
   CloseCircleOutlined,
   DollarOutlined,
-  ShoppingOutlined
+  ShoppingOutlined,
+  TableOutlined
 } from '@ant-design/icons';
 import notificationSound from './notification.mp3';
 
@@ -530,7 +531,7 @@ const AdminOrderComponent = () => {
       paddingTop: '90px'
     }}>
       <div style={{
-        maxWidth: '1200px',
+        maxWidth: '1600px',
         margin: '0 auto',
         padding: '20px',
       }}>
@@ -554,7 +555,15 @@ const AdminOrderComponent = () => {
             alignItems: 'center',
             gap: '10px'
           }}>
-            <ShoppingOutlined /> Order Management
+          <h1 style={{ 
+            color: '#ff4d4f',
+            fontSize: '1.5rem',
+            fontWeight: '700',
+            margin: 0,
+            textTransform: 'uppercase',
+          }}>
+            Manage Orders
+          </h1>
           </Title>
           <div style={{
             display: 'flex',
@@ -602,7 +611,6 @@ const AdminOrderComponent = () => {
                   hoverable
                   style={{
                     borderRadius: '15px',
-                    overflow: 'hidden',
                     boxShadow: newOrders.includes(order.id) 
                       ? '0 0 20px rgba(255, 77, 79, 0.3)'
                       : '0 4px 12px rgba(0,0,0,0.05)',
@@ -615,46 +623,57 @@ const AdminOrderComponent = () => {
                   bodyStyle={{ padding: '20px' }}
                 >
                   <div style={{
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    marginBottom: '15px'
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      marginBottom: '20px'
                   }}>
                     <div>
-                      <Title level={4} style={{
-                        margin: 0,
-                        color: '#ff4d4f',
-                        fontSize: '1.5rem'
+                      <h3  style={{
+                          color: '#ff4d4f',
+                          fontSize: '1.4rem',
+                          fontWeight: '600',
+                          margin: 0
                       }}>
                         #{order.id}
-                      </Title>
-                      <Tag color="#ff4d4f" style={{
-                        marginTop: '8px',
-                        borderRadius: '4px',
-                        padding: '4px 8px'
-                      }}>
-                        Table {order.tableNumber}
-                      </Tag>
+                      </h3>
+                      <div style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '8px',
+                          marginTop: '8px'
+                        }}>
+                          <TableOutlined style={{ color: '#ff4d4f' }} />
+                          <span style={{ fontSize: '1.1rem' }}>Table {order.tableNumber}</span>
+                        </div>
                     </div>
-                    <div style={{
+
+                  </div>
+                  <div style={{
                       display: 'flex',
                       alignItems: 'center',
                       gap: '5px',
+                      marginBottom: '25px',
                       background: '#fff',
                       padding: '8px 12px',
                       borderRadius: '8px',
                       boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                     }}>
-                      <DollarOutlined style={{ color: '#ff4d4f' }} />
-                      <Text strong>₹{order.total}</Text>
+                       <DollarOutlined style={{ color: '#ff4d4f' }} />
+                        <span style={{ 
+                          fontSize: '1.2rem', 
+                          fontWeight: '600', 
+                          color: '#ff4d4f' 
+                        }}>
+                          ₹{order.total}
+                        </span>
                     </div>
-                  </div>
 
                   <div style={{
                     background: 'rgba(255, 255, 255, 0.8)',
                     borderRadius: '10px',
                     padding: '15px',
-                    marginBottom: '15px'
+                    marginBottom: '5px'
                   }}>
                     <Text strong style={{ display: 'block', marginBottom: '10px' }}>
                       Order Items
