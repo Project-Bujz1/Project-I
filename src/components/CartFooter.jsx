@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -8,12 +8,24 @@ const CartFooter = () => {
   const { cart } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const [showCelebration, setShowCelebration] = useState(false);
 
   // Calculate total items in cart
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   // Calculate total price
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+  // Trigger celebration when a new item is added to the cart
+  useEffect(() => {
+    // Check if the component should render the celebration
+    if (location.pathname === '/home' && totalItems > 0) {
+      setShowCelebration(true);
+      // Hide the celebration animation after 2 seconds
+      const timeout = setTimeout(() => setShowCelebration(false), 5000);
+      return () => clearTimeout(timeout);
+    }
+  }, [totalItems, location.pathname]);
 
   // Only show on home screen and when cart has items
   if (location.pathname !== '/home' || totalItems === 0) return null;
@@ -31,11 +43,11 @@ const CartFooter = () => {
           left: 0,
           right: 0,
           padding: '16px',
-          background: 'linear-gradient(90deg, red, #ef4444)', // Red gradient background
-          boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.3)', // Slightly stronger shadow
+          background: 'linear-gradient(90deg, red, #ef4444)',
+          boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.3)',
           borderTop: '1px solid #e5e7eb',
           zIndex: 50,
-          borderRadius: '16px 16px 0 0', // Rounded top corners
+          borderRadius: '16px 16px 0 0',
           color: 'white',
         }}
       >
@@ -56,7 +68,13 @@ const CartFooter = () => {
             gap: '12px'
           }}>
             <div style={{ position: 'relative' }}>
-              <ShoppingCart style={{
+              {/* Replace the static cart icon with an animated GIF */}
+              <img 
+                src="/assets/gif-2.gif" // Update this path to the location of your GIF
+                alt="Cart Icon"
+                style={{ width: '48px', height: '48px' }}
+              />
+                            <ShoppingCart style={{
                 width: '28px',
                 height: '28px',
                 color: 'white', // White icon for contrast
@@ -102,16 +120,16 @@ const CartFooter = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               style={{
-                background: 'white', // White background for the button
-                color: 'black', // Black text for contrast
+                background: 'white',
+                color: 'black',
                 padding: '10px 28px',
                 borderRadius: '9999px',
                 fontSize: '15px',
                 fontWeight: 600,
                 transition: 'background-color 0.3s',
-                border: '2px solid red', // Red border for consistency
+                border: '2px solid red',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)', // Subtle shadow for the button
+                boxShadow: '0 4px 14px rgba(0, 0, 0, 0.2)',
               }}
               onClick={(e) => {
                 e.stopPropagation();
@@ -122,6 +140,24 @@ const CartFooter = () => {
             </motion.button>
           </div>
         </div>
+
+        {/* Celebration GIF Animation */}
+        {showCelebration && (
+          <motion.img
+            src="/assets/gif-1.gif" // Update this path to the location of your GIF
+            alt="Celebration"
+            initial={{ opacity: 0, scale: 1.0 }}
+            animate={{ opacity: 1, scale: 2 }}
+            exit={{ opacity: 0, scale: 1.0 }}
+            style={{
+              position: 'absolute',
+              bottom: '60px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 51,
+            }}
+          />
+        )}
       </motion.div>
     </AnimatePresence>
   );
