@@ -38,7 +38,7 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
           handleStopListening();
           setErrorState(true);
         }
-      }, 10000);
+      }, 3000);
     }
 
     return () => {
@@ -213,6 +213,7 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
         suffix={suffixIcon}
         onSearch={() => handleSearch(searchText)}
         style={{ width: '100%' }}
+        className="custom-search-input"
       />
 
       <Modal
@@ -228,6 +229,34 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
       </Modal>
 
       <style jsx global>{`
+       .custom-search-input .ant-input-wrapper {
+    background-color: #ffffff;
+  }
+  
+  .custom-search-input .ant-input {
+    border-color: #ff4d4f;
+  }
+  
+  .custom-search-input .ant-input:hover,
+  .custom-search-input .ant-input:focus {
+    border-color: #ff7875;
+    box-shadow: none;
+  }
+  
+  .custom-search-input .ant-input-search-button {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+  }
+  
+  .custom-search-input .ant-input-search-button:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
+  }
+  
+  .custom-search-input .ant-input-clear-icon:hover,
+  .custom-search-input .ant-input-clear-icon:active {
+    color: #ff4d4f;
+  }
         @keyframes soundWave {
           0%, 100% { height: 20px; }
           50% { height: 40px; }
