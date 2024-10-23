@@ -923,7 +923,7 @@ const WaitingScreen = () => {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', minHeight: '100vh', backgroundColor: '#f8f9fa' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', minHeight: '100vh', backgroundColor: '#f8f9fa', marginTop: "70PX" }}>
       <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
         <Switch
           checkedChildren={<SoundOutlined />}
