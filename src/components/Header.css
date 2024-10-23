@@ -64,6 +64,12 @@
   .header__search-input {
     flex-grow: 1; /* Make the search input take up available space */
   }
+
+  .header__search-mic {
+    flex-grow: 1;
+    padding: 70;
+    font-size: large;
+  }
   
   .header__menu-button {
     margin-right: 20px;

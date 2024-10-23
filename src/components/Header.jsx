@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, Badge, Tooltip, Modal, Rate } from 'antd';
 import { TiThMenu } from 'react-icons/ti';
-import { AiOutlineShoppingCart, AiOutlineFileText, AiFillPhone, AiFillMail, AiFillEnvironment } from 'react-icons/ai';
+import { AiOutlineShoppingCart, AiOutlineFileText, AiFillPhone, AiFillMail, AiFillEnvironment, AiOutlineAudio } from 'react-icons/ai';
 import { IoPowerSharp } from "react-icons/io5";
 import { FaUtensils } from "react-icons/fa";
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import './Header.css';
 import CartHitEffect from './CartHitEffect';
 
@@ -22,11 +23,13 @@ function Header({ toggleDrawer, onSearch }) {
   const [isSignOutModalVisible, setIsSignOutModalVisible] = useState(false);
   const [restaurantLogo, setRestaurantLogo] = useState('');
   const [isLogoModalVisible, setIsLogoModalVisible] = useState(false);
-  const [role, setRole] = useState(localStorage.getItem('role'));  const [restaurantDetails, setRestaurantDetails] = useState(null);
-
-  // State for dynamic placeholder
+  const [role, setRole] = useState(localStorage.getItem('role'));
+  const [restaurantDetails, setRestaurantDetails] = useState(null);
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const menuItems = ["Fish", "Chicken", "Pizza", "Burger", "Pasta"]; // Add your menu items here
+  const menuItems = ["Fish", "Chicken", "Pizza", "Burger", "Pasta"];
+
+  // Speech recognition state
+  const { transcript, listening, resetTranscript } = useSpeechRecognition();
 
   useEffect(() => {
     fetchRestaurantDetails();
@@ -39,6 +42,18 @@ function Header({ toggleDrawer, onSearch }) {
 
     return () => clearInterval(interval);
   }, [menuItems.length]);
+
+  useEffect(() => {
+    if (transcript) {
+      setSearchTerm(transcript);
+      if (onSearch) {
+        onSearch(transcript);
+      }
+      if (location.pathname !== '/home') {
+        navigate('/home');
+      }
+    }
+  }, [transcript, onSearch, location.pathname, navigate]);
 
   const fetchRestaurantDetails = async () => {
     try {
@@ -83,29 +98,28 @@ function Header({ toggleDrawer, onSearch }) {
       navigate('/');
     }
   }, [role, navigate]);
-
-  const handleOrderSummaryClick = () => {
-    navigate('/summary-view');
-  };
-
-  const handleSignOut = () => {
-    setIsSignOutModalVisible(true);
-  };
-
-  const handleConfirmSignOut = () => {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('role');
-    setRole(null); // Update the role state to null
-    setIsSignOutModalVisible(false);
-  };
-
-  const handleCancelSignOut = () => {
-    setIsSignOutModalVisible(false);
-  };
-
-  const triggerHitEffect = () => {
-    setShowHitEffect(true);
-    setTimeout(() => setShowHitEffect(false), 300);
+    const handleOrderSummaryClick = () => {
+      navigate('/summary-view');
+    };
+  
+    const handleSignOut = () => {
+      setIsSignOutModalVisible(true);
+    };
+  
+    const handleConfirmSignOut = () => {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('role');
+      setRole(null); // Update the role state to null
+      setIsSignOutModalVisible(false);
+    };
+  
+    const handleCancelSignOut = () => {
+      setIsSignOutModalVisible(false);
+    };
+  
+    const triggerHitEffect = () => {
+      setShowHitEffect(true);
+      setTimeout(() => setShowHitEffect(false), 300);
   };
 
   const handleSearch = (value) => {
@@ -122,21 +136,23 @@ function Header({ toggleDrawer, onSearch }) {
     setIsLogoModalVisible(true);
   };
 
+  const handleVoiceSearch = () => {
+    if (!listening) {
+      SpeechRecognition.startListening({ continuous: true });
+    } else {
+      SpeechRecognition.stopListening();
+    }
+  };
+
   return (
     <header className="header">
-      {/* ... (previous header content) */}
-
       <div className="header__container">
         <div className="header__content">
           <div className="header__left">
             <TiThMenu className="header__menu-button" onClick={toggleDrawer} />
             {localStorage.role === 'customer' ? (
-  <Link to="/home" className="header__logo">
-    <img 
-      src={process.env.PUBLIC_URL + '/assets/logo-transparent-png.png'} 
-      alt="Smart Server" 
-      className="header__logo-image" 
-    />
+            <Link to="/home" className="header__logo">
+              <img src="/assets/logo-transparent-png.png" alt="Smart Server" className="header__logo-image" />
     <span className="header__logo-text">Smart Server</span>
   </Link>
 ) : (
@@ -152,16 +168,23 @@ function Header({ toggleDrawer, onSearch }) {
 
           </div>
           <div className="header__center">
-            {localStorage.getItem('role') !== "admin" && <Search
+          {localStorage.getItem('role') !== "admin" && <Search
               placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
               className="header__search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onSearch={handleSearch}
+              // enterButton
+              addonAfter={
+                <AiOutlineAudio
+                className="header__search-mic"
+                  onClick={handleVoiceSearch}
+                  style={{ color: 'red', cursor: 'pointer',fontSize: '20px' , marginleft: "22px" }}
+                />
+              }
             />}
 
           </div>
-
           <div className="header__right">
           {restaurantLogo && (
               <div className="header__restaurant-logo-container">
@@ -198,13 +221,11 @@ function Header({ toggleDrawer, onSearch }) {
                 onClick={handleSignOut} 
                 className="header__icon"
               />
-            </Tooltip>}
-          </div>
+            </Tooltip>}          </div>
         </div>
       </div>
-
-      {/* Sign Out Confirmation Modal */}
-      <Modal
+            {/* Sign Out Confirmation Modal */}
+            <Modal
         title="Confirm Sign Out"
         visible={isSignOutModalVisible}
         onOk={handleConfirmSignOut}
