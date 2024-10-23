@@ -647,7 +647,6 @@
 // };
 
 // export default WaitingScreen;
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch, Progress, Tooltip } from 'antd';
@@ -671,7 +670,56 @@ const WaitingScreen = () => {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [confirmCancelVisible, setConfirmCancelVisible] = useState(false); // State for confirmation modal
   const ws = useRef(null);
-  const audioRef = useRef(new Audio(notificationSound));
+  const audioRef = useRef(new Audio(notificationSound));  const [currentGifIndex, setCurrentGifIndex] = useState(0);
+  const GIF_INTERVAL = 5000; // 5 seconds per GIF
+
+  // GIF arrays for each status
+  const statusGifs = {
+    pending: [
+      '/assets/pending1-1.gif',
+      '/assets/pending2-2.gif',
+      '/assets/pending3-3.gif'
+    ],
+    preparing: [
+      '/assets/preparing1.gif',
+      '/assets/preparing2.gif',
+      '/assets/preparing3.gif'
+    ],
+    ready: [
+      '/assets/preparing1.gif',
+      '/assets/preparing2.gif',
+      '/assets/preparing3.gif'
+    ],
+    completed: [
+      '/assets/preparing1.gif',
+      '/assets/preparing2.gif',
+      '/assets/preparing3.gif'
+    ],
+    delayed: [
+      '/assets/preparing1.gif',
+      '/assets/preparing2.gif',
+      '/assets/preparing3.gif'
+    ],
+    cancelled: [
+      '/assets/pending1-1.gif',
+      '/assets/pending2-2.gif',
+      '/assets/pending3-3.gif'
+    ]
+  };
+
+  // GIF rotation effect
+  useEffect(() => {
+    if (order?.status) {
+      const interval = setInterval(() => {
+        setCurrentGifIndex(prevIndex => {
+          const currentStatusGifs = statusGifs[order.status] || [];
+          return (prevIndex + 1) % currentStatusGifs.length;
+        });
+      }, GIF_INTERVAL);
+
+      return () => clearInterval(interval);
+    }
+  }, [order?.status]);
 
   useEffect(() => {
     const fetchOrder = async () => {
@@ -886,6 +934,7 @@ const WaitingScreen = () => {
         />
         <Text style={{ marginLeft: '8px', color: '#343a40' }}>Sound Notifications</Text>
       </div>
+      
       <Card
         className="status-card"
         style={{
@@ -901,6 +950,31 @@ const WaitingScreen = () => {
         }}
       >
         <Title level={3} style={{ color: '#343a40' }}>Order #{order.displayOrderId}</Title>
+        
+        {/* New GIF Display Section */}
+        <div style={{ 
+          marginBottom: '20px',
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          height: '200px',
+          backgroundColor: '#f8f9fa',
+          position: 'relative'
+        }}>
+          {order?.status && statusGifs[order.status] && (
+            <img 
+              src={statusGifs[order.status][currentGifIndex]}
+              alt={`Order ${order.status} animation`}
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                transition: 'opacity 0.3s ease-in-out'
+              }}
+            />
+          )}
+        </div>
+
         <Progress
           type="circle"
           percent={getStatusProgress(order.status)}
@@ -912,13 +986,15 @@ const WaitingScreen = () => {
           }}
           trailColor="#f0f0f0"
         />
+        
         <Title level={4} style={{ marginTop: '16px', color: '#343a40' }}>{order.statusMessage}</Title>
         <Text type="secondary" style={{ color: '#6c757d' }}>We'll notify you when your order status changes</Text>
+        
         <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-        <Tooltip title="Cancel your order" placement="bottom">
+          <Tooltip title="Cancel your order" placement="bottom">
             <Button
               icon={<CloseOutlined />}
-              onClick={handleCancelOrder} // Show confirmation modal
+              onClick={handleCancelOrder}
               type="default"
               disabled={order.status !== 'pending' && order.status !== 'preparing'}
               style={{ backgroundColor: '#f8f9fa', color: '#ff4d4f', borderColor: '#e9ecef', fontWeight: 'bold' }}
@@ -939,6 +1015,8 @@ const WaitingScreen = () => {
           </Tooltip>
         </div>
       </Card>
+
+      {/* Keep all existing modals */}
       <Modal
         title="Thank You!"
         visible={isModalVisible}
@@ -977,55 +1055,63 @@ const WaitingScreen = () => {
           style={{ marginBottom: '10px' }}
         />
       </Modal>
-      {/* Confirmation Modal */}
+
       <Modal
-                title={
-                  <div style={{ display: 'flex', alignItems: 'center', color: '#ff4d4f' }}>
-                    <ExclamationCircleOutlined style={{ marginRight: '8px' }} />
-                    Confirm Cancellation
-                  </div>
-                }
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', color: '#ff4d4f' }}>
+            <ExclamationCircleOutlined style={{ marginRight: '8px' }} />
+            Confirm Cancellation
+          </div>
+        }
         visible={confirmCancelVisible}
         onOk={handleConfirmCancelOrder}
         onCancel={() => setConfirmCancelVisible(false)}
         centered
         footer={[
-          <Button key="cancel" type="primary" onClick={() => setConfirmCancelVisible(false)}             style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
->
+          <Button key="cancel" onClick={() => setConfirmCancelVisible(false)}>
             Cancel
           </Button>,
-          <Button key="confirm" type="primary" onClick={handleConfirmCancelOrder}             style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
->
+          <Button 
+            key="confirm" 
+            type="primary" 
+            onClick={handleConfirmCancelOrder}
+            style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
+          >
             Confirm
           </Button>,
         ]}
         bodyStyle={{ backgroundColor: '#fff5f5', color: '#ff4d4f', textAlign: 'center' }}
       >
-                <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>Are you sure you want to cancel your order?</p>
+        <p style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '16px' }}>
+          Are you sure you want to cancel your order?
+        </p>
       </Modal>
-      {/* Modal for cancellation confirmation */}
+
       <Modal
-                title={
-                  <div style={{ display: 'flex', alignItems: 'center', color: '#ff4d4f' }}>
-                    <CheckCircleOutlined style={{ marginRight: '8px' }} />
-                    Cancellation Confirmation
-                  </div>
-                }
+        title={
+          <div style={{ display: 'flex', alignItems: 'center', color: '#ff4d4f' }}>
+            <CheckCircleOutlined style={{ marginRight: '8px' }} />
+            Cancellation Confirmation
+          </div>
+        }
         visible={cancelModalVisible}
         onOk={handleCancelModalClose}
         onCancel={handleCancelModalClose}
         footer={null}
         centered
         closable={false}
-        style={{ backdropFilter: 'blur(5px)' }} // Optional for blurred background
+        style={{ backdropFilter: 'blur(5px)' }}
       >
         <div style={{ textAlign: 'center' }}>
           <CheckCircleOutlined style={{ fontSize: '48px', color: '#52c41a' }} />
           <Title level={4} style={{ marginTop: '16px' }}>Cancelled successfully</Title>
           <Text>Your order has been cancelled successfully.</Text>
           <div style={{ marginTop: '20px' }}>
-            <Button type="primary" onClick={handleCancelModalClose}             style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
- >
+            <Button 
+              type="primary" 
+              onClick={handleCancelModalClose}
+              style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
+            >
               Go to Home
             </Button>
           </div>
