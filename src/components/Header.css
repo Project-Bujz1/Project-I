@@ -104,4 +104,22 @@
       height: 40px;
       width: 48px;
     }
+
+    .header__search-input::placeholder {
+      display: block;
+      animation: swipeUp 0.5s ease-in-out;
+    }
+    
+    @keyframes swipeUp {
+      0% {
+        transform: translateY(20px);
+        opacity: 0;
+      }
+      100% {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    
   }

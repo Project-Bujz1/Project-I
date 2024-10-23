@@ -22,13 +22,23 @@ function Header({ toggleDrawer, onSearch }) {
   const [isSignOutModalVisible, setIsSignOutModalVisible] = useState(false);
   const [restaurantLogo, setRestaurantLogo] = useState('');
   const [isLogoModalVisible, setIsLogoModalVisible] = useState(false);
-  
-  // Add state to track the role
   const [role, setRole] = useState(localStorage.getItem('role'));  const [restaurantDetails, setRestaurantDetails] = useState(null);
+
+  // State for dynamic placeholder
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
+  const menuItems = ["Fish", "Chicken", "Pizza", "Burger", "Pasta"]; // Add your menu items here
 
   useEffect(() => {
     fetchRestaurantDetails();
   }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentPlaceholder((prevIndex) => (prevIndex + 1) % menuItems.length);
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [menuItems.length]);
 
   const fetchRestaurantDetails = async () => {
     try {
@@ -143,7 +153,7 @@ function Header({ toggleDrawer, onSearch }) {
           </div>
           <div className="header__center">
             {localStorage.getItem('role') !== "admin" && <Search
-              placeholder="Search menu..."
+              placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
               className="header__search-input"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
