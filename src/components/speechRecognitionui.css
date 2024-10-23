@@ -1,0 +1,104 @@
+/* SpeechRecognitionUI.css */
+
+.speech-recognition-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    transition: opacity 0.3s ease;
+    z-index: 1000;
+  }
+  
+  .speech-recognition-container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    padding: 2rem;
+    width: 24rem;
+    z-index: 1001;
+    transition: all 0.3s ease;
+  }
+  
+  .mic-button {
+    width: 5rem;
+    height: 5rem;
+    border-radius: 50%;
+    background-color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+  }
+  
+  .mic-button.listening {
+    animation: pulse 2s infinite;
+  }
+  
+  .sound-wave {
+    display: flex;
+    justify-content: center;
+    gap: 0.25rem;
+    height: 2rem;
+    margin: 1rem 0;
+  }
+  
+  .sound-wave-bar {
+    width: 0.25rem;
+    background-color: #ef4444;
+    border-radius: 999px;
+    animation: soundwave 1s ease-in-out infinite;
+  }
+  
+  .suggestion-button {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #fef2f2;
+    color: #ef4444;
+    text-align: left;
+    transition: background-color 0.2s ease;
+  }
+  
+  .suggestion-button:hover {
+    background-color: #fee2e2;
+  }
+  
+  .try-again-button {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #ef4444;
+    color: white;
+    text-align: center;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .try-again-button:hover {
+    background-color: #dc2626;
+  }
+  
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
+    }
+    70% {
+      transform: scale(1.05);
+      box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+    }
+    100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 rgba(239, 68, 68, 0);
+    }
+  }
+  
+  @keyframes soundwave {
+    0% { transform: scaleY(0.2); }
+    50% { transform: scaleY(1); }
+    100% { transform: scaleY(0.2); }
+  }

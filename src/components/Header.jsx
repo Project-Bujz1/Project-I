@@ -10,6 +10,8 @@ import { useCartIcon } from '../contexts/CartIconContext';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import './Header.css';
 import CartHitEffect from './CartHitEffect';
+import SpeechRecognitionUI from './SpeechRecognitionUI';
+import EnhancedSpeechSearch from './EnhancedSpeechSearch';
 
 const { Search } = Input;
 
@@ -143,6 +145,16 @@ function Header({ toggleDrawer, onSearch }) {
       SpeechRecognition.stopListening();
     }
   };
+  
+  const handleSpeechResult = (result) => {
+    setSearchTerm(result);
+    if (onSearch) {
+      onSearch(result);
+    }
+    if (location.pathname !== '/home') {
+      navigate('/home');
+    }
+  };
 
   return (
     <header className="header">
@@ -168,21 +180,13 @@ function Header({ toggleDrawer, onSearch }) {
 
           </div>
           <div className="header__center">
-          {localStorage.getItem('role') !== "admin" && <Search
-              placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
-              className="header__search-input"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              onSearch={handleSearch}
-              // enterButton
-              addonAfter={
-                <AiOutlineAudio
-                className="header__search-mic"
-                  onClick={handleVoiceSearch}
-                  style={{ color: 'red', cursor: 'pointer',fontSize: '20px' , marginleft: "22px" }}
-                />
-              }
-            />}
+          {localStorage.getItem('role') !== "admin" && 
+            <EnhancedSpeechSearch 
+  onSearch={handleSearch}
+  placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
+/>
+
+            }
 
           </div>
           <div className="header__right">
@@ -339,6 +343,7 @@ function Header({ toggleDrawer, onSearch }) {
           </div>
         )}
       </Modal>
+   {/* Add this right before the closing header tag */}
     </header>
   );
 }

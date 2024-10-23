@@ -126,6 +126,42 @@
         opacity: 1;
       }
     }
+/* Add these to your existing Header.css */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s ease-out;
+}
+
+/* Ensure the header has proper z-index */
+.header {
+  position: relative;
+  z-index: 50;
+}
+
+/* Style adjustments for mobile */
+@media (max-width: 768px) {
+  .header__center {
+    flex: 1;
+    margin: 0 8px;
+  }
+  
+  .voice-search-container {
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+}
     
   }
