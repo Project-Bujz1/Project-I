@@ -38,7 +38,7 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
           handleStopListening();
           setErrorState(true);
         }
-      }, 3000);
+      }, 10000);
     }
 
     return () => {
