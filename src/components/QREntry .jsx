@@ -394,7 +394,7 @@ const QREntry = () => {
         }
     }, [orgId, tableNumber]);
 
-    
+
     const containerStyle = {
         display: 'flex',
         flexDirection: 'column',
@@ -527,12 +527,12 @@ const QREntry = () => {
                     <>
                         {/* Restaurant Logo with Decorative Frame */}
                         <div style={{ position: 'relative' }}>
-                            <IconCircle rotation={45}>
+                            {/* <IconCircle rotation={45}> */}
                                 <Croissant size={20} style={{ position: 'absolute', top: 0, left: '50%', transform: 'translateX(-50%) rotate(-45deg)' }} />
                                 <Fish size={20} style={{ position: 'absolute', bottom: 0, left: '50%', transform: 'translateX(-50%) rotate(-45deg)' }} />
                                 <IceCream2 size={20} style={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%) rotate(-45deg)' }} />
                                 <Salad size={20} style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%) rotate(-45deg)' }} />
-                            </IconCircle>
+                            {/* </IconCircle> */}
                             <img
                                 src={restaurant.logo}
                                 alt={restaurant.name}
