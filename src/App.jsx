@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Header from './components/Header';
-import Drawer from './components/Drawer';
+import FooterNavigation from './components/FooterNavigation';
 import Home from './pages/Home';
 import Cart from './pages/Cart';
 import OrderSummary from './pages/OrderSummary';
@@ -15,22 +15,14 @@ import MenuManagement from './components/MenuManagement';
 import WaitingScreen from './components/WaitingScreen';
 import LandingPage from './components/LandingPage';
 import RestaurantManagement from './components/RestaurantManagement';
-import BillSummary from './components/BillSummary';
 import RestaurantDashBoard from './components/RestaurantDashboard';
 import SummaryView from './components/SummaryView';
 import MyOrders from './components/MyOrders';
 import MenuItem from './components/MenuItem';
 import QREntry from './components/QREntry ';
-import CartFooter from './components/CartFooter';
-import CategoryNavigator from './components/BillSummary';
 
 const App = () => {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
 
   const handleSearch = (value) => {
     setSearchTerm(value);
@@ -52,12 +44,8 @@ const App = () => {
                 path="*"
                 element={
                   <>
-                    <Header 
-                      toggleDrawer={toggleDrawer} 
-                      onSearch={handleSearch}
-                    />
-                    <Drawer isOpen={isDrawerOpen} onClose={toggleDrawer} />
-                    <div className="container">
+                    <Header onSearch={handleSearch} />
+                    <div className="container pb-16"> {/* Added padding bottom for footer */}
                       <Routes>
                         <Route 
                           path="/home" 
@@ -68,7 +56,6 @@ const App = () => {
                             />
                           } 
                         />
-                        {/* Add MenuItem route inside the layout */}
                         <Route 
                           path="/home/menu/:subcategoryId" 
                           element={
@@ -79,7 +66,7 @@ const App = () => {
                           }
                         />
                         <Route path="/cart" element={<Cart />} />
-                        <Route path="/admin" element={<AdminPage/>} />
+                        <Route path="/admin" element={<AdminPage />} />
                         <Route path="/order-summary" element={<OrderSummary />} />
                         <Route path="/summary-view" element={<SummaryView />} />
                         <Route path="/order-history" element={<OrderHistory />} />
@@ -91,13 +78,12 @@ const App = () => {
                         <Route path="/my-orders" element={<MyOrders />} />
                       </Routes>
                     </div>
-                    <CartFooter />
-                    <CategoryNavigator />
+                    <FooterNavigation />
                   </>
                 }
               />
-      </Routes>
-      </div>
+            </Routes>
+          </div>
         </CartIconProvider>
       </CartProvider>
     </Router>

@@ -769,7 +769,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
       <motion.button
         style={{
           position: 'fixed',
-          bottom: '100px',
+          bottom: '150px',
           right: '24px',
           zIndex: 50,
           border: 'none',

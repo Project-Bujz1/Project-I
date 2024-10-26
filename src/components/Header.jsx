@@ -161,7 +161,7 @@ function Header({ toggleDrawer, onSearch }) {
       <div className="header__container">
         <div className="header__content">
           <div className="header__left">
-            <TiThMenu className="header__menu-button" onClick={toggleDrawer} />
+            {/* <TiThMenu className="header__menu-button" onClick={toggleDrawer} /> */}
             {localStorage.role === 'customer' ? (
             <Link to="/home" className="header__logo">
               <img src="/assets/logo-transparent-png.png" alt="Smart Server" className="header__logo-image" />

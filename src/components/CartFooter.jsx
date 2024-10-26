@@ -47,6 +47,7 @@ const CartFooter = () => {
           left: 0,
           right: 0,
           padding: '16px',
+          marginBottom : '60px',
           background: isExpanded ? 'white' : 'linear-gradient(90deg, red, #ef4444)',
           boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.3)',
           borderTop: '1px solid #e5e7eb',
