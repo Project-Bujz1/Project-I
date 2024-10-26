@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../contexts/CartContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, ChevronUp, ChevronDown } from 'lucide-react';
 
 const CartFooter = () => {
   const { cart, updateQuantity, removeFromCart } = useCart();
@@ -27,7 +27,8 @@ const CartFooter = () => {
     }
   }, [totalItems, location.pathname]);
 
-  const toggleCartExpansion = () => {
+  const toggleCartExpansion = (e) => {
+    e.stopPropagation(); // Prevent triggering the cart expansion/collapse when clicking on other elements
     setIsExpanded(!isExpanded);
   };
 
@@ -47,7 +48,7 @@ const CartFooter = () => {
           left: 0,
           right: 0,
           padding: '16px',
-          marginBottom : '60px',
+          marginBottom: '60px',
           background: isExpanded ? 'white' : 'linear-gradient(90deg, red, #ef4444)',
           boxShadow: '0 -4px 24px rgba(0, 0, 0, 0.3)',
           borderTop: '1px solid #e5e7eb',
@@ -55,8 +56,28 @@ const CartFooter = () => {
           borderRadius: '16px 16px 0 0',
           color: isExpanded ? 'black' : 'white',
         }}
-        onClick={toggleCartExpansion}
       >
+        {/* Chevron button to expand or collapse the cart */}
+        <div
+          onClick={toggleCartExpansion}
+          style={{
+            position: 'absolute',
+            top: '0px',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            borderRadius: '50%',
+            boxShadow: '0 2px 10px rgba(0, 0, 0, 0.2)',
+            cursor: 'pointer',
+            width: '32px',
+            height: '32px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {isExpanded ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
+        </div>
+
         <div
           style={{
             maxWidth: '40rem',
@@ -158,7 +179,10 @@ const CartFooter = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateQuantity(item.id, item.quantity - 1);
+                    }}
                     style={{
                       background: 'red',
                       color: 'white',
@@ -173,7 +197,10 @@ const CartFooter = () => {
                   </button>
                   <span>{item.quantity}</span>
                   <button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      updateQuantity(item.id, item.quantity + 1);
+                    }}
                     style={{
                       background: 'red',
                       color: 'white',
