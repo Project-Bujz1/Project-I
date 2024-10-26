@@ -944,6 +944,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence, useDragControls } from 'framer-motion';
+// Import FontAwesome icons
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBars, faTimes, faUtensils } from '@fortawesome/free-solid-svg-icons';
 
 const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -955,7 +958,8 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
     width: window.innerWidth,
     height: window.innerHeight
   });
-  
+
+  // Default position closer to the top
   const [position, setPosition] = useState(() => {
     const saved = localStorage.getItem('categoryNavigatorPosition');
     if (saved) {
@@ -967,7 +971,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
     }
     return {
       x: window.innerWidth - 80,
-      y: window.innerHeight - 150
+      y: window.innerHeight - 300 // Adjusted higher
     };
   });
 
@@ -980,7 +984,7 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
   const resetToDefault = () => {
     setPosition({
       x: window.innerWidth - 80,
-      y: window.innerHeight - 150
+      y: window.innerHeight - 300 // Adjusted higher
     });
   };
 
@@ -1283,25 +1287,13 @@ const CategoryNavigator = ({ onCategorySelect, onSubcategorySelect }) => {
           padding: '16px',
           borderRadius: '50%',
           boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
-          width: '24px',
-          height: '24px',
+          width: '56px',
+          height: '56px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            {isOpen ? (
-              <path d="M18 6L6 18M6 6l12 12"/>
-            ) : (
-              <>
-                <path d="M3 6h18v12H3z"/>
-                <path d="M3 10h18"/>
-                <path d="M12 6v12"/>
-                <circle cx="8" cy="16" r="1"/>
-                <circle cx="16" cy="16" r="1"/>
-              </>
-            )}
-          </svg>
+          <FontAwesomeIcon icon={isOpen ? faTimes : faUtensils} size="lg" />
         </div>
       </motion.button>
 
