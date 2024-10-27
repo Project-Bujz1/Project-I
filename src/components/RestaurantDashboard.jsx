@@ -1357,6 +1357,7 @@ import {
 } from '@ant-design/icons';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import axios from 'axios';
+import FoodLoader from './FoodLoader';
 
 const { Content } = Layout;
 const { Title, Text } = Typography;
@@ -1766,7 +1767,7 @@ export const RestaurantDashboard = () => {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: themeColors.background }}>
-        <Spin size="large" tip="Loading restaurant data..." />
+        <FoodLoader/>
       </div>
     );
   }

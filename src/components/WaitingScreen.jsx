@@ -654,6 +654,7 @@ import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutl
 import { useCart } from '../contexts/CartContext';
 import { IoVolumeMuteOutline } from "react-icons/io5";
 import notificationSound from './notification.mp3';
+import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
 
@@ -913,7 +914,7 @@ const WaitingScreen = () => {
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" />
+        <FoodLoader/>
       </div>
     );
   }

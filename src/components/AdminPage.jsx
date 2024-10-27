@@ -281,6 +281,7 @@ import {
   TableOutlined
 } from '@ant-design/icons';
 import notificationSound from './notification.mp3';
+import FoodLoader from './FoodLoader';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -518,7 +519,7 @@ const AdminOrderComponent = () => {
         alignItems: 'center',
         background: '#fff5f5'
       }}>
-        <Spin size="large" />
+        <FoodLoader/>
       </div>
     );
   }

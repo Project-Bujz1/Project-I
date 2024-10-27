@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
+import FoodLoader from './FoodLoader';
 
 const RestaurantManagement = () => {
   const [loading, setLoading] = useState(false);
@@ -216,7 +217,7 @@ const RestaurantManagement = () => {
         borderRadius: '0.5rem',
         boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
       }}>
-        <Loader2 size={48} color="#FF0000" style={{ animation: 'spin 1s linear infinite' }} />
+        <FoodLoader/>
         <div style={{
           marginTop: '1rem',
           color: '#FF0000',

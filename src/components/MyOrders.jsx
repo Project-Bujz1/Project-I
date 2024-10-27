@@ -8,6 +8,7 @@ import {
   ExclamationCircleOutlined,
   ShopOutlined 
 } from '@ant-design/icons';
+import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
 
@@ -92,6 +93,7 @@ const MyOrders = () => {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '200px',
+      marginTop: '75px'
     },
     emptyState: {
       textAlign: 'center',
@@ -161,7 +163,7 @@ const MyOrders = () => {
   if (loading) {
     return (
       <div style={styles.loadingContainer}>
-        <Spin size="large" />
+        <FoodLoader/>
       </div>
     );
   }

@@ -212,14 +212,25 @@ const filteredMenuItems = selectedSubcategory
               <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '26px'}}>
                 ← Back to {selectedCategory.name}
               </button>
-              <h2 className="section-title">{selectedSubcategory.name}</h2>
+                            <h2 className="section-title">{selectedSubcategory.name}</h2>
               {loading.menuItems ? (
-                <p>Loading menu items...</p>
+                <div className="loading-animation"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  height: '200px', // Adjust height as needed
+                }}>
+                  <img src="/assets/LoadingMenuItems.gif" alt="Loading menu items..." />
+                  <h1>Loading Menu Items</h1>
+                </div>
               ) : (
                 <div className="menu-items-grid">
                   {filteredMenuItems.map(renderMenuItem)}
                 </div>
               )}
+
             </>
           )}
         </>
