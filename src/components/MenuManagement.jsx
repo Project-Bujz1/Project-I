@@ -938,154 +938,183 @@ const columns = {
 
 
 
-const ModernMenuItem = ({ item }) => (
-  <Card
-    hoverable
-    className="menu-item-card"
-    style={{
-      marginBottom: '16px',
-      borderRadius: '16px',
-      overflow: 'hidden',
-      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-      backgroundColor: theme.cardBg,
-    }}
-  >
-    <div style={{ display: 'flex', gap: '16px', overflow: 'hidden' }}>
-      <img
-        src={getImageUrl(item.image)}
-        alt={item.name}
-        style={{
-          width: '100px',
-          height: '100px',
-          objectFit: 'cover',
-          borderRadius: '12px',
-        }}
-        onError={(e) => {
-          e.target.src = '/api/placeholder/100/100';
-        }}
-      />
-      <div style={{ flex: 1, overflow: 'hidden' }}>
-      <div
+const ModernMenuItem = ({ item }) => {
+  const getFoodTypeIcon = (type) => {
+    switch (type) {
+      case 'veg':
+        return (
+          <img
+            src="https://img.icons8.com/?size=100&id=61083&format=png&color=000000"
+            alt="Veg"
+            style={{ width: '18px', height: '18px' }}
+          />
+        );
+      case 'nonveg':
+        return (
+          <img
+            src="https://img.icons8.com/?size=100&id=61082&format=png&color=000000"
+            alt="Non-Veg"
+            style={{ width: '18px', height: '18px' }}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+  
+
+  return (
+    <Card
+      hoverable
+      className="menu-item-card"
+      style={{
+        marginBottom: '16px',
+        borderRadius: '16px',
+        overflow: 'hidden',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+        backgroundColor: theme.cardBg,
+      }}
+    >
+      <div style={{ display: 'flex', gap: '16px', overflow: 'hidden' }}>
+        <img
+          src={getImageUrl(item.image)}
+          alt={item.name}
           style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            overflow: 'hidden',
+            width: '100px',
+            height: '100px',
+            objectFit: 'cover',
+            borderRadius: '12px',
           }}
-        >
-          <Popover content={item.name} placement="topLeft">
+          onError={(e) => {
+            e.target.src = '/api/placeholder/100/100';
+          }}
+        />
+        <div style={{ flex: 1, overflow: 'hidden' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              overflow: 'hidden',
+            }}
+          >
+            <Popover content={item.name} placement="topLeft">
+              <Text
+                strong
+                style={{
+                  fontSize: '18px',
+                  maxWidth: '70%',
+                  whiteSpace: 'nowrap',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  cursor: 'pointer',
+                }}
+              >
+                {item.name}
+              </Text>
+            </Popover>
             <Text
-              strong
               style={{
+                color: theme.primary,
                 fontSize: '18px',
-                maxWidth: '70%',
-                whiteSpace: 'nowrap',
+                fontWeight: 'bold',
+                marginLeft: '8px',
+              }}
+            >
+              ₹{item.price}
+            </Text>
+          </div>
+          <Popover content={item.description} placement="topLeft">
+            <Text
+              type="secondary"
+              style={{
+                fontSize: '14px',
+                display: 'block',
+                marginTop: '4px',
+                maxWidth: '100%',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
                 cursor: 'pointer',
               }}
             >
-              {item.name}
+              {item.description}
             </Text>
           </Popover>
-          <Text
-            style={{
-              color: theme.primary,
-              fontSize: '18px',
-              fontWeight: 'bold',
-              marginLeft: '8px',
-            }}
-          >
-            ₹{item.price}
-          </Text>
-        </div>
-        <Popover content={item.description} placement="topLeft">
-          <Text
-            type="secondary"
-            style={{
-              fontSize: '14px',
-              display: 'block',
-              marginTop: '4px',
-              maxWidth: '100%',
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-            }}
-          >
-            {item.description}
-          </Text>
-        </Popover>
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginTop: '12px',
-          overflow: 'hidden',
-        }}>
-          <Space>
-            <Switch
-              checked={item.isAvailable}
-              onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
-              style={{
-                backgroundColor: item.isAvailable ? theme.primary : '#f5f5f5',
-              }}
-            />
-            <Badge
-              status={item.isAvailable ? 'success' : 'error'}
-              text={item.isAvailable ? 'Available' : 'Unavailable'}
-            />
-          </Space>
-          <Space>
-            <Button
-              type="text"
-              icon={<EditOutlined />}
-              onClick={() => {
-                const itemToEdit = {
-                  ...item,
-                  categoryId: item.categoryId,
-                  subcategoryId: item.subcategoryId
-                };
-                setEditingItem(itemToEdit);
-                form.setFieldsValue(itemToEdit);
-                setSelectedCategory(item.categoryId);
-                
-                // Set image data based on existing image
-                if (item.image) {
-                  if (typeof item.image === 'string') {
-                    setImageInputType('url');
-                    form.setFieldsValue({
-                      imageUrl: item.image
-                    });
-                  } else if (item.image.file && item.image.file.url) {
-                    setImageInputType('upload');
-                    form.setFieldsValue({
-                      imageUpload: [{
-                        uid: '-1',
-                        name: item.image.file.name || 'existing-image.jpg',
-                        status: 'done',
-                        url: item.image.file.url,
-                        thumbUrl: item.image.file.url
-                      }]
-                    });
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginTop: '12px',
+            overflow: 'hidden',
+          }}>
+            <Space>
+            {getFoodTypeIcon(item.foodType)}
+
+              <Switch
+                checked={item.isAvailable}
+                onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
+                style={{
+                  backgroundColor: item.isAvailable ? theme.primary : '#f5f5f5',
+                }}
+              />
+              <Badge
+                status={item.isAvailable ? 'success' : 'error'}
+                text={item.isAvailable ? 'Available' : 'Unavailable'}
+              />
+            </Space>
+            <Space>
+              <Button
+                type="text"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  const itemToEdit = {
+                    ...item,
+                    categoryId: item.categoryId,
+                    subcategoryId: item.subcategoryId
+                  };
+                  setEditingItem(itemToEdit);
+                  form.setFieldsValue(itemToEdit);
+                  setSelectedCategory(item.categoryId);
+                  
+                  // Set image data based on existing image
+                  if (item.image) {
+                    if (typeof item.image === 'string') {
+                      setImageInputType('url');
+                      form.setFieldsValue({
+                        imageUrl: item.image
+                      });
+                    } else if (item.image.file && item.image.file.url) {
+                      setImageInputType('upload');
+                      form.setFieldsValue({
+                        imageUpload: [{
+                          uid: '-1',
+                          name: item.image.file.name || 'existing-image.jpg',
+                          status: 'done',
+                          url: item.image.file.url,
+                          thumbUrl: item.image.file.url
+                        }]
+                      });
+                    }
                   }
-                }
-                
-                setIsModalVisible(true);
-              }}
-            />
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDelete(item.firebaseId)}
-            />
-          </Space>
+                  
+                  setIsModalVisible(true);
+                }}
+              />
+              <Button
+                type="text"
+                danger
+                icon={<DeleteOutlined />}
+                onClick={() => handleDelete(item.firebaseId)}
+              />
+            </Space>
+          </div>
         </div>
       </div>
-    </div>
-  </Card>
-);
+    </Card>
+  );
+};
+
 
 
 
@@ -1178,99 +1207,111 @@ const ModernMenuItem = ({ item }) => (
               </Form.Item>
             </>
           );
-        case 'menu_items':
-          return (
-            <>
-              <Form.Item
-                name="name"
-                label="Item Name"
-                rules={[{ required: true, message: 'Please input the item name!' }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="description"
-                label="Description"
-              >
-                <Input.TextArea rows={4} />
-              </Form.Item>
-              <Form.Item
-                name="price"
-                label="Price"
-                rules={[{ required: true, message: 'Please input the price!' }]}
-              >
-                <Input type="number" prefix="₹" />
-              </Form.Item>
-              {/* Image Input Type Selection */}
-              <Form.Item label="Image Input Type">
-                <Radio.Group onChange={handleImageInputTypeChange} value={imageInputType}>
-                  <Radio value="url">Provide URL</Radio>
-                  <Radio value="upload">Upload from System</Radio>
-                </Radio.Group>
-              </Form.Item>
-              {/* Conditional Rendering Based on Image Input Type */}
-  {imageInputType === 'url' ? (
-    <Form.Item
-      name="imageUrl"
-      label="Image URL"
-      rules={[{ required: !editingItem, message: 'Please provide the image URL!' }]}
-    >
-      <Input />
-    </Form.Item>
-  ) : (
-    <Form.Item
-      name="imageUpload"
-      label="Upload Image"
-      valuePropName="fileList"
-      getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-      rules={[{ required: !editingItem, message: 'Please upload the image!' }]}
-    >
-      <Upload
-        name="image"
-        listType="picture"
-        beforeUpload={() => false}
-      >
-        <Button>Click to Upload</Button>
-      </Upload>
-    </Form.Item>
-  )}
-              <Form.Item
-                name="categoryId"
-                label="Category"
-                rules={[{ required: true, message: 'Please select a category!' }]}
-              >
-                <Select onChange={handleCategoryChange}>
-                  {categories.map((category) => (
-      <Option key={category.firebaseId} value={category.firebaseId}>
-                      {category.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="subcategoryId"
-                label="Subcategory"
-                rules={[{ required: true, message: 'Please select a subcategory!' }]}
-              >
-                <Select disabled={!selectedCategory}>
-                  {subcategories
-                    .filter((subcat) => subcat.categoryId === selectedCategory)
-                    .map((subcategory) => (
-                      <Option key={subcategory.firebaseId} value={subcategory.firebaseId}>
-                        {subcategory.name}
+          case 'menu_items':
+            return (
+              <>
+                <Form.Item
+                  name="name"
+                  label="Item Name"
+                  rules={[{ required: true, message: 'Please input the item name!' }]}
+                >
+                  <Input />
+                </Form.Item>
+                <Form.Item
+                  name="description"
+                  label="Description"
+                >
+                  <Input.TextArea rows={4} />
+                </Form.Item>
+                <Form.Item
+                  name="price"
+                  label="Price"
+                  rules={[{ required: true, message: 'Please input the price!' }]}
+                >
+                  <Input type="number" prefix="₹" />
+                </Form.Item>
+                <Form.Item
+                  name="foodType"
+                  label="Food Type"
+                  rules={[{ required: true, message: 'Please select the food type!' }]}
+                >
+                  <Select>
+                    <Select.Option value="veg">Veg</Select.Option>
+                    <Select.Option value="nonveg">Non-Veg</Select.Option>
+                    <Select.Option value="neutral">Neutral</Select.Option>
+                  </Select>
+                </Form.Item>
+                {/* Image Input Type Selection */}
+                <Form.Item label="Image Input Type">
+                  <Radio.Group onChange={handleImageInputTypeChange} value={imageInputType}>
+                    <Radio value="url">Provide URL</Radio>
+                    <Radio value="upload">Upload from System</Radio>
+                  </Radio.Group>
+                </Form.Item>
+                {/* Conditional Rendering Based on Image Input Type */}
+                {imageInputType === 'url' ? (
+                  <Form.Item
+                    name="imageUrl"
+                    label="Image URL"
+                    rules={[{ required: !editingItem, message: 'Please provide the image URL!' }]}
+                  >
+                    <Input />
+                  </Form.Item>
+                ) : (
+                  <Form.Item
+                    name="imageUpload"
+                    label="Upload Image"
+                    valuePropName="fileList"
+                    getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+                    rules={[{ required: !editingItem, message: 'Please upload the image!' }]}
+                  >
+                    <Upload
+                      name="image"
+                      listType="picture"
+                      beforeUpload={() => false}
+                    >
+                      <Button>Click to Upload</Button>
+                    </Upload>
+                  </Form.Item>
+                )}
+                <Form.Item
+                  name="categoryId"
+                  label="Category"
+                  rules={[{ required: true, message: 'Please select a category!' }]}
+                >
+                  <Select onChange={handleCategoryChange}>
+                    {categories.map((category) => (
+                      <Option key={category.firebaseId} value={category.firebaseId}>
+                        {category.name}
                       </Option>
                     ))}
-                </Select>
-              </Form.Item>
-              <Form.Item
-                name="isAvailable"
-                label="Available"
-                valuePropName="checked"
-              >
-                <Switch />
-              </Form.Item>
-            </>
-          );
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="subcategoryId"
+                  label="Subcategory"
+                  rules={[{ required: true, message: 'Please select a subcategory!' }]}
+                >
+                  <Select disabled={!selectedCategory}>
+                    {subcategories
+                      .filter((subcat) => subcat.categoryId === selectedCategory)
+                      .map((subcategory) => (
+                        <Option key={subcategory.firebaseId} value={subcategory.firebaseId}>
+                          {subcategory.name}
+                        </Option>
+                      ))}
+                  </Select>
+                </Form.Item>
+                <Form.Item
+                  name="isAvailable"
+                  label="Available"
+                  valuePropName="checked"
+                >
+                  <Switch />
+                </Form.Item>
+              </>
+            );
+          
         default:
           return null;
       }

@@ -14,21 +14,26 @@ function MenuItem({ item, onItemAdded }) {
   const [imageLoaded, setImageLoaded] = useState(false);
   const itemRef = useRef(null);
 
-  // Get the correct image URL based on the image data structure
+  // Function to get food type icon
+  const getFoodTypeIcon = (type) => {
+    switch (type) {
+      case 'veg':
+        return <img src="https://img.icons8.com/?size=100&id=61083&format=png&color=000000" alt="Veg" style={{ width: '24px', marginRight: '8px' }} />;
+      case 'nonveg':
+        return <img src="https://img.icons8.com/?size=100&id=61082&format=png&color=000000" alt="Non-Veg" style={{ width: '24px', marginRight: '8px' }} />;
+      default:
+        return null;
+    }
+  };
+
   const getImageUrl = (imageData) => {
-    if (!imageData) return ''; // Return empty string or a default image URL
-    
-    // If imageData is a string, it's a direct URL
+    if (!imageData) return '';
     if (typeof imageData === 'string') {
       return imageData;
     }
-    
-    // If imageData is an object with file.url, use that
     if (imageData.file && imageData.file.url) {
       return imageData.file.url;
     }
-    
-    // Return empty string or default image if no valid image data
     return '';
   };
 
@@ -90,9 +95,8 @@ function MenuItem({ item, onItemAdded }) {
   };
 
   const handleImageError = (e) => {
-    // Handle image loading errors
     console.error('Error loading image:', e);
-    e.target.src = '/path-to-your-fallback-image.jpg'; // Add a fallback image
+    e.target.src = '/path-to-your-fallback-image.jpg';
   };
 
   const styles = {
@@ -178,9 +182,10 @@ function MenuItem({ item, onItemAdded }) {
           onError={handleImageError}
         />
       </div>
-      {/* Rest of the component remains the same */}
       <div style={styles.content}>
-        <h3 style={styles.title}>{item.name}</h3>
+        <h3 style={styles.title}>
+          {getFoodTypeIcon(item.foodType)} {item.name}
+        </h3>
         <p style={styles.description}>{item.description}</p>
         <div style={styles.footer}>
           <span style={styles.price}>₹{item.price}</span>
