@@ -1370,7 +1370,7 @@ const ModernMenuItem = ({ item }) => {
       }}
       style={{
         position: 'fixed',
-        bottom: '24px',
+        bottom: '80px',
         right: '24px',
         backgroundColor: theme.primary,
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
