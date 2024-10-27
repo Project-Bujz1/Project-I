@@ -16,7 +16,16 @@ const CartFooter = () => {
 
   // Calculate total price
   const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
+  const getImageUrl = (imageData) => {
+    if (!imageData) return '';
+    if (typeof imageData === 'string') {
+      return imageData;
+    }
+    if (imageData.file && imageData.file.url) {
+      return imageData.file.url;
+    }
+    return '';
+  };
   // Trigger celebration when a new item is added to the cart
   useEffect(() => {
     if (location.pathname === '/home' && totalItems > 0) {
@@ -169,7 +178,7 @@ const CartFooter = () => {
                 }}
               >
                 <img
-                  src={item.image}
+                  src={getImageUrl(item.image)}
                   alt={item.name}
                   style={{ width: '50px', height: '50px', borderRadius: '8px' }}
                 />

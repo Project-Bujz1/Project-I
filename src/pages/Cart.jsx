@@ -17,6 +17,16 @@ function Cart() {
   const handleBrowseMenu = () => {
     navigate('/home');
   };
+  const getImageUrl = (imageData) => {
+    if (!imageData) return '';
+    if (typeof imageData === 'string') {
+      return imageData;
+    }
+    if (imageData.file && imageData.file.url) {
+      return imageData.file.url;
+    }
+    return '';
+  };
 
   return (
     <div className="cart-container" style={{ marginTop: '115px' }}>
@@ -53,9 +63,10 @@ function Cart() {
 
       ) : (
         <>
-          {cart.map((item) => (
+          {
+          cart.map((item) => (
             <div key={item.id} className="cart-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-              <img src={item.image} alt={item.name} style={{ width: '100px', height: '100px', marginRight: '20px' }} />
+              <img src={getImageUrl(item.image)} alt={item.name} style={{ width: '100px', height: '100px', marginRight: '20px' }} />
               <div className="item-info">
                 <h3 className="item-name">{item.name}</h3>
                 <p className="item-price">₹{item.price} x {item.quantity}</p>
