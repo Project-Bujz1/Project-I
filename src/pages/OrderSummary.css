@@ -1,0 +1,8 @@
+.suggestion-bubble {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .bubble-animation {
+    transform: scale(1.1);
+  }
+  
