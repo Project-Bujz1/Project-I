@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Button } from 'antd';
+import { Modal, Button, Checkbox, Input } from 'antd';
 import { CoffeeOutlined, SmileOutlined,ExclamationCircleOutlined, PlusCircleOutlined, CheckOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
@@ -20,6 +20,8 @@ function OrderSummary() {
   const [seatingCapacity, setSeatingCapacity] = useState(0);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isCustomizing, setIsCustomizing] = useState(false);
+  const [description, setDescription] = useState('');
   const ws = useRef(null);
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -281,11 +283,11 @@ function OrderSummary() {
   style={{ borderRadius: '10px' }}
 >
   <div style={{ textAlign: 'center', color: '#ff6347', fontSize: '1.2em' }}>
-    🎉"Please let us know if you would like any changes to your items or have specific preferences, such as extra spice, less salt, dry or saucy, etc." 🎉
-  </div>
+  🔥 Tell us your flavor! Extra spicy, less salt, saucy, or dry – your call! 🌶️👌
+</div>
   <p style={{ textAlign: 'center', color: '#777', marginTop: '10px', fontSize: '1em' }}>
-    Here’s a taste of what you might find with your meal!, Order for further If you want any....!!!!
-  </p>
+  🍛 Got a taste for more? Just say the word! 🍴🤩
+</p>
   <div className="suggestions-container" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '20px' }}>
     {suggestedItems.map((item) => (
       <div key={item.name} className="suggestion-item" style={{
@@ -308,6 +310,30 @@ function OrderSummary() {
       </div>
     ))}
   </div>
+    {/* Checkbox for enabling customization */}
+    <Checkbox
+        checked={isCustomizing}
+        onChange={(e) => setIsCustomizing(e.target.checked)}
+      >
+        Add cooking customization notes
+      </Checkbox>
+
+      {/* Conditionally render the description input */}
+      {isCustomizing && (
+        <Input.TextArea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Enter your special requests here..."
+          style={{
+            marginTop: '10px',
+            borderRadius: '5px',
+            borderColor: '#ff6347',
+            width: '90%',
+            alignSelf: 'center'
+          }}
+          rows={3}
+        />
+      )}
 </Modal>
 
       <Modal
