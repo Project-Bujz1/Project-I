@@ -269,6 +269,8 @@ const MenuItem = ({ item, onItemAdded }) => {
     image: {
       width: '100%',
       height: '100%',
+      borderRadius: '25px',
+      padding: '10px',
       objectFit: 'cover',
       transition: 'opacity 0.3s ease-in-out',
       opacity: imageLoaded ? 1 : 0
@@ -303,7 +305,7 @@ const MenuItem = ({ item, onItemAdded }) => {
     price: {
       fontSize: '18px',
       fontWeight: 'bold',
-      color: '#ff4d4f'
+      color: 'red'
     },
     quantityControls: {
       display: 'flex',
@@ -317,16 +319,17 @@ const MenuItem = ({ item, onItemAdded }) => {
     },
     addToCartButton: {
       position: 'absolute',
-      bottom: 0,
-      left: 0,
+      bottom: 18,
+      left: 50,
       right: 0,
-      padding: '8px',
+      borderRadius: '8px',
+      padding: '8px', 
       border: 'none',
-      background: '#ff4d4f',
+      background: 'red',
       color: 'white',
       cursor: 'pointer',
       transition: 'background 0.3s',
-      width: '100%'
+      width: '50%'
     },
     disabledAddToCartButton: {
       background: '#d9d9d9',
@@ -471,7 +474,7 @@ const MenuItem = ({ item, onItemAdded }) => {
                 ...(item.isAvailable ? {} : styles.disabledAddToCartButton)
               }}
             >
-              Add to Cart
+              Add
             </button>
           </Tooltip>
         )}
