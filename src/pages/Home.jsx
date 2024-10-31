@@ -79,7 +79,6 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   }, [searchTerm, menuItems]);
   
 
-  // Mobile Back Navigation Handler
   useEffect(() => {
     const handleBrowserBack = (event) => {
       event.preventDefault();
@@ -98,15 +97,17 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
         return;
       }
       
-      // If on the main screen, allow default browser back behavior
-      if (window.history.length > 1) {
-        window.history.back();
+      // If on the main screen, prevent default back navigation
+      if (!selectedCategory && !selectedSubcategory) {
+        // Optionally, you could add a redirect or show a home screen
+        navigate('/home');
+        return;
       }
     };
-
+  
     // Add event listener for popstate
     window.addEventListener('popstate', handleBrowserBack);
-
+  
     // Cleanup listener
     return () => {
       window.removeEventListener('popstate', handleBrowserBack);
@@ -138,25 +139,25 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
     setSelectedSubcategory(null);
-    navigate(`/home?categoryId=${category.id}`);
+    navigate(`/home?categoryId=${category.id}`, { replace: true });
   };
-
+  
   const handleSubcategoryClick = (subcategory) => {
     const category = categories.find(cat => cat.id === subcategory.categoryId);
     setSelectedCategory(category);
     setSelectedSubcategory(subcategory);
-    navigate(`/home?categoryId=${category.id}&subcategoryId=${subcategory.id}`);
+    navigate(`/home?categoryId=${category.id}&subcategoryId=${subcategory.id}`, { replace: true });
   };
-
+  
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setSelectedSubcategory(null);
-    navigate('/home');
+    navigate('/home', { replace: true });
   };
-
+  
   const handleBackToSubcategories = () => {
     setSelectedSubcategory(null);
-    navigate(`/home?categoryId=${selectedCategory.id}`);
+    navigate(`/home?categoryId=${selectedCategory.id}`, { replace: true });
   };
 
   // Filter and render logic (keep existing logic)
