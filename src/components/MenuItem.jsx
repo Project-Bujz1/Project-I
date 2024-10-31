@@ -329,7 +329,9 @@ const MenuItem = ({ item, onItemAdded }) => {
       color: 'white',
       cursor: 'pointer',
       transition: 'background 0.3s',
-      width: '50%'
+      width: '50%',
+      fontSize: '16px',
+      fontWeight: 'bold',
     },
     disabledAddToCartButton: {
       background: '#d9d9d9',
@@ -474,7 +476,7 @@ const MenuItem = ({ item, onItemAdded }) => {
                 ...(item.isAvailable ? {} : styles.disabledAddToCartButton)
               }}
             >
-              Add
+              ADD
             </button>
           </Tooltip>
         )}
