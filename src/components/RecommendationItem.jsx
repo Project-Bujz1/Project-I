@@ -138,7 +138,7 @@ const RecommendationItem = ({ item, onAddToCart, collapsed }) => {
               />
               <h3 style={styles.title}>{item.name}</h3>
             </div>
-            <p style={styles.description}>{item.description}</p>
+            {/* <p style={styles.description}>{item.description}</p> */}
             <div style={styles.price}>₹{item.price}</div>
           </div>
           

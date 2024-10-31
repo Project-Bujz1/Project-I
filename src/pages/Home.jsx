@@ -1,4 +1,3 @@
-// Home.jsx
 import React, { useState, useEffect } from 'react';
 import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
@@ -24,6 +23,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fetch data on component mount
   useEffect(() => {
     if (orgId) {
       fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
@@ -64,6 +64,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     }
   }, [orgId]);
 
+  // Search functionality
   useEffect(() => {
     if (searchTerm) {
       const filteredItems = menuItems.filter((item) =>
@@ -76,35 +77,46 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
       setSearchResults([]);
     }
   }, [searchTerm, menuItems]);
-  const filteredSubcategories = selectedCategory
-  ? subcategories.filter((sub) => sub.categoryId === selectedCategory.id)
-  : [];
+  
 
-  const filteredMenuItems = selectedSubcategory
-  ? menuItems
-      .filter((item) => item.subcategoryId === selectedSubcategory.id)
-      .filter(
-        (item) =>
-          (filters.veg && item.foodType === 'veg') ||
-          (filters.nonVeg && item.foodType === 'nonveg')
-      )
-  : [];
+  // Mobile Back Navigation Handler
+  useEffect(() => {
+    const handleBrowserBack = (event) => {
+      event.preventDefault();
+      
+      // If a subcategory is selected, go back to categories
+      if (selectedSubcategory) {
+        setSelectedSubcategory(null);
+        navigate(`/home?categoryId=${selectedCategory.id}`);
+        return;
+      }
+      
+      // If a category is selected, go back to main categories
+      if (selectedCategory) {
+        setSelectedCategory(null);
+        navigate('/home');
+        return;
+      }
+      
+      // If on the main screen, allow default browser back behavior
+      if (window.history.length > 1) {
+        window.history.back();
+      }
+    };
 
-  const handleCategoryClick = (category) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory(null);
-  };
+    // Add event listener for popstate
+    window.addEventListener('popstate', handleBrowserBack);
 
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-  };
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('popstate', handleBrowserBack);
+    };
+  }, [selectedCategory, selectedSubcategory, navigate]);
 
-  const handleSubcategoryClick = (subcategory) => {
-    setSelectedSubcategory(subcategory);
-    navigate(`?subcategoryId=${subcategory.id}`); // Update the URL with the subcategory ID
-  };
+  // Restore state from URL
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
+    const categoryId = queryParams.get('categoryId');
     const subcategoryId = queryParams.get('subcategoryId');
     
     if (subcategoryId && subcategories.length > 0 && categories.length > 0) {
@@ -114,10 +126,28 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
         setSelectedCategory(category);
         setSelectedSubcategory(subcategory);
       }
+    } else if (categoryId && categories.length > 0) {
+      const category = categories.find(cat => cat.id === categoryId);
+      if (category) {
+        setSelectedCategory(category);
+      }
     }
   }, [location.search, subcategories, categories]);
 
-  // Modify the back button handlers to update URL
+  // Category and Subcategory Selection Handlers
+  const handleCategoryClick = (category) => {
+    setSelectedCategory(category);
+    setSelectedSubcategory(null);
+    navigate(`/home?categoryId=${category.id}`);
+  };
+
+  const handleSubcategoryClick = (subcategory) => {
+    const category = categories.find(cat => cat.id === subcategory.categoryId);
+    setSelectedCategory(category);
+    setSelectedSubcategory(subcategory);
+    navigate(`/home?categoryId=${category.id}&subcategoryId=${subcategory.id}`);
+  };
+
   const handleBackToCategories = () => {
     setSelectedCategory(null);
     setSelectedSubcategory(null);
@@ -126,8 +156,28 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
 
   const handleBackToSubcategories = () => {
     setSelectedSubcategory(null);
-    navigate(`/home`);
+    navigate(`/home?categoryId=${selectedCategory.id}`);
   };
+
+  // Filter and render logic (keep existing logic)
+  const filteredSubcategories = selectedCategory
+    ? subcategories.filter((sub) => sub.categoryId === selectedCategory.id)
+    : [];
+
+  const filteredMenuItems = selectedSubcategory
+    ? menuItems
+        .filter((item) => item.subcategoryId === selectedSubcategory.id)
+        .filter(
+          (item) =>
+            (filters.veg && item.foodType === 'veg') ||
+            (filters.nonVeg && item.foodType === 'nonveg')
+        )
+    : [];
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
   const renderMenuItem = (item) => (
     <MenuItem 
       key={item.id} 
