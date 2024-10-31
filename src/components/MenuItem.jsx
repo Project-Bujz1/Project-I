@@ -225,7 +225,6 @@
 
 
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Tooltip } from 'antd';
 import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
@@ -233,8 +232,10 @@ import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
 import FoodLoader from './FoodLoader';
+import RecommendationSection from './RecommendationSection';
 
 const MenuItem = ({ item, onItemAdded }) => {
+  const [showRecommendations, setShowRecommendations] = useState(false);
   const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartIconRef = useCartIcon();
   const [quantity, setQuantity] = useState(0);
@@ -379,6 +380,7 @@ const MenuItem = ({ item, onItemAdded }) => {
     setShowAnimation(true);
   };
 
+
   const handleAddToCart = () => {
     if (quantity === 0) {
       addToCart(item);
@@ -386,6 +388,7 @@ const MenuItem = ({ item, onItemAdded }) => {
       updateQuantity(item.id, quantity + 1);
     }
     setQuantity(quantity + 1);
+    setShowRecommendations(true);
     triggerAnimation();
     if (onItemAdded) onItemAdded();
   };
@@ -397,6 +400,7 @@ const MenuItem = ({ item, onItemAdded }) => {
     } else if (quantity === 1) {
       removeFromCart(item.id);
       setQuantity(0);
+      setShowRecommendations(false);
     }
   };
 
@@ -415,7 +419,8 @@ const MenuItem = ({ item, onItemAdded }) => {
   const imageUrl = getImageUrl(item.image);
 
   return (
-    <div style={styles.card} ref={itemRef}>
+    <>
+      <div style={styles.card} ref={itemRef}>
       <div style={styles.contentSection}>
         <div>
           <div style={styles.titleWrapper}>
@@ -481,16 +486,16 @@ const MenuItem = ({ item, onItemAdded }) => {
           </Tooltip>
         )}
       </div>
-
-      {showAnimation && (
-        <FlyingItemAnimation
-          itemImage={imageUrl}
-          startPosition={animationStartPosition}
-          endPosition={getCartIconPosition()}
-          onAnimationComplete={handleAnimationComplete}
-        />
-      )}
-    </div>
+ </div>
+      <RecommendationSection 
+        isVisible={showRecommendations}
+        parentItemId={item.id}
+        onAddToCart={(recommendedItem) => {
+          addToCart(recommendedItem);
+          if (onItemAdded) onItemAdded();
+        }}
+      />
+    </>
   );
 };
 
