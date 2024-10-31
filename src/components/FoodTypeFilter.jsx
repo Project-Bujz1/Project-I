@@ -22,40 +22,39 @@ const FoodTypeFilter = ({ onFilterChange }) => {
     container: {
       position: 'sticky',
       top: 0,
-      backgroundColor: 'white',
-      // boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+      // backgroundColor: 'white',
       padding: '0px 16px',
       zIndex: 10,
     },
     toggleContainer: {
       display: 'flex',
       justifyContent: 'center',
-      gap: '24px',
+      gap: '16px', // Decreased gap between toggles
       alignItems: 'center',
     },
     toggleWrapper: {
       display: 'flex',
       alignItems: 'center',
       cursor: 'pointer',
-      padding: '8px 16px',
-      borderRadius: '20px',
+      padding: '6px 12px', // Reduced padding around the toggle
+      borderRadius: '16px', // Reduced border radius for smaller size
       transition: 'all 0.3s ease',
     },
     toggle: {
       position: 'relative',
-      width: '44px',
-      height: '24px',
-      backgroundColor: '#e2e8f0',
-      borderRadius: '12px',
-      marginRight: '8px',
+      width: '36px', // Reduced width
+      height: '18px', // Reduced height
+      // backgroundColor: '#e2e8f0',
+      borderRadius: '9px', // Adjusted for smaller height
+      marginRight: '6px', // Reduced margin
       transition: 'all 0.3s ease',
     },
     toggleCircle: {
       position: 'absolute',
-      top: '2px',
-      left: '2px',
-      width: '20px',
-      height: '20px',
+      top: '1px', // Adjusted position for smaller size
+      left: '1px',
+      width: '16px', // Reduced circle width
+      height: '16px', // Reduced circle height
       backgroundColor: 'white',
       borderRadius: '50%',
       transition: 'transform 0.3s ease',
@@ -67,6 +66,7 @@ const FoodTypeFilter = ({ onFilterChange }) => {
       gap: '4px',
     }
   };
+  
 
   return (
     <div style={styles.container}>
@@ -92,7 +92,7 @@ const FoodTypeFilter = ({ onFilterChange }) => {
             ...styles.label,
             color: filters.veg ? '#48BB78' : '#718096',
           }}>
-            🥬 Veg
+            🥬
           </span>
         </div>
 
@@ -117,7 +117,7 @@ const FoodTypeFilter = ({ onFilterChange }) => {
             ...styles.label,
             color: filters.nonVeg ? '#F56565' : '#718096',
           }}>
-            🍖 Non Veg
+            🍖
           </span>
         </div>
       </div>

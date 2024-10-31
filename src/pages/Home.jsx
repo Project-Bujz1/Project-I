@@ -222,28 +222,49 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
 
 {selectedSubcategory && (
   <>
-    <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '26px'}}>
-      ← Back to {selectedCategory.name}
-    </button>
-    <FoodTypeFilter onFilterChange={handleFilterChange} />
+    <div
+      style={{
+        position: 'sticky',
+        top: 90,
+        // backgroundColor: '#fff',
+        zIndex: 1000,
+        padding: '10px 0',
+        // boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+        borderRadius: '10px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <button
+        className="back-button"
+        onClick={handleBackToSubcategories}
+        style={{ margin: '0 10px' }}
+      >
+        ← {selectedCategory.name}
+      </button>
+      <FoodTypeFilter onFilterChange={handleFilterChange} />
+    </div>
+    
     <h2 className="section-title">{selectedSubcategory.name}</h2>
     {loading.menuItems ? (
                 <div className="loading-animation"
                 style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  height: '200px', // Adjust height as needed
-                }}>
-                  <img src="/assets/LoadingMenuItems.gif" alt="Loading menu items..." />
-                  <h1>Loading Menu Items</h1>
-                </div>
-              ) : (
-                <div className="menu-items-grid">
-                  {filteredMenuItems.map(renderMenuItem)}
-                </div>
-              )}
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: '200px',
+        }}
+      >
+        <img src="/assets/LoadingMenuItems.gif" alt="Loading menu items..." />
+        <h1>Loading Menu Items</h1>
+      </div>
+    ) : (
+      <div className="menu-items-grid">
+        {filteredMenuItems.map(renderMenuItem)}
+      </div>
+    )}
   </>
 )}
         </>
