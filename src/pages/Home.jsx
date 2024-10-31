@@ -7,6 +7,7 @@ import FoodLoader from '../components/FoodLoader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryNavigator from '../components/BillSummary';
 import CartFooter from '../components/CartFooter';
+import FoodTypeFilter from '../components/FoodTypeFilter';
 
 function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [categories, setCategories] = useState([]);
@@ -16,6 +17,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
   const [searchResults, setSearchResults] = useState([]);
+  const [filters, setFilters] = useState({ veg: true, nonVeg: true });
   
   const orgId = localStorage.getItem('orgId');
 
@@ -78,12 +80,23 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   ? subcategories.filter((sub) => sub.categoryId === selectedCategory.id)
   : [];
 
-const filteredMenuItems = selectedSubcategory
-  ? menuItems.filter((item) => item.subcategoryId === selectedSubcategory.id)
+  const filteredMenuItems = selectedSubcategory
+  ? menuItems
+      .filter((item) => item.subcategoryId === selectedSubcategory.id)
+      .filter(
+        (item) =>
+          (filters.veg && item.foodType === 'veg') ||
+          (filters.nonVeg && item.foodType === 'nonveg')
+      )
   : [];
+
   const handleCategoryClick = (category) => {
     setSelectedCategory(category);
     setSelectedSubcategory(null);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
   };
 
   const handleSubcategoryClick = (subcategory) => {
@@ -207,13 +220,14 @@ const filteredMenuItems = selectedSubcategory
             </>
           )}
 
-          {selectedSubcategory && (
-            <>
-              <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '26px'}}>
-                ← Back to {selectedCategory.name}
-              </button>
-                            <h2 className="section-title">{selectedSubcategory.name}</h2>
-              {loading.menuItems ? (
+{selectedSubcategory && (
+  <>
+    <button className="back-button" onClick={handleBackToSubcategories} style={{marginTop: '26px'}}>
+      ← Back to {selectedCategory.name}
+    </button>
+    <FoodTypeFilter onFilterChange={handleFilterChange} />
+    <h2 className="section-title">{selectedSubcategory.name}</h2>
+    {loading.menuItems ? (
                 <div className="loading-animation"
                 style={{
                   display: 'flex',
@@ -230,9 +244,8 @@ const filteredMenuItems = selectedSubcategory
                   {filteredMenuItems.map(renderMenuItem)}
                 </div>
               )}
-
-            </>
-          )}
+  </>
+)}
         </>
       )}
     </div>
