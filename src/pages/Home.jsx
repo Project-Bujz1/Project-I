@@ -79,39 +79,36 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   }, [searchTerm, menuItems]);
   
 
-  // Mobile Back Navigation Handler
-  useEffect(() => {
-    const handleBrowserBack = (event) => {
-      event.preventDefault();
-      
-      // If a subcategory is selected, go back to categories
-      if (selectedSubcategory) {
-        setSelectedSubcategory(null);
-        navigate(`/home?categoryId=${selectedCategory.id}`);
-        return;
-      }
-      
-      // If a category is selected, go back to main categories
-      if (selectedCategory) {
-        setSelectedCategory(null);
-        navigate('/home');
-        return;
-      }
-      
-      // If on the main screen, allow default browser back behavior
+// Mobile Back Navigation Handler
+useEffect(() => {
+  const handleBrowserBack = (event) => {
+    event.preventDefault();
+
+    if (selectedSubcategory) {
+      // Going back from subcategory to category view
+      setSelectedSubcategory(null);
+      navigate(`/home?categoryId=${selectedCategory.id}`, { replace: true });
+    } else if (selectedCategory) {
+      // Going back from category to main categories view
+      setSelectedCategory(null);
+      navigate('/home', { replace: true });
+    } else {
+      // If on the main categories screen, let the app close
       if (window.history.length > 1) {
         window.history.back();
       }
-    };
+    }
+  };
 
-    // Add event listener for popstate
-    window.addEventListener('popstate', handleBrowserBack);
+  // Add event listener for popstate
+  window.addEventListener('popstate', handleBrowserBack);
 
-    // Cleanup listener
-    return () => {
-      window.removeEventListener('popstate', handleBrowserBack);
-    };
-  }, [selectedCategory, selectedSubcategory, navigate]);
+  // Cleanup listener
+  return () => {
+    window.removeEventListener('popstate', handleBrowserBack);
+  };
+}, [selectedCategory, selectedSubcategory, navigate]);
+
 
   // Restore state from URL
   useEffect(() => {
