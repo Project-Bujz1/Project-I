@@ -43,6 +43,12 @@ function BillSummary() {
     }
   }, [orgId]);
   
+  const getImageUrl = (imageData) => {
+    if (!imageData) return '';
+    if (typeof imageData === 'string') return imageData;
+    if (imageData.file?.url) return imageData.file.url;
+    return '';
+  };
 
   const showErrorModal = (message) => {
     setErrorMessage(message);
@@ -199,7 +205,7 @@ function BillSummary() {
       >
         <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
           <img 
-            src={item.image} 
+            src={getImageUrl(item.image)} 
             alt={item.name}
             style={{ 
               width: 60, 
