@@ -677,9 +677,9 @@ const WaitingScreen = () => {
   // GIF arrays for each status
   const statusGifs = {
     pending: [
+      '/assets/waiting-gif-1.gif',
       '/assets/pending1-1.gif',
-      '/assets/pending2-2.gif',
-      '/assets/pending3-3.gif'
+      '/assets/pending1-3.gif'
     ],
     preparing: [
       '/assets/preparing1.gif',
@@ -687,23 +687,25 @@ const WaitingScreen = () => {
       '/assets/preparing3.gif'
     ],
     ready: [
-      '/assets/preparing1.gif',
-      '/assets/preparing2.gif',
-      '/assets/preparing3.gif'
+      '/assets/Taken.gif',
+      '/assets/preparing-5.gif',
+      '/assets/preparing-4.gif'
     ],
     completed: [
+      '/assets/completed-1.gif',
       '/assets/preparing1.gif',
       '/assets/preparing2.gif',
-      '/assets/preparing3.gif'
+      '/assets/preparing3.gif',
+      '/assets/completed-1.gif',
     ],
     delayed: [
-      '/assets/preparing1.gif',
+      '/assets/waiting-2.gif',
       '/assets/preparing2.gif',
-      '/assets/preparing3.gif'
+      '/assets/taken-2.gif'
     ],
     cancelled: [
       '/assets/pending1-1.gif',
-      '/assets/pending2-2.gif',
+      '/assets/pending1-3.gif',
       '/assets/pending3-3.gif'
     ]
   };
@@ -937,85 +939,91 @@ const WaitingScreen = () => {
       </div>
       
       <Card
-        className="status-card"
+  className="status-card"
+  style={{
+    width: '100%',
+    maxWidth: '400px',
+    textAlign: 'center',
+    borderRadius: '16px',
+    border: '1px solid #e9ecef',
+    boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
+    padding: '20px',
+    background: '#fff',
+    transition: 'transform 0.3s ease',
+  }}
+>
+  <Title level={3} style={{ color: '#343a40' }}>Order #{order.displayOrderId}</Title>
+
+  {/* New GIF Display Section */}
+  <div style={{ 
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: '20px',
+    borderRadius: '12px',
+    marginLeft: '80px',
+    overflow: 'hidden',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    height: '100px',
+    width: '100px',
+    maxWidth: '100%',
+    backgroundColor: '#f8f9fa',
+  }}>
+    {order?.status && statusGifs[order.status] && (
+      <img 
+        src={statusGifs[order.status][currentGifIndex]}
+        alt={`Order ${order.status} animation`}
         style={{
           width: '100%',
-          maxWidth: '400px',
-          textAlign: 'center',
-          borderRadius: '16px',
-          border: '1px solid #e9ecef',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.1)',
-          padding: '20px',
-          background: '#fff',
-          transition: 'transform 0.3s ease',
+          height: '100%',
+          objectFit: 'cover',
+          transition: 'opacity 0.3s ease-in-out'
         }}
-      >
-        <Title level={3} style={{ color: '#343a40' }}>Order #{order.displayOrderId}</Title>
-        
-        {/* New GIF Display Section */}
-        <div style={{ 
-          marginBottom: '20px',
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-          height: '200px',
-          backgroundColor: '#f8f9fa',
-          position: 'relative'
-        }}>
-          {order?.status && statusGifs[order.status] && (
-            <img 
-              src={statusGifs[order.status][currentGifIndex]}
-              alt={`Order ${order.status} animation`}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                transition: 'opacity 0.3s ease-in-out'
-              }}
-            />
-          )}
-        </div>
+      />
+    )}
+  </div>
 
-        <Progress
-          type="circle"
-          percent={getStatusProgress(order.status)}
-          format={() => getStatusIcon(order.status)}
-          width={80}
-          strokeColor={{
-            '0%': '#ff4d4f',
-            '100%': '#52c41a',
-          }}
-          trailColor="#f0f0f0"
-        />
-        
-        <Title level={4} style={{ marginTop: '16px', color: '#343a40' }}>{order.statusMessage}</Title>
-        <Text type="secondary" style={{ color: '#6c757d' }}>We'll notify you when your order status changes</Text>
-        
-        <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          <Tooltip title="Cancel your order" placement="bottom">
-            <Button
-              icon={<CloseOutlined />}
-              onClick={handleCancelOrder}
-              type="default"
-              disabled={order.status !== 'pending' && order.status !== 'preparing'}
-              style={{ backgroundColor: '#f8f9fa', color: '#ff4d4f', borderColor: '#e9ecef', fontWeight: 'bold' }}
-            >
-              Cancel
-            </Button>
-          </Tooltip>
-          <Tooltip title="Complete your order" placement="bottom">
-            <Button
-              icon={<CheckOutlined />}
-              onClick={handleCompleteOrder}
-              type="primary"
-              disabled={order.status !== 'ready'}
-              style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', fontWeight: 'bold' }}
-            >
-              Complete
-            </Button>
-          </Tooltip>
-        </div>
-      </Card>
+  <Progress
+    type="circle"
+    percent={getStatusProgress(order.status)}
+    format={() => getStatusIcon(order.status)}
+    width={80}
+    strokeColor={{
+      '0%': '#ff4d4f',
+      '100%': '#52c41a',
+    }}
+    trailColor="#f0f0f0"
+  />
+  
+  <Title level={4} style={{ marginTop: '16px', color: '#343a40' }}>{order.statusMessage}</Title>
+  <Text type="secondary" style={{ color: '#6c757d' }}>We'll notify you when your order status changes</Text>
+  
+  <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+    <Tooltip title="Cancel your order" placement="bottom">
+      <Button
+        icon={<CloseOutlined />}
+        onClick={handleCancelOrder}
+        type="default"
+        disabled={order.status !== 'pending' && order.status !== 'preparing'}
+        style={{ backgroundColor: '#f8f9fa', color: '#ff4d4f', borderColor: '#e9ecef', fontWeight: 'bold' }}
+      >
+        Cancel
+      </Button>
+    </Tooltip>
+    <Tooltip title="Complete your order" placement="bottom">
+      <Button
+        icon={<CheckOutlined />}
+        onClick={handleCompleteOrder}
+        type="primary"
+        disabled={order.status !== 'ready'}
+        style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', fontWeight: 'bold' }}
+      >
+        Complete
+      </Button>
+    </Tooltip>
+  </div>
+</Card>
+
 
       {/* Keep all existing modals */}
       <Modal
