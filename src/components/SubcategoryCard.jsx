@@ -2,7 +2,12 @@ import React from 'react';
 import { Card, Typography } from 'antd';
 
 const { Text } = Typography;
-
+const getImageUrl = (imageData) => {
+  if (!imageData) return '';
+  if (typeof imageData === 'string') return imageData;
+  if (imageData.file?.url) return imageData.file.url;
+  return '';
+};
 function SubcategoryCard({ subcategory, onClick }) {
   return (
     <Card
@@ -22,7 +27,7 @@ function SubcategoryCard({ subcategory, onClick }) {
         subcategory.image ? (
           <img
             alt={subcategory.name}
-            src={subcategory.image}
+            src={getImageUrl(subcategory.image)}
             style={{ height: '120px', objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
           />
         ) : (
