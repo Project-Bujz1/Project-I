@@ -247,12 +247,25 @@ useEffect(() => {
 
           {selectedCategory && !selectedSubcategory && (
             <>
-              <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px' }}>
+              {/* <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px' }}>
                 ← Back to Categories
-              </button>
+              </button> */}
               <h2 className="section-title">{selectedCategory.name}</h2>
               {loading.subcategories ? (
-                <p>Loading subcategories...</p>
+                <>
+                <div className="loading-animation"
+                style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: '200px',
+        }}
+      >
+        <img src="/assets/LoadingMenuItems.gif" alt="Loading menu items..." />
+        <h1>Loading Sub Categories</h1>
+      </div>
+                </>
               ) : (
                 <div className="card-grid">
                   {filteredSubcategories?.map((subcategory) => (
@@ -283,13 +296,13 @@ useEffect(() => {
         justifyContent: 'space-between',
       }}
     >
-      <button
+      {/* <button
         className="back-button"
         onClick={handleBackToSubcategories}
         style={{ margin: '0 10px' }}
       >
         ← {selectedCategory.name}
-      </button>
+      </button> */}
       <FoodTypeFilter onFilterChange={handleFilterChange} />
     </div>
     
