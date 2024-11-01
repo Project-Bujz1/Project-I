@@ -28,20 +28,39 @@ function BillSummary() {
   
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
+
   useEffect(() => {
+    const fetchRestaurantInfo = async () => {
+      try {
+        const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json`);
+
+        if (response.ok) {
+          const data = await response.json();
+
+          // Check if data exists and filter by `orgId`
+          if (data) {
+            // Firebase stores data in a key-value format, so `data` is an object not an array
+            const restaurant = Object.values(data).find(item => item.orgId === orgId);
+            if (restaurant) {
+              setRestaurantInfo(restaurant);
+            } else {
+              throw new Error('Organization not found');
+            }
+          }
+        } else {
+          throw new Error('Failed to fetch restaurant details');
+        }
+      } catch (error) {
+        console.error(error);
+        showErrorModal('Failed to fetch organization details.');
+      }
+    };
+
     if (orgId) {
-      fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants/${orgId}.json`)
-        .then(response => {
-          if (!response.ok) throw new Error('Failed to fetch restaurant details');
-          return response.json();
-        })
-        .then(setRestaurantInfo)
-        .catch(error => {
-          console.error(error);
-          showErrorModal('Failed to fetch organization details.');
-        });
+      fetchRestaurantInfo();
     }
   }, [orgId]);
+
   
   const getImageUrl = (imageData) => {
     if (!imageData) return '';
@@ -127,8 +146,8 @@ function BillSummary() {
     const tableData = cart.map(item => [
       item.name,
       item.quantity.toString(),
-      `₹${item.price.toFixed(2)}`,
-      `₹${(item.price * item.quantity).toFixed(2)}`
+      `₹${Number(item.price).toFixed(2)}`,
+      `₹${(Number(item.price) * item.quantity).toFixed(2)}`
     ]);
     
     doc.autoTable({
