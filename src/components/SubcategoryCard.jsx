@@ -23,16 +23,16 @@ function SubcategoryCard({ subcategory, onClick }) {
           <img
             alt={subcategory.name}
             src={subcategory.image}
-            style={{ height: '150px', objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
+            style={{ height: '120px', objectFit: 'cover', borderRadius: '12px 12px 0 0' }}
           />
         ) : (
           <div
             style={{
-              height: '150px',
+              height: '120px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '36px',
+              fontSize: '56px',
             }}
           >
             🍴

@@ -179,16 +179,7 @@ function Header({ toggleDrawer, onSearch }) {
 )}
 
           </div>
-          <div className="header__center">
-          {localStorage.getItem('role') !== "admin" && 
-            <EnhancedSpeechSearch 
-  onSearch={handleSearch}
-  placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
-/>
-
-            }
-
-          </div>
+         
           <div className="header__right">
           {restaurantLogo && (
               <div className="header__restaurant-logo-container">
@@ -227,6 +218,16 @@ function Header({ toggleDrawer, onSearch }) {
               />
             </Tooltip>}          </div>
         </div>
+        <div className="header__center">
+          {localStorage.getItem('role') !== "admin" && 
+            <EnhancedSpeechSearch 
+  onSearch={handleSearch}
+  placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
+/>
+
+            }
+
+          </div>
       </div>
             {/* Sign Out Confirmation Modal */}
             <Modal
