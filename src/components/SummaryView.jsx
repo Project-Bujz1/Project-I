@@ -189,38 +189,42 @@ function BillSummary() {
         </div>
 
         <List
-          dataSource={cart}
-          renderItem={item => (
-            <List.Item
-              key={item.id}
-              style={{ padding: '16px', background: '#fafafa', borderRadius: '8px', marginBottom: '8px' }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-                <img 
-                  src={item.image} 
-                  alt={item.name}
-                  style={{ 
-                    width: 60, 
-                    height: 60, 
-                    objectFit: 'cover', 
-                    borderRadius: '4px',
-                    marginRight: '16px'
-                  }} 
-                />
-                <div style={{ flex: 1 }}>
-                  <Text strong>{item.name}</Text>
-                  <br />
-                  <Text type="secondary">Quantity: {item.quantity}</Text>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <Text strong>₹{(item.price * item.quantity).toFixed(2)}</Text>
-                  <br />
-                  <Text type="secondary">@₹{item.price.toFixed(2)}</Text>
-                </div>
-              </div>
-            </List.Item>
-          )}
-        />
+  dataSource={cart}
+  renderItem={item => {
+    const price = Number(item.price) || 0; // Ensure price is a number, default to 0 if invalid
+    return (
+      <List.Item
+        key={item.id}
+        style={{ padding: '16px', background: '#fafafa', borderRadius: '8px', marginBottom: '8px' }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', flex: 1 }}>
+          <img 
+            src={item.image} 
+            alt={item.name}
+            style={{ 
+              width: 60, 
+              height: 60, 
+              objectFit: 'cover', 
+              borderRadius: '4px',
+              marginRight: '16px'
+            }} 
+          />
+          <div style={{ flex: 1 }}>
+            <Text strong>{item.name}</Text>
+            <br />
+            <Text type="secondary">Quantity: {item.quantity}</Text>
+          </div>
+          <div style={{ textAlign: 'right' }}>
+            <Text strong>₹{(price * item.quantity).toFixed(2)}</Text>
+            <br />
+            <Text type="secondary">@₹{price.toFixed(2)}</Text>
+          </div>
+        </div>
+      </List.Item>
+    );
+  }}
+/>
+
 
         <div style={{ padding: '24px', background: '#f5f5f5', borderTop: '1px solid #e8e8e8' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
