@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Input, Button, Modal, Space } from 'antd';
 import { AudioOutlined, SearchOutlined, CheckCircleOutlined } from '@ant-design/icons';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import _ from 'lodash';
 
 const { Search } = Input;
 
@@ -12,7 +13,6 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
   const [showSuccess, setShowSuccess] = useState(false);
   const [errorState, setErrorState] = useState(false);
   const timeoutRef = useRef(null);
-  const searchTimeoutRef = useRef(null);
 
   const foodSuggestions = [
     { text: "Butter Chicken", icon: "🍗" },
@@ -20,22 +20,17 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
     { text: "Grilled Fish", icon: "🐟" }
   ];
 
-  const {
-    transcript,
-    resetTranscript,
-    browserSupportsSpeechRecognition
-  } = useSpeechRecognition();
+  const { transcript, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+  // Debounced handleSearch function
+  const debouncedSearch = useRef(_.debounce((value) => {
+    if (onSearch) onSearch(value);
+  }, 500)).current;
 
   useEffect(() => {
     if (transcript) {
       setSearchText(transcript);
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
-      // Start a timeout for 2 seconds to automatically trigger search
-      searchTimeoutRef.current = setTimeout(() => {
-        handleSearch(transcript);
-      }, 2000);
+      debouncedSearch(transcript);
     }
   }, [transcript]);
 
@@ -50,12 +45,7 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
     }
 
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-      if (searchTimeoutRef.current) {
-        clearTimeout(searchTimeoutRef.current);
-      }
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
   }, [isListening, transcript]);
 
@@ -65,40 +55,21 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
     setShowModal(true);
     setShowSuccess(false);
     resetTranscript();
-    SpeechRecognition.startListening({
-      continuous: false,
-      language: 'en-US'
-    });
+    SpeechRecognition.startListening({ continuous: false, language: 'en-US' });
   };
 
   const handleStopListening = () => {
     setIsListening(false);
     SpeechRecognition.stopListening();
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    if (searchTimeoutRef.current) {
-      clearTimeout(searchTimeoutRef.current);
-    }
-    if (!transcript) {
-      setErrorState(true);
-    } else {
-      handleSearch(transcript);
-      handleCloseModal();
-    }
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    if (!transcript) setErrorState(true);
   };
 
   const handleSearch = (value) => {
     setSearchText(value);
-    setIsListening(false);
-    setErrorState(false);
-    if (onSearch) {
-      onSearch(value);
-    }
+    debouncedSearch(value);
     setShowSuccess(true);
-    setTimeout(() => {
-      handleCloseModal();
-    }, 1500); // Delay to show the success animation
+    setTimeout(() => handleCloseModal(), 1500);
   };
 
   const handleCloseModal = () => {
@@ -116,17 +87,14 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
       });
       return;
     }
-    if (isListening) {
-      handleStopListening();
-    } else {
-      startListening();
-    }
+    if (isListening) handleStopListening();
+    else startListening();
   };
 
   const suffixIcon = (
     <AudioOutlined
-      style={{ 
-        fontSize: '18px', 
+      style={{
+        fontSize: '18px',
         color: isListening ? '#ff4d4f' : undefined,
         cursor: 'pointer'
       }}
@@ -164,12 +132,7 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
           </Button>
         ))}
       </Space>
-      <Button
-        type="primary"
-        danger
-        onClick={startListening}
-        style={{ marginTop: '16px' }}
-      >
+      <Button type="primary" danger onClick={startListening} style={{ marginTop: '16px' }}>
         Try Again
       </Button>
     </div>
@@ -185,11 +148,13 @@ const EnhancedSpeechSearch = ({ onSearch, placeholder = "Search for food..." }) 
     <>
       <Search
         value={searchText}
-        onChange={(e) => setSearchText(e.target.value)}
+        onChange={(e) => {
+          setSearchText(e.target.value);
+          debouncedSearch(e.target.value);
+        }}
         placeholder={placeholder}
         enterButton={<SearchOutlined />}
         suffix={suffixIcon}
-        onSearch={() => handleSearch(searchText)}
         style={{ width: '100%' }}
         className="custom-search-input"
       />
