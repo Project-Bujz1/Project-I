@@ -401,6 +401,254 @@ const ModernMenuManagement = () => {
   };
 
 // Also update the handleCreate function to properly handle both image types
+// Update the renderFormItems function to include image upload for categories and subcategories
+const renderFormItems = () => {
+  const handleImageInputTypeChange = (e) => {
+    setImageInputType(e.target.value);
+  };
+
+  // Common image upload form items
+  const imageUploadFields = (
+    <>
+      <Form.Item label="Image Input Type">
+        <Radio.Group onChange={handleImageInputTypeChange} value={imageInputType}>
+          <Radio value="url">Provide URL</Radio>
+          <Radio value="upload">Upload from System</Radio>
+        </Radio.Group>
+      </Form.Item>
+      
+      {imageInputType === 'url' ? (
+        <Form.Item
+          name="imageUrl"
+          label="Image URL"
+          rules={[{ required: !editingItem, message: 'Please provide the image URL!' }]}
+        >
+          <Input />
+        </Form.Item>
+      ) : (
+        <Form.Item
+          name="imageUpload"
+          label="Upload Image"
+          valuePropName="fileList"
+          getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+          rules={[{ required: !editingItem, message: 'Please upload the image!' }]}
+        >
+          <Upload
+            name="image"
+            listType="picture"
+            beforeUpload={() => false}
+          >
+            <Button>Click to Upload</Button>
+          </Upload>
+        </Form.Item>
+      )}
+    </>
+  );
+
+  switch (activeTab) {
+    case 'categories':
+      return (
+        <>
+          <Form.Item
+            name="name"
+            label="Category Name"
+            rules={[{ required: true, message: 'Please input the category name!' }]}
+          >
+            <Input />
+          </Form.Item>
+          {imageUploadFields}
+        </>
+      );
+    case 'subcategories':
+      return (
+        <>
+          <Form.Item
+            name="name"
+            label="Subcategory Name"
+            rules={[{ required: true, message: 'Please input the subcategory name!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="categoryId"
+            label="Category"
+            rules={[{ required: true, message: 'Please select a category!' }]}
+          >
+            <Select onChange={handleCategoryChange}>
+              {categories.map((category) => (
+                <Option key={category.firebaseId} value={category.firebaseId}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          {imageUploadFields}
+        </>
+      );
+    case 'menu_items':
+      return (
+        <>
+          <Form.Item
+            name="name"
+            label="Item Name"
+            rules={[{ required: true, message: 'Please input the item name!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="description"
+            label="Description"
+          >
+            <Input.TextArea rows={4} />
+          </Form.Item>
+          <Form.Item
+            name="price"
+            label="Price"
+            rules={[{ required: true, message: 'Please input the price!' }]}
+          >
+            <Input type="number" prefix="₹" />
+          </Form.Item>
+          <Form.Item
+            name="foodType"
+            label="Food Type"
+            rules={[{ required: true, message: 'Please select the food type!' }]}
+          >
+            <Select>
+              <Select.Option value="veg">Veg</Select.Option>
+              <Select.Option value="nonveg">Non-Veg</Select.Option>
+              <Select.Option value="neutral">Neutral</Select.Option>
+            </Select>
+          </Form.Item>
+          {imageUploadFields}
+          <Form.Item
+            name="categoryId"
+            label="Category"
+            rules={[{ required: true, message: 'Please select a category!' }]}
+          >
+            <Select onChange={handleCategoryChange}>
+              {categories.map((category) => (
+                <Option key={category.firebaseId} value={category.firebaseId}>
+                  {category.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="subcategoryId"
+            label="Subcategory"
+            rules={[{ required: true, message: 'Please select a subcategory!' }]}
+          >
+            <Select disabled={!selectedCategory}>
+              {subcategories
+                .filter((subcat) => subcat.categoryId === selectedCategory)
+                .map((subcategory) => (
+                  <Option key={subcategory.firebaseId} value={subcategory.firebaseId}>
+                    {subcategory.name}
+                  </Option>
+                ))}
+            </Select>
+          </Form.Item>
+          <Form.Item
+            name="isAvailable"
+            label="Available"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+        </>
+      );
+    default:
+      return null;
+  }
+};
+
+// Update the ModernCategoryCard component to display images
+const ModernCategoryCard = ({ item, type }) => (
+  <Card
+    hoverable
+    className="category-card"
+    style={{
+      marginBottom: '16px',
+      borderRadius: '16px',
+      backgroundColor: type === 'category' ? theme.secondary : theme.background,
+      border: `1px solid ${theme.primary}20`
+    }}
+  >
+    <div style={{ display: 'flex', gap: '16px' }}>
+      <img
+        src={getImageUrl(item.image)}
+        alt={item.name}
+        style={{
+          width: '80px',
+          height: '80px',
+          objectFit: 'cover',
+          borderRadius: '8px',
+        }}
+        onError={(e) => {
+          e.target.src = '/api/placeholder/80/80';
+        }}
+      />
+      <div style={{ flex: 1 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Space>
+            <div>
+              <Text strong style={{ fontSize: '18px', color: theme.text }}>
+                {item.name}
+              </Text>
+              {type === 'subcategory' && (
+                <Text type="secondary" style={{ fontSize: '14px', display: 'block' }}>
+                  {categories.find((c) => c.firebaseId === item.categoryId)?.name}
+                </Text>
+              )}
+            </div>
+          </Space>
+          <Space>
+            <Button
+              type="text"
+              icon={<EditOutlined />}
+              onClick={() => {
+                setEditingItem(item);
+                // Set form values including image data
+                if (item.image) {
+                  if (typeof item.image === 'string') {
+                    setImageInputType('url');
+                    form.setFieldsValue({
+                      ...item,
+                      imageUrl: item.image
+                    });
+                  } else if (item.image.file && item.image.file.url) {
+                    setImageInputType('upload');
+                    form.setFieldsValue({
+                      ...item,
+                      imageUpload: [{
+                        uid: '-1',
+                        name: item.image.file.name || 'existing-image.jpg',
+                        status: 'done',
+                        url: item.image.file.url,
+                        thumbUrl: item.image.file.url
+                      }]
+                    });
+                  }
+                } else {
+                  form.setFieldsValue(item);
+                }
+                setIsModalVisible(true);
+              }}
+            />
+            <Button
+              type="text"
+              danger
+              icon={<DeleteOutlined />}
+              onClick={() => handleDelete(item.firebaseId)}
+            />
+          </Space>
+        </div>
+      </div>
+    </div>
+  </Card>
+);
+
+// Update handleCreate and handleUpdate functions to handle images for all types
 const handleCreate = async values => {
   const type = activeTab === 'categories'
     ? 'categories'
@@ -409,19 +657,17 @@ const handleCreate = async values => {
     : 'menu_items';
     
   try {
-    // Handle image data for menu items
+    // Handle image data for all types
     let imageData;
-    if (type === 'menu_items') {
-      if (imageInputType === 'url') {
-        imageData = values.imageUrl;
-      } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
-        imageData = {
-          file: {
-            url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
-            name: values.imageUpload[0].name
-          }
-        };
-      }
+    if (imageInputType === 'url') {
+      imageData = values.imageUrl;
+    } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
+      imageData = {
+        file: {
+          url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
+          name: values.imageUpload[0].name
+        }
+      };
     }
 
     const dataToCreate = {
@@ -456,6 +702,7 @@ const handleCreate = async values => {
     message.error('Failed to create item');
   }
 };
+
 const handleUpdate = async values => {
   const type = activeTab === 'categories'
     ? 'categories'
@@ -468,19 +715,17 @@ const handleUpdate = async values => {
       throw new Error('No item selected for update');
     }
 
-    // Handle image data based on input type
+    // Handle image data for all types
     let imageData;
-    if (type === 'menu_items') {
-      if (imageInputType === 'url') {
-        imageData = values.imageUrl;
-      } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
-        imageData = {
-          file: {
-            url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
-            name: values.imageUpload[0].name
-          }
-        };
-      }
+    if (imageInputType === 'url') {
+      imageData = values.imageUrl;
+    } else if (imageInputType === 'upload' && values.imageUpload?.[0]) {
+      imageData = {
+        file: {
+          url: values.imageUpload[0].url || values.imageUpload[0].thumbUrl,
+          name: values.imageUpload[0].name
+        }
+      };
     }
 
     const dataToUpdate = {
@@ -518,6 +763,7 @@ const handleUpdate = async values => {
     message.error(`Failed to update item: ${error.message}`);
   }
 };
+
 
 // Helper function to get the correct image URL
 const getImageUrl = (imageData) => {
@@ -1119,203 +1365,7 @@ const ModernMenuItem = ({ item }) => {
 
 
 
-  const ModernCategoryCard = ({ item, type }) => (
-    <Card
-      hoverable
-      className="category-card"
-      style={{
-        marginBottom: '16px',
-        borderRadius: '16px',
-        backgroundColor: type === 'category' ? theme.secondary : theme.background,
-        border: `1px solid ${theme.primary}20`
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Space>
-          <ShopOutlined style={{ fontSize: '24px', color: theme.primary }} />
-          <div>
-            <Text strong style={{ fontSize: '18px', color: theme.text }}>
-              {item.name}
-            </Text>
-            {type === 'subcategory' && (
-              <Text type="secondary" style={{ fontSize: '14px', display: 'block' }}>
-                {categories.find((c) => c.firebaseId === item.categoryId)?.name}
-              </Text>
-            )}
-          </div>
-        </Space>
-        <Space>
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => {
-              setEditingItem(item);
-              form.setFieldsValue(item);
-              setIsModalVisible(true);
-            }}
-          />
-          <Button
-            type="text"
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => handleDelete(item.firebaseId)}
-          />
-        </Space>
-      </div>
-    </Card>
-  );
-    const renderFormItems = () => {  
-      const handleImageInputTypeChange = (e) => {
-        setImageInputType(e.target.value);
-      };
-    
-      switch (activeTab) {
-        case 'categories':
-          return (
-            <>
-              <Form.Item
-                name="name"
-                label="Category Name"
-                rules={[{ required: true, message: 'Please input the category name!' }]}
-              >
-                <Input />
-              </Form.Item>
-            </>
-          );
-        case 'subcategories':
-          return (
-            <>
-              <Form.Item
-                name="name"
-                label="Subcategory Name"
-                rules={[{ required: true, message: 'Please input the subcategory name!' }]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                name="categoryId"
-                label="Category"
-                rules={[{ required: true, message: 'Please select a category!' }]}
-              >
-                <Select onChange={handleCategoryChange}>
-                  {categories.map((category) => (
-      <Option key={category.firebaseId} value={category.firebaseId}>
-                      {category.name}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </>
-          );
-          case 'menu_items':
-            return (
-              <>
-                <Form.Item
-                  name="name"
-                  label="Item Name"
-                  rules={[{ required: true, message: 'Please input the item name!' }]}
-                >
-                  <Input />
-                </Form.Item>
-                <Form.Item
-                  name="description"
-                  label="Description"
-                >
-                  <Input.TextArea rows={4} />
-                </Form.Item>
-                <Form.Item
-                  name="price"
-                  label="Price"
-                  rules={[{ required: true, message: 'Please input the price!' }]}
-                >
-                  <Input type="number" prefix="₹" />
-                </Form.Item>
-                <Form.Item
-                  name="foodType"
-                  label="Food Type"
-                  rules={[{ required: true, message: 'Please select the food type!' }]}
-                >
-                  <Select>
-                    <Select.Option value="veg">Veg</Select.Option>
-                    <Select.Option value="nonveg">Non-Veg</Select.Option>
-                    <Select.Option value="neutral">Neutral</Select.Option>
-                  </Select>
-                </Form.Item>
-                {/* Image Input Type Selection */}
-                <Form.Item label="Image Input Type">
-                  <Radio.Group onChange={handleImageInputTypeChange} value={imageInputType}>
-                    <Radio value="url">Provide URL</Radio>
-                    <Radio value="upload">Upload from System</Radio>
-                  </Radio.Group>
-                </Form.Item>
-                {/* Conditional Rendering Based on Image Input Type */}
-                {imageInputType === 'url' ? (
-                  <Form.Item
-                    name="imageUrl"
-                    label="Image URL"
-                    rules={[{ required: !editingItem, message: 'Please provide the image URL!' }]}
-                  >
-                    <Input />
-                  </Form.Item>
-                ) : (
-                  <Form.Item
-                    name="imageUpload"
-                    label="Upload Image"
-                    valuePropName="fileList"
-                    getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
-                    rules={[{ required: !editingItem, message: 'Please upload the image!' }]}
-                  >
-                    <Upload
-                      name="image"
-                      listType="picture"
-                      beforeUpload={() => false}
-                    >
-                      <Button>Click to Upload</Button>
-                    </Upload>
-                  </Form.Item>
-                )}
-                <Form.Item
-                  name="categoryId"
-                  label="Category"
-                  rules={[{ required: true, message: 'Please select a category!' }]}
-                >
-                  <Select onChange={handleCategoryChange}>
-                    {categories.map((category) => (
-                      <Option key={category.firebaseId} value={category.firebaseId}>
-                        {category.name}
-                      </Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  name="subcategoryId"
-                  label="Subcategory"
-                  rules={[{ required: true, message: 'Please select a subcategory!' }]}
-                >
-                  <Select disabled={!selectedCategory}>
-                    {subcategories
-                      .filter((subcat) => subcat.categoryId === selectedCategory)
-                      .map((subcategory) => (
-                        <Option key={subcategory.firebaseId} value={subcategory.firebaseId}>
-                          {subcategory.name}
-                        </Option>
-                      ))}
-                  </Select>
-                </Form.Item>
-                <Form.Item
-                  name="isAvailable"
-                  label="Available"
-                  valuePropName="checked"
-                >
-                  <Switch />
-                </Form.Item>
-              </>
-            );
-          
-        default:
-          return null;
-      }
-    };
+
   const renderSiderContent = () => (
     <>
       <div style={{ 

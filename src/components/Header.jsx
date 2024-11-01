@@ -202,7 +202,7 @@ function Header({ toggleDrawer, onSearch }) {
             )}
             {role === 'customer' && (
               <>
-                <Tooltip title="Order Summary">
+                {/* <Tooltip title="Order Summary">
                   <AiOutlineFileText 
                     onClick={handleOrderSummaryClick} 
                     className="header__icon"
@@ -217,8 +217,8 @@ function Header({ toggleDrawer, onSearch }) {
                       </div>
                     </Badge>
                   </Link>
-                </Tooltip>
-              </>
+                </Tooltip> */}
+              </>     
             )}
            {role !== 'customer' && <Tooltip title="Sign Out">
               <IoPowerSharp
