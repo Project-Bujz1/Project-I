@@ -594,57 +594,61 @@ const MenuSuggestionManager = () => {
       </Row>
 
       <Modal
-        title={`Select Suggestions for ${selectedItem?.name}`}
-        open={modalVisible}
-        onCancel={() => setModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
-            Cancel
-          </Button>,
-          <Button
-            key="save"
-            type="primary"
-            icon={<SaveOutlined />}
-            loading={saving}
-            onClick={saveSuggestions}
-          >
-            Save Suggestions
-          </Button>,
-        ]}
-      >
-        <Search
-          placeholder="Search menu items..."
-          style={styles.modalSearch}
-          onChange={(e) => setSearchText(e.target.value)}
-        />
+  title={`Select Suggestions for ${selectedItem?.name}`}
+  open={modalVisible}
+  onCancel={() => setModalVisible(false)}
+  footer={[
+    <Button key="cancel" onClick={() => setModalVisible(false)}>
+      Cancel
+    </Button>,
+    <Button
+      key="save"
+      type="primary"
+      icon={<SaveOutlined />}
+      loading={saving}
+      onClick={saveSuggestions}
+    >
+      Save Suggestions
+    </Button>,
+  ]}
+>
+  <Search
+    placeholder="Search menu items..."
+    style={styles.modalSearch}
+    onChange={(e) => setSearchText(e.target.value)}
+  />
 
-        <Row gutter={[8, 8]}>
-          {getFilteredItems().map(suggestedItem => (
-            <Col xs={24} md={12} key={suggestedItem.id}>
-              <Card
-                hoverable
-                onClick={() => handleSuggestionToggle(suggestedItem)}
-                style={{
-                  ...styles.suggestionCard,
-                  ...(selectedSuggestions.includes(suggestedItem.id) ? styles.selectedSuggestion : {}),
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <img
-                    src={getImageUrl(suggestedItem.image)}
-                    alt={suggestedItem.name}
-                    style={styles.suggestionImage}
-                  />
-                  <div>
-                    <Title level={5}>{suggestedItem.name}</Title>
-                    <Text type="secondary">{suggestedItem.description}</Text>
-                  </div>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </Modal>
+  {/* Scrollable Container */}
+  <div style={{ maxHeight: '400px', overflowY: 'auto', paddingRight: '16px' }}>
+    <Row gutter={[8, 8]}>
+      {getFilteredItems().map(suggestedItem => (
+        <Col xs={24} md={12} key={suggestedItem.id}>
+          <Card
+            hoverable
+            onClick={() => handleSuggestionToggle(suggestedItem)}
+            style={{
+              ...styles.suggestionCard,
+              ...(selectedSuggestions.includes(suggestedItem.id) ? styles.selectedSuggestion : {}),
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <img
+                src={getImageUrl(suggestedItem.image)}
+                alt={suggestedItem.name}
+                style={styles.suggestionImage}
+              />
+              <div>
+                <Title level={5}>{suggestedItem.name}</Title>
+                <Text type="secondary">{suggestedItem.description}</Text>
+              </div>
+            </div>
+          </Card>
+        </Col>
+      ))}
+    </Row>
+  </div>
+</Modal>
+
     </div>
   );
 };
