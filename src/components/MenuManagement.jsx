@@ -22,7 +22,8 @@ import {
   Upload,
   Dropdown,
   Divider,
-  Popover
+  Popover,
+  Popconfirm
 } from 'antd';
 import {
   PlusOutlined,
