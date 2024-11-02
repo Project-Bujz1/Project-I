@@ -635,12 +635,19 @@ const ModernCategoryCard = ({ item, type }) => (
                 setIsModalVisible(true);
               }}
             />
-            <Button
-              type="text"
-              danger
-              icon={<DeleteOutlined />}
-              onClick={() => handleDelete(item.firebaseId)}
-            />
+             <Popconfirm
+      title="Are you sure you want to delete this item?"
+      onConfirm={() => handleDelete(item.firebaseId)}
+      okText="Yes"
+      cancelText="No"
+      placement="topRight"
+    >
+      <Button
+        type="text"
+        danger
+        icon={<DeleteOutlined />}
+      />
+    </Popconfirm>
           </Space>
         </div>
       </div>
@@ -1021,16 +1028,20 @@ const columns = {
             }}
 
           />
-
-          <Button
-
-            icon={<DeleteOutlined />}
-
-            onClick={() => handleDelete(record.firebaseId)}
-
-            style={{ marginLeft: 8 }}
-
-          />
+ <Popconfirm
+      title="Are you sure you want to delete this item?"
+      onConfirm={() => handleDelete(record.firebaseId)}
+      okText="Yes"
+      cancelText="No"
+      placement="topRight"
+    >
+      <Button
+        type="text"
+        danger
+        icon={<DeleteOutlined />}
+        style={{ marginLeft: 8 }}
+      />
+    </Popconfirm>
 
         </>
 
@@ -1082,16 +1093,20 @@ const columns = {
 
           />
 
-          <Button
-
-            icon={<DeleteOutlined />}
-
-            onClick={() => handleDelete(record.firebaseId)}
-
-            style={{ marginLeft: 8 }}
-
-          />
-
+<Popconfirm
+      title="Are you sure you want to delete this item?"
+      onConfirm={() => handleDelete(record.firebaseId)}
+      okText="Yes"
+      cancelText="No"
+      placement="topRight"
+    >
+      <Button
+        type="text"
+        danger
+        icon={<DeleteOutlined />}
+        style={{ marginLeft: 8 }}
+      />
+    </Popconfirm>
         </>
 
       ),
@@ -1162,15 +1177,20 @@ const columns = {
 
           />
 
-          <Button
-
-            icon={<DeleteOutlined />}
-
-            onClick={() => handleDelete(record.firebaseId)}
-
-            style={{ marginLeft: 8 }}
-
-          />
+<Popconfirm
+      title="Are you sure you want to delete this item?"
+      onConfirm={() => handleDelete(record.firebaseId)}
+      okText="Yes"
+      cancelText="No"
+      placement="topRight"
+    >
+      <Button
+        type="text"
+        danger
+        icon={<DeleteOutlined />}
+        style={{ marginLeft: 8 }}
+      />
+    </Popconfirm>
 
         </>
 
@@ -1347,12 +1367,19 @@ const ModernMenuItem = ({ item }) => {
                   setIsModalVisible(true);
                 }}
               />
-              <Button
-                type="text"
-                danger
-                icon={<DeleteOutlined />}
-                onClick={() => handleDelete(item.firebaseId)}
-              />
+               <Popconfirm
+      title="Are you sure you want to delete this item?"
+      onConfirm={() => handleDelete(item.firebaseId)}
+      okText="Yes"
+      cancelText="No"
+      placement="topRight"
+    >
+      <Button
+        type="text"
+        danger
+        icon={<DeleteOutlined />}
+      />
+    </Popconfirm>
             </Space>
           </div>
         </div>
