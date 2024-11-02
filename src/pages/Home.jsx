@@ -247,9 +247,9 @@ useEffect(() => {
 
           {selectedCategory && !selectedSubcategory && (
             <>
-              {/* <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px' }}>
+              <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px' }}>
                 ← Back to Categories
-              </button> */}
+              </button>
               <h2 className="section-title">{selectedCategory.name}</h2>
               {loading.subcategories ? (
                 <>
@@ -296,13 +296,13 @@ useEffect(() => {
         justifyContent: 'space-between',
       }}
     >
-      {/* <button
+      <button
         className="back-button"
         onClick={handleBackToSubcategories}
         style={{ margin: '0 10px' }}
       >
         ← {selectedCategory.name}
-      </button> */}
+      </button>
       <FoodTypeFilter onFilterChange={handleFilterChange} />
     </div>
     

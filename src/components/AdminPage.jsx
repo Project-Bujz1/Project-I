@@ -739,6 +739,12 @@ const AdminOrderComponent = () => {
                     }}>
                       {order.statusMessage || getStatusMessage(order.status || 'pending')}
                     </Text>
+                              {/* Show the order description if it exists */}
+          {order.description && (
+            <Text style={{ fontSize: '0.9rem', color: '#555', marginTop: '10px' }}>
+              Notes: {order.description}
+            </Text>
+          )}
 
                     <Text type="secondary" style={{
                       fontSize: '0.8rem',

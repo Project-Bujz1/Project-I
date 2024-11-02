@@ -123,6 +123,7 @@ function OrderSummary() {
       timestamp: new Date().toISOString(),
       status: 'pending',
       statusMessage: 'Your order is being processed',
+      description: description
     };
   
     try {
@@ -362,7 +363,14 @@ function OrderSummary() {
           }}
           rows={3}
         />
+        
       )}
+              <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Button onClick={() => setIsModalVisible(false)} style={{ marginRight: '10px' }}>
+            Submit
+          </Button>
+        </div>
+        
 </Modal>
 
       <Modal
