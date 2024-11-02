@@ -173,18 +173,46 @@ function OrderSummary() {
   };
 
   const handleAddSuggestion = (item) => {
-    // Logic to add the suggested item to the cart or confirm order
-    // You can extend this to add the item to the existing cart
     console.log(`Added ${item.name} to the order.`);
     setIsModalVisible(false);
-    // navigate('/confirm-order');
   };
 
+  if (loading) {
+    return <FoodLoader />;
+  }
+
   return (
-    <div className="order-summary-container" style={{ marginTop: '115px' }}>
+    <div className="order-summary-container" style={{ marginTop: '115px' ,           marginBottom: '200px',
+    }}>
       <h2 className="order-summary-title">Confirm Order</h2>
       {cart.map((item) => (
-        <div key={item.id} className="order-item">
+        
+        <div
+        style={{
+          maxHeight: '150px',
+          overflowY: 'auto',
+          paddingRight: '10px',
+          marginTop: '20px',
+          scrollbarColor: 'red transparent',
+        }}
+      
+     
+        key={item.id} className="order-item">
+          
+        <style>
+          {`
+            ::-webkit-scrollbar {
+              width: 6px;
+            }
+            ::-webkit-scrollbar-thumb {
+              background-color: red;
+              border-radius: 4px;
+            }
+            ::-webkit-scrollbar-track {
+              background: transparent;
+            }
+          `}
+        </style>
           <span className="item-name">{item.name} x {item.quantity}</span>
           <span className="item-price">₹{(item.price * item.quantity).toFixed(2)}</span>
         </div>
@@ -205,8 +233,9 @@ function OrderSummary() {
       <button className="pay-button" onClick={handlePayClick}>
         Confirm Order
       </button>
-      {/* Suggestion Bubble */}
-      {showBubble && (
+
+         {/* Suggestion Bubble */}
+         {showBubble && (
         <div
           className={`suggestion-bubble ${animationClass}`}
           onClick={handleBubbleClick}

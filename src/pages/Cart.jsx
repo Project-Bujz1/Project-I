@@ -17,6 +17,7 @@ function Cart() {
   const handleBrowseMenu = () => {
     navigate('/home');
   };
+  
   const getImageUrl = (imageData) => {
     if (!imageData) return '';
     if (typeof imageData === 'string') {
@@ -28,83 +29,104 @@ function Cart() {
     return '';
   };
 
+  const scrollStyles = {
+    maxHeight: '400px',
+    overflowY: 'auto',
+    padding: '10px',
+    border: '1px solid #ddd',
+    marginBottom: '20px',
+    scrollbarWidth: 'thin', // Firefox-only
+    scrollbarColor: 'red transparent', // Firefox-only
+
+    /* Inline style for WebKit browsers */
+    WebkitOverflowScrolling: 'touch',
+  };
+
   return (
-    <div className="cart-container" style={{ marginTop: '115px' }}>
+    <div className="cart-container" style={{ marginTop: '115px', marginBottom: '200px',  padding: '20px' }}>
       <h2 className="cart-title">Your Cart</h2>
       {cart.length === 0 ? (
         <div
-  className="empty-cart"
-  style={{
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '200px', // You can adjust the height as needed
-    textAlign: 'center'
-  }}
->
-  <p className="empty-cart-message">Your cart is empty.</p>
-  <button
-    onClick={handleBrowseMenu}
-    className="browse-menu-button"
-    style={{
-      backgroundColor: 'red',
-      color: '#fff',
-      padding: '10px 20px',
-      border: 'none',
-      borderRadius: '5px',
-      cursor: 'pointer',
-      marginTop: '10px'
-    }}
-  >
-    Browse Menu
-  </button>
-</div>
-
+          className="empty-cart"
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '200px',
+            textAlign: 'center'
+          }}
+        >
+          <p className="empty-cart-message">Your cart is empty.</p>
+          <button
+            onClick={handleBrowseMenu}
+            className="browse-menu-button"
+            style={{
+              backgroundColor: 'red',
+              color: '#fff',
+              padding: '10px 20px',
+              border: 'none',
+              borderRadius: '5px',
+              cursor: 'pointer',
+              marginTop: '10px'
+            }}
+          >
+            Browse Menu
+          </button>
+        </div>
       ) : (
         <>
-          {
-          cart.map((item) => (
-            <div key={item.id} className="cart-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
-              <img src={getImageUrl(item.image)} alt={item.name} style={{ width: '100px', height: '100px', marginRight: '20px' }} />
-              <div className="item-info">
-                <h3 className="item-name">{item.name}</h3>
-                <p className="item-price">₹{item.price} x {item.quantity}</p>
+          <div 
+            className="cart-items-container" 
+            style={{
+              ...scrollStyles,
+              overflowY: 'auto',
+              maxHeight: '400px',
+              marginBottom: '20px',
+            }}
+          >
+            {cart.map((item) => (
+              <div key={item.id} className="cart-item" style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+                <img src={getImageUrl(item.image)} alt={item.name} style={{ width: '100px', height: '100px', marginRight: '20px' }} />
+                <div className="item-info">
+                  <h3 className="item-name">{item.name}</h3>
+                  <p className="item-price">₹{item.price} x {item.quantity}</p>
+                </div>
+                <div className="item-actions" style={{ marginLeft: 'auto' }}>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                    className="quantity-button"
+                    style={{ marginRight: '10px' }}
+                  >
+                    -
+                  </button>
+                  <span className="item-quantity">{item.quantity}</span>
+                  <button
+                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                    className="quantity-button"
+                    style={{ marginLeft: '10px', marginRight: '20px' }}
+                  >
+                    +
+                  </button>
+                  <button
+                    onClick={() => removeFromCart(item.id)}
+                    className="remove-button"
+                    style={{
+                      backgroundColor: 'red',
+                      color: '#fff',
+                      padding: '5px 10px',
+                      border: 'none',
+                      borderRadius: '5px',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    Remove
+                  </button>
+                </div>
               </div>
-              <div className="item-actions" style={{ marginLeft: 'auto' }}>
-                <button
-                  onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  className="quantity-button"
-                  style={{ marginRight: '10px' }}
-                >
-                  -
-                </button>
-                <span className="item-quantity">{item.quantity}</span>
-                <button
-                  onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  className="quantity-button"
-                  style={{ marginLeft: '10px', marginRight: '20px' }}
-                >
-                  +
-                </button>
-                <button
-                  onClick={() => removeFromCart(item.id)}
-                  className="remove-button"
-                  style={{
-                    backgroundColor: 'red',
-                    color: '#fff',
-                    padding: '5px 10px',
-                    border: 'none',
-                    borderRadius: '5px',
-                    cursor: 'pointer'
-                  }}
-                >
-                  Remove
-                </button>
-              </div>
-            </div>
-          ))}
-          <div className="cart-actions" style={{ marginTop: '20px', textAlign: 'right' }}>
+            ))}
+          </div>
+          <div className="cart-actions" style={{ textAlign: 'right' }}>
             <p className="total-text">Total: ₹{total.toFixed(2)}</p>
             <div className="button-group" style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
