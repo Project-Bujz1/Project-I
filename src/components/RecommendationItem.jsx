@@ -191,7 +191,7 @@ const RecommendationItem = ({ item, onAddToCart, collapsed }) => {
             </div>
           )}
           <img
-            src={item.image}
+            src={getImageUrl(item.image)}
             alt={item.name}
             style={{ ...styles.image, opacity: imageLoaded ? 1 : 0 }}
             onLoad={() => setImageLoaded(true)}

@@ -87,7 +87,8 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '200px',
-  },};
+  },
+};
 
 const MenuSuggestionManager = () => {
   const [menuItems, setMenuItems] = useState([]);
@@ -132,85 +133,87 @@ const MenuSuggestionManager = () => {
     fetchAllData();
   }, []);
 
-    // Update selectedSuggestions when modal is opened
-    const handleOpenModal = (item) => {
-        setSelectedItem(item);
-        // Ensure we're getting the latest suggestions for this item
-        setSelectedSuggestions(suggestions[item.id] || []);
-        setModalVisible(true);
-        setSearchText('');
+  const handleOpenModal = (item) => {
+    setSelectedItem(item);
+    setSelectedSuggestions(suggestions[item.id] || []);
+    setModalVisible(true);
+    setSearchText('');
+  };
+
+  const getImageUrl = (imageData) => {
+    if (!imageData) return '/placeholder.jpg'; // Fallback image
+    if (typeof imageData === 'string') return imageData; // Direct URL
+    if (imageData.url) return imageData.url; // For URL field
+    if (imageData.file?.url) return imageData.file.url; // For nested file structure
+    return '/placeholder.jpg';
+  };
+  
+
+  const handleSuggestionToggle = (suggestedItem) => {
+    setSelectedSuggestions(prev => {
+      const exists = prev.find(item => item.id === suggestedItem.id);
+      if (exists) {
+        return prev.filter(item => item.id !== suggestedItem.id);
+      }
+      if (prev.length >= 5) {
+        message.warning('Maximum 5 suggestions allowed');
+        return prev;
+      }
+      return [...prev, suggestedItem];
+    });
+  };
+
+  const saveSuggestions = async () => {
+    if (!selectedItem) return;
+
+    if (selectedSuggestions.length < 3) {
+      message.error('Please select at least 3 suggestions');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const updatedSuggestions = {
+        ...suggestions,
+        [selectedItem.id]: selectedSuggestions,
       };
-    
-      const getImageUrl = (imageData) => {
-        if (!imageData) return '/placeholder.jpg'; // Add a default placeholder
-        if (typeof imageData === 'string') return imageData;
-        if (imageData.file?.url) return imageData.file.url;
-        return '/placeholder.jpg';
-      };
-    
-      const handleSuggestionToggle = (suggestedItem) => {
-        setSelectedSuggestions(prev => {
-          const newSuggestions = prev.includes(suggestedItem.id)
-            ? prev.filter(id => id !== suggestedItem.id)
-            : prev.length >= 5
-              ? (message.warning('Maximum 5 suggestions allowed'), prev)
-              : [...prev, suggestedItem.id];
-          return newSuggestions;
-        });
-      };
-    
-      const saveSuggestions = async () => {
-        if (!selectedItem) return;
-    
-        if (selectedSuggestions.length < 3) {
-          message.error('Please select at least 3 suggestions');
-          return;
-        }
-    
-        setSaving(true);
-        try {
-          const updatedSuggestions = {
-            ...suggestions,
-            [selectedItem.id]: selectedSuggestions,
-          };
-    
-          const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_suggestions.json', {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(updatedSuggestions),
-          });
-    
-          if (!response.ok) throw new Error('Failed to save suggestions');
-    
-          setSuggestions(updatedSuggestions);
-          message.success('Suggestions saved successfully');
-          setModalVisible(false);
-        } catch (error) {
-          console.error('Error saving suggestions:', error);
-          message.error('Failed to save suggestions');
-        } finally {
-          setSaving(false);
-        }
-      };
-    
-      const getFilteredItems = () => {
-        if (!selectedItem) return [];
-        return menuItems.filter(item => 
-          item.id !== selectedItem.id &&
-          (item.name.toLowerCase().includes(searchText.toLowerCase()) ||
-           item.description?.toLowerCase().includes(searchText.toLowerCase()))
-        );
-      };
-    
-      const getSuggestionItems = (itemId) => {
-        const suggestionIds = suggestions[itemId] || [];
-        return suggestionIds
-          .map(id => menuItems.find(item => item.id === id))
-          .filter(Boolean); // Remove any undefined items
-      };
-    
+
+      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_suggestions.json', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updatedSuggestions),
+      });
+
+      if (!response.ok) throw new Error('Failed to save suggestions');
+
+      setSuggestions(updatedSuggestions);
+      message.success('Suggestions saved successfully');
+      setModalVisible(false);
+    } catch (error) {
+      console.error('Error saving suggestions:', error);
+      message.error('Failed to save suggestions');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getFilteredItems = () => {
+    if (!selectedItem) return [];
+    return menuItems.filter(item => 
+      item.id !== selectedItem.id &&
+      (item.name.toLowerCase().includes(searchText.toLowerCase()) ||
+       item.description?.toLowerCase().includes(searchText.toLowerCase()))
+    );
+  };
+   
+  const getSuggestionItems = (itemId) => {
+    const suggestionIds = suggestions[itemId] || [];
+    return suggestionIds
+      .map(id => menuItems.find(item => item.id === id))
+      .filter(Boolean); // Remove any undefined items
+  };
 
   const handleSearch = (value) => {
     setSearchText(value.toLowerCase());
@@ -233,7 +236,6 @@ const MenuSuggestionManager = () => {
     <div style={styles.container}>
       <Title level={2} style={styles.header}>Menu Item Suggestions</Title>
 
-      {/* Search Input for filtering menu items */}
       <Search
         placeholder="Search menu items..."
         onSearch={handleSearch}
@@ -316,7 +318,7 @@ const MenuSuggestionManager = () => {
                   onClick={() => handleSuggestionToggle(suggestedItem)}
                   style={{
                     ...styles.suggestionCard,
-                    ...(selectedSuggestions.includes(suggestedItem.id) ? styles.selectedSuggestion : {}),
+                    ...(selectedSuggestions.some(item => item.id === suggestedItem.id) && styles.selectedSuggestion),
                   }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -326,8 +328,8 @@ const MenuSuggestionManager = () => {
                       style={styles.suggestionImage}
                     />
                     <div>
-                      <Title level={5}>{suggestedItem.name}</Title>
-                      <Text type="secondary">{suggestedItem.description}</Text>
+                      <Text>{suggestedItem.name}</Text>
+                      <div style={{ fontSize: '12px' }}>{suggestedItem.description}</div>
                     </div>
                   </div>
                 </Card>
