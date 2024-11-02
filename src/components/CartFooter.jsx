@@ -163,8 +163,26 @@ const CartFooter = () => {
         </div>
 
         {isExpanded && (
-          <div className="cart-details" style={{ marginTop: '16px' }}>
-            {cart.map((item) => (
+          <div
+  className="cart-details"
+  style={{
+    marginTop: '16px',
+    maxHeight: '300px', // limit height for scroll
+    overflowY: 'auto',
+    paddingRight: '8px',
+    scrollbarWidth: 'thin', // for Firefox
+    scrollbarColor: 'red transparent', // for Firefox
+    WebkitOverflowScrolling: 'touch', // smooth scrolling for mobile
+    WebkitScrollbarWidth: 'thin', // Custom width
+    WebkitScrollbarTrack: {
+      backgroundColor: 'transparent',
+    },
+    WebkitScrollbarThumb: {
+      backgroundColor: 'red',
+      borderRadius: '4px',
+    },
+  }}
+>            {cart.map((item) => (
               <div
                 key={item.id}
                 style={{
