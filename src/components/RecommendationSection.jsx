@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Spin } from 'antd';
+import { Button, Spin, message } from 'antd';
 import { DownOutlined, UpOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import RecommendationItem from './RecommendationItem';
@@ -56,20 +56,47 @@ const RecommendationSection = ({ isVisible, parentItemId, onAddToCart }) => {
   useEffect(() => {
     const fetchRecommendations = async () => {
       try {
-        const response = await axios.get('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json');
-        const items = Object.values(response.data);
-        const filteredItems = items.filter(item => item.id !== parentItemId);
-        const count = Math.floor(Math.random() * 3) + 3; // Random number between 3-5
-        const randomItems = filteredItems.sort(() => 0.5 - Math.random()).slice(0, count);
-        setRecommendations(randomItems);
+        // Fetch suggestions mapping
+        const suggestionsResponse = await axios.get(
+          'https://stage-smart-server-default-rtdb.firebaseio.com/menu_suggestions.json'
+        );
+        const suggestionsData = suggestionsResponse.data || {};
+        
+        // Get suggestion IDs for the parent item
+        const suggestionIds = suggestionsData[parentItemId] || [];
+        
+        if (suggestionIds.length === 0) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch all menu items
+        const menuResponse = await axios.get(
+          'https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json'
+        );
+        const menuItems = Object.values(menuResponse.data);
+// Assuming you have access to menuItems and suggestionIds
+const orgId = localStorage.getItem("orgId"); // Get the orgId from local storage
+
+const suggestedItems = menuItems.filter(item => {
+    // Find if the suggestionId matches with the menuItems
+    const suggestion = suggestionIds.find(s => s.name === item.name);
+
+    // Check if suggestion exists and orgId and name match
+    return suggestion && suggestion.orgId.toString() === orgId && suggestion.name === item.name;
+});
+
+
+        setRecommendations(suggestedItems);
         setLoading(false);
       } catch (error) {
         console.error('Error fetching recommendations:', error);
+        message.error('Failed to load recommendations');
         setLoading(false);
       }
     };
 
-    if (isVisible) {
+    if (isVisible && parentItemId) {
       fetchRecommendations();
     }
   }, [isVisible, parentItemId]);
@@ -89,7 +116,7 @@ const RecommendationSection = ({ isVisible, parentItemId, onAddToCart }) => {
   return (
     <div style={styles.container}>
       <div style={styles.header}>
-        <h4 style={styles.title}>People usually pair this with</h4>
+        <h4 style={styles.title}>Recommended Pairings</h4>
         <Button
           type="text"
           icon={isExpanded ? <UpOutlined /> : <DownOutlined />}
@@ -104,7 +131,7 @@ const RecommendationSection = ({ isVisible, parentItemId, onAddToCart }) => {
               key={item.id} 
               item={item}
               onAddToCart={onAddToCart}
-              collapsed={false} // Expanded view
+              collapsed={false}
             />
           ))}
         </div>
@@ -113,7 +140,7 @@ const RecommendationSection = ({ isVisible, parentItemId, onAddToCart }) => {
           <RecommendationItem 
             item={recommendations[0]}
             onAddToCart={onAddToCart}
-            collapsed={true} // Collapsed view
+            collapsed={true}
           />
           <div style={styles.moreCount}>
             +{recommendations.length - 1} more

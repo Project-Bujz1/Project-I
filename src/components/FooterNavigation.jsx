@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, FileText, Home, History, Settings, ChefHat, LayoutDashboard, User } from 'lucide-react';
+import { ShoppingBag, FileText, Home, History, Settings, ChefHat, LayoutDashboard, User, Lightbulb } from 'lucide-react';
 
 const FooterNavigation = () => {
   const location = useLocation();
@@ -20,7 +20,8 @@ const FooterNavigation = () => {
     { path: '/menu-management', icon: Settings, label: 'Menu' },
     { path: '/management', icon: User, label: 'Profile' },
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-    { path: '/order-history', icon: History, label: 'History' }
+    { path: '/order-history', icon: History, label: 'History' },
+    { path: '/menu-suggestion', icon: Lightbulb, label: 'Suggestion'}
   ];
 
   const links = role === 'customer' ? customerLinks : adminLinks;

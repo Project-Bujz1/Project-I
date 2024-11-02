@@ -20,6 +20,7 @@ import SummaryView from './components/SummaryView';
 import MyOrders from './components/MyOrders';
 import MenuItem from './components/MenuItem';
 import QREntry from './components/QREntry ';
+import MenuSuggestionManager from './components/MenuSuggestionManager';
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -76,6 +77,7 @@ const App = () => {
                         <Route path="/management" element={<RestaurantManagement />} /> 
                         <Route path="/dashboard" element={<RestaurantDashBoard />} />
                         <Route path="/my-orders" element={<MyOrders />} />
+                        <Route path="/menu-suggestion" element={<MenuSuggestionManager />} />
                       </Routes>
                     </div>
                     <FooterNavigation />

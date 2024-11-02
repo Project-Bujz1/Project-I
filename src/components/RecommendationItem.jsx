@@ -83,7 +83,12 @@ const RecommendationItem = ({ item, onAddToCart, collapsed }) => {
       setQuantity(quantity + 1);
       onAddToCart(item);
     };
-  
+    const getImageUrl = (imageData) => {
+      if (!imageData) return '';
+      if (typeof imageData === 'string') return imageData;
+      if (imageData.file?.url) return imageData.file.url;
+      return '';
+    };
     const handleDecreaseQuantity = () => {
       if (quantity > 0) {
         setQuantity(quantity - 1);
@@ -103,7 +108,7 @@ const RecommendationItem = ({ item, onAddToCart, collapsed }) => {
       return (
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: '140px' }}>
           <img
-            src={item.image}
+            src={getImageUrl(item.image)}
             alt={item.name}
             style={{
               width: '40px',
