@@ -5,7 +5,7 @@
 // import FoodLoader from './FoodLoader';
 // import './landing-page.css';
 
-// const API_URL = process.env.REACT_APP_API_URL || 'https://smart-server-3.onrender.com';
+// const API_URL = process.env.REACT_APP_API_URL || 'https://www.py-server.smart-server.in';
 
 // const restaurants = [
 //   { id: 1, name: 'Yati Restaurant', image: '/assets/yati-restaurant.jpg', orgId: 1 },
@@ -175,7 +175,7 @@
 // import QREntry from './QREntry ';
 // import './landing-page.css';
 
-// const API_URL = process.env.REACT_APP_API_URL || 'https://smart-server-3.onrender.com';
+// const API_URL = process.env.REACT_APP_API_URL || 'https://www.py-server.smart-server.in';
 
 // const LandingPage = () => {
 //     const [isAdminLogin, setIsAdminLogin] = useState(false);
@@ -379,7 +379,7 @@ import FoodLoader from './FoodLoader';
 import './landing-page.css';
 import QREntry from './QREntry ';
 
-const API_URL = process.env.REACT_APP_API_URL || 'https://smart-server-3.onrender.com';
+const API_URL = process.env.REACT_APP_API_URL || 'https://www.py-server.smart-server.in';
 
 const LandingPage = () => {
     const [username, setUsername] = useState('');
