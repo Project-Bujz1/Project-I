@@ -12,6 +12,7 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [categories, setCategories] = useState([]);
   const [subcategories, setSubcategories] = useState([]);
   const [menuItems, setMenuItems] = useState([]);
+  const [recommendations, setRecommendations] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
@@ -22,44 +23,73 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
 
   const location = useLocation();
   const navigate = useNavigate();
-
-  // Fetch data on component mount
+  // Modified fetchData to include recommendations
   useEffect(() => {
     if (orgId) {
-      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            const matchedCategories = Object.entries(data)
+      Promise.all([
+        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json'),
+        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json'),
+        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json'),
+        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_suggestions.json')
+      ])
+        .then(([catRes, subRes, menuRes, sugRes]) => 
+          Promise.all([catRes.json(), subRes.json(), menuRes.json(), sugRes.json()])
+        )
+        .then(([catData, subData, menuData, sugData]) => {
+          // Process categories
+          if (catData) {
+            const matchedCategories = Object.entries(catData)
               .map(([id, category]) => ({ id, ...category }))
               .filter(category => category.orgId === parseInt(orgId));
             setCategories(matchedCategories);
           }
-          setLoading((prev) => ({ ...prev, categories: false }));
-        });
 
-      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            const matchedSubcategories = Object.entries(data)
+          // Process subcategories
+          if (subData) {
+            const matchedSubcategories = Object.entries(subData)
               .map(([id, subcategory]) => ({ id, ...subcategory }))
               .filter(subcategory => subcategory.orgId === parseInt(orgId));
             setSubcategories(matchedSubcategories);
           }
-          setLoading((prev) => ({ ...prev, subcategories: false }));
-        });
 
-      fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json')
-        .then((res) => res.json())
-        .then((data) => {
-          if (data) {
-            const matchedMenuItems = Object.entries(data)
+          // Process menu items and suggestions together
+          if (menuData) {
+            const menuItemsArray = Object.entries(menuData)
               .map(([id, item]) => ({ id, ...item }))
               .filter(item => item.orgId === parseInt(orgId));
-            setMenuItems(matchedMenuItems);
+            setMenuItems(menuItemsArray);
+
+            // Process recommendations
+            if (sugData) {
+              const processedRecommendations = {};
+              Object.entries(sugData).forEach(([itemId, suggestionIds]) => {
+                const suggestedItems = menuItemsArray.filter(menuItem => 
+                  suggestionIds.some(suggestion => 
+                    suggestion.name === menuItem.name && 
+                    suggestion.orgId.toString() === orgId
+                  )
+                );
+                if (suggestedItems.length > 0) {
+                  processedRecommendations[itemId] = suggestedItems;
+                }
+              });
+              setRecommendations(processedRecommendations);
+            }
           }
-          setLoading((prev) => ({ ...prev, menuItems: false }));
+
+          setLoading({
+            categories: false,
+            subcategories: false,
+            menuItems: false
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+          setLoading({
+            categories: false,
+            subcategories: false,
+            menuItems: false
+          });
         });
     }
   }, [orgId]);
@@ -180,7 +210,8 @@ useEffect(() => {
       key={item.id} 
       item={item} 
       cartIconRef={cartIconRef} 
-      onItemAdded={onItemAdded} 
+      onItemAdded={onItemAdded}
+      recommendations={recommendations[item.id] || []}
     />
   );
 

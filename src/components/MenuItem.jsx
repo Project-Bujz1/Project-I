@@ -234,7 +234,7 @@ import FlyingItemAnimation from './FlyingItemAnimation';
 import FoodLoader from './FoodLoader';
 import RecommendationSection from './RecommendationSection';
 
-const MenuItem = ({ item, onItemAdded }) => {
+const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const [showRecommendations, setShowRecommendations] = useState(false);
   const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartIconRef = useCartIcon();
@@ -388,7 +388,10 @@ const MenuItem = ({ item, onItemAdded }) => {
       updateQuantity(item.id, quantity + 1);
     }
     setQuantity(quantity + 1);
-    setShowRecommendations(true);
+    // Only show recommendations if they exist for this item
+    if (recommendations?.length > 0) {
+      setShowRecommendations(true);
+    }
     triggerAnimation();
     if (onItemAdded) onItemAdded();
   };
@@ -455,12 +458,10 @@ const MenuItem = ({ item, onItemAdded }) => {
       </div>
 
       <div style={styles.imageSection}>
-        {!imageLoaded && (
-          <div style={styles.loaderContainer}>
-            <FoodLoader />
-          </div>
-        )}
-        <img
+ 
+      {/* Render RecommendationSection without loading state */}
+      {/* {recommendations?.length > 0 && ( */}
+ <img
           src={imageUrl}
           alt={item.name}
           style={styles.image}
@@ -484,17 +485,19 @@ const MenuItem = ({ item, onItemAdded }) => {
               ADD
             </button>
           </Tooltip>
-        )}
+        )
+      }
       </div>
  </div>
-      <RecommendationSection 
-        isVisible={showRecommendations}
-        parentItemId={item.id}
-        onAddToCart={(recommendedItem) => {
-          addToCart(recommendedItem);
-          if (onItemAdded) onItemAdded();
-        }}
-      />
+        <RecommendationSection 
+          isVisible={showRecommendations}
+          recommendations={recommendations}
+          onAddToCart={(recommendedItem) => {
+            addToCart(recommendedItem);
+            if (onItemAdded) onItemAdded();
+          }}
+        />
+      
     </>
   );
 };
