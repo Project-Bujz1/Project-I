@@ -135,7 +135,7 @@ const MenuSuggestionManager = () => {
 
   const handleOpenModal = (item) => {
     setSelectedItem(item);
-    setSelectedSuggestions(suggestions[item.id] || []);
+    setSelectedSuggestions(suggestions[item.id] || []); // Set specific suggestions for this item
     setModalVisible(true);
     setSearchText('');
   };
@@ -147,7 +147,6 @@ const MenuSuggestionManager = () => {
     if (imageData.file?.url) return imageData.file.url; // For nested file structure
     return '/placeholder.jpg';
   };
-  
 
   const handleSuggestionToggle = (suggestedItem) => {
     setSelectedSuggestions(prev => {
@@ -207,13 +206,6 @@ const MenuSuggestionManager = () => {
        item.description?.toLowerCase().includes(searchText.toLowerCase()))
     );
   };
-   
-  const getSuggestionItems = (itemId) => {
-    const suggestionIds = suggestions[itemId] || [];
-    return suggestionIds
-      .map(id => menuItems.find(item => item.id === id))
-      .filter(Boolean); // Remove any undefined items
-  };
 
   const handleSearch = (value) => {
     setSearchText(value.toLowerCase());
@@ -260,7 +252,7 @@ const MenuSuggestionManager = () => {
                   <Text type="secondary">{item.description}</Text>
                   <div style={styles.price}>₹{item.price}</div>
                   <div style={styles.tagsContainer}>
-                    {getSuggestionItems(item.id).map(suggestion => (
+                    {(suggestions[item.id] || []).map(suggestion => (
                       <Avatar 
                         key={suggestion.id}
                         src={getImageUrl(suggestion.image)} 
@@ -300,10 +292,10 @@ const MenuSuggestionManager = () => {
             onClick={saveSuggestions}
           >
             Save Suggestions
-          </Button>,
+          </Button>
         ]}
       >
-        <Search
+         <Search
           placeholder="Search menu items..."
           style={styles.modalSearch}
           onChange={(e) => setSearchText(e.target.value)}
@@ -337,7 +329,7 @@ const MenuSuggestionManager = () => {
             ))}
           </Row>
         </div>
-      </Modal>
+              </Modal>
     </div>
   );
 };
