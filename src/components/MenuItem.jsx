@@ -241,6 +241,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const [quantity, setQuantity] = useState(0);
   const [showAnimation, setShowAnimation] = useState(false);
   const [animationStartPosition, setAnimationStartPosition] = useState({ x: 0, y: 0 });
+  const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
   const itemRef = useRef(null);
 
@@ -296,12 +297,13 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     description: {
       fontSize: '14px',
       color: '#666',
-      margin: '0 0 8px 0',
-      display: '-webkit-box',
-      WebkitLineClamp: 2,
-      WebkitBoxOrient: 'vertical',
-      overflow: 'hidden',
-      textOverflow: 'ellipsis'
+      margin: '0 0 8px 0'
+    },
+    readMore: {
+      color: 'red',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      marginLeft: '5px'
     },
     price: {
       fontSize: '18px',
@@ -324,7 +326,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       left: 50,
       right: 0,
       borderRadius: '8px',
-      padding: '8px', 
+      padding: '8px',
       border: 'none',
       background: 'red',
       color: 'white',
@@ -360,6 +362,14 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       default:
         return null;
     }
+  };
+
+  const toggleDescription = () => {
+    setIsDescriptionExpanded((prev) => !prev);
+  };
+
+  const getTruncatedDescription = (text) => {
+    return text.length > 50 ? `${text.substring(0, 50)}...` : text;
   };
 
   const getImageUrl = (imageData) => {
@@ -421,85 +431,89 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
 
   const imageUrl = getImageUrl(item.image);
 
+
   return (
     <>
-      <div style={styles.card} ref={itemRef}>
-      <div style={styles.contentSection}>
-        <div>
-          <div style={styles.titleWrapper}>
-            <h1>{getFoodTypeIcon(item.foodType)}</h1>
-            <h3 style={styles.title}>{item.name}</h3>
+      <div style={styles.card}>
+        <div style={styles.contentSection}>
+          <div>
+            <div style={styles.titleWrapper}>
+              <h1>{getFoodTypeIcon(item.foodType)}</h1>
+              <h3 style={styles.title}>{item.name}</h3>
+            </div>
+            <p style={styles.description}>
+              {isDescriptionExpanded ? item.description : getTruncatedDescription(item.description)}
+              {item.description.length > 50 && (
+                <span onClick={toggleDescription} style={styles.readMore}>
+                  {isDescriptionExpanded ? ' ' : '... Read more'}
+                </span>
+              )}
+            </p>
+            <div style={styles.price}>₹{item.price}</div>
           </div>
-          <p style={styles.description}>{item.description}</p>
-          <div style={styles.price}>₹{item.price}</div>
+
+          {quantity > 0 && (
+            <div style={styles.quantityControls}>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<MinusOutlined />}
+                onClick={handleDecreaseQuantity}
+                size="middle"
+                danger
+              />
+              <span style={styles.quantityDisplay}>{quantity}</span>
+              <Button
+                type="primary"
+                shape="circle"
+                icon={<PlusOutlined />}
+                onClick={handleAddToCart}
+                size="middle"
+                danger
+              />
+            </div>
+          )}
         </div>
-        
-        {quantity > 0 && (
-          <div style={styles.quantityControls}>
-            <Button 
-              type="primary"
-              shape="circle"
-              icon={<MinusOutlined />}
-              onClick={handleDecreaseQuantity}
-              size="middle"
-              danger
-            />
-            <span style={styles.quantityDisplay}>{quantity}</span>
-            <Button
-              type="primary" 
-              shape="circle"
-              icon={<PlusOutlined />}
-              onClick={handleAddToCart}
-              size="middle"
-              danger
-            />
-          </div>
-        )}
+
+        <div style={styles.imageSection}>
+          <img
+            src={imageUrl}
+            alt={item.name}
+            style={styles.image}
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              console.error('Error loading image:', e);
+              e.target.src = '/path-to-your-fallback-image.jpg';
+            }}
+          />
+
+          {quantity === 0 && (
+            <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
+              <button
+                onClick={item.isAvailable ? handleAddToCart : undefined}
+                disabled={!item.isAvailable}
+                style={{
+                  ...styles.addToCartButton,
+                  ...(item.isAvailable ? {} : styles.disabledAddToCartButton)
+                }}
+              >
+                ADD
+              </button>
+            </Tooltip>
+          )}
+        </div>
       </div>
 
-      <div style={styles.imageSection}>
- 
-      {/* Render RecommendationSection without loading state */}
-      {/* {recommendations?.length > 0 && ( */}
- <img
-          src={imageUrl}
-          alt={item.name}
-          style={styles.image}
-          onLoad={() => setImageLoaded(true)}
-          onError={(e) => {
-            console.error('Error loading image:', e);
-            e.target.src = '/path-to-your-fallback-image.jpg';
-          }}
-        />
-        
-        {quantity === 0 && (
-          <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
-            <button
-              onClick={item.isAvailable ? handleAddToCart : undefined}
-              disabled={!item.isAvailable}
-              style={{
-                ...styles.addToCartButton,
-                ...(item.isAvailable ? {} : styles.disabledAddToCartButton)
-              }}
-            >
-              ADD
-            </button>
-          </Tooltip>
-        )
-      }
-      </div>
- </div>
-        <RecommendationSection 
-          isVisible={showRecommendations}
-          recommendations={recommendations}
-          onAddToCart={(recommendedItem) => {
-            addToCart(recommendedItem);
-            if (onItemAdded) onItemAdded();
-          }}
-        />
-      
+      <RecommendationSection 
+        isVisible={showRecommendations}
+        recommendations={recommendations}
+        onAddToCart={(recommendedItem) => {
+          addToCart(recommendedItem);
+          if (onItemAdded) onItemAdded();
+        }}
+      />
     </>
-  );
+  );  
 };
 
 export default MenuItem;
