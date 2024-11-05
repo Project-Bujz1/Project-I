@@ -1016,7 +1016,7 @@ const WaitingScreen = () => {
         onClick={handleCompleteOrder}
         type="primary"
         disabled={order.status !== 'ready'}
-        style={{ backgroundColor: '#52c41a', borderColor: '#52c41a', fontWeight: 'bold' }}
+        style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f', fontWeight: 'bold' }}
       >
         Complete
       </Button>
@@ -1034,19 +1034,20 @@ const WaitingScreen = () => {
         okText="Submit Feedback"
         cancelText="Later"
         footer={[
-          <Button key="submit" type="primary" onClick={handleSubmitFeedback} style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}>
+          <Button key="submit" type="primary" onClick={handleSubmitFeedback} style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}>
             Submit Feedback
           </Button>,
-          <Button key="cancel" onClick={() => setIsModalVisible(false)}>
+          <Button key="cancel" onClick={() =>{ setIsModalVisible(false);       navigate('/home'); // Redirect after submission
+          } }>
             Later
           </Button>,
         ]}
         centered
-        bodyStyle={{ backgroundColor: '#f6ffed', color: '#52c41a', textAlign: 'center' }}
+        bodyStyle={{ backgroundColor: '#f6ffed', color: '#ff4d4f', textAlign: 'center' }}
       >
         <div style={{ fontSize: '24px', marginBottom: '16px' }}>
           <CheckCircleOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
-          <CoffeeOutlined style={{ color: '#52c41a', marginRight: '8px' }} />
+          <CoffeeOutlined style={{ color: '#ff4d4f', marginRight: '8px' }} />
         </div>
         <p style={{ fontSize: '18px', fontWeight: 'bold' }}>Thank you for dining with us!</p>
         <p>We hope you enjoyed your meal. Please provide your feedback below:</p>
