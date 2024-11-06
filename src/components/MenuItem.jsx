@@ -225,9 +225,11 @@
 
 
 
+
+
 import React, { useState, useEffect, useRef } from 'react';
-import { Button, Tooltip } from 'antd';
-import { MinusOutlined, PlusOutlined } from '@ant-design/icons';
+import { Button, Tooltip, Input, Tag, Drawer } from 'antd';
+import { MinusOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
@@ -236,6 +238,8 @@ import RecommendationSection from './RecommendationSection';
 
 const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const [showRecommendations, setShowRecommendations] = useState(false);
+  const [showCookingRequest, setShowCookingRequest] = useState(false);
+  const [cookingRequest, setCookingRequest] = useState('');
   const { cart, addToCart, updateQuantity, removeFromCart } = useCart();
   const cartIconRef = useCartIcon();
   const [quantity, setQuantity] = useState(0);
@@ -249,96 +253,132 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     card: {
       display: 'flex',
       background: '#fff',
-      borderRadius: '8px',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+      borderRadius: '12px',
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
       overflow: 'hidden',
-      height: '180px',
-      marginBottom: '16px',
-      border: '1px solid #f0f0f0'
+      height: '220px',
+      marginBottom: '24px',
+      border: '1px solid #f0f0f0',
+      '@media (max-width: 767px)': {
+        height: 'auto',
+        flexDirection: 'column',
+      },
     },
     contentSection: {
       flex: 1,
-      padding: '16px',
+      padding: '24px',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between'
+      justifyContent: 'space-between',
+    },
+    cookingRequestDrawer: {
+      background: '#fff',
+      padding: '24px',
+      borderRadius: '16px 16px 0 0',
+      boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.15)',
+    },
+    cookingRequestTitle: {
+      fontSize: '18px',
+      fontWeight: 'bold',
+      marginBottom: '16px',
+    },
+    cookingRequestTextarea: {
+      marginBottom: '16px',
+    },
+    cookingRequestTags: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '12px',
+    },
+    spiceTags: {
+      display: 'flex',
+      gap: '12px',
+      marginTop: '12px',
     },
     imageSection: {
       position: 'relative',
-      width: '180px',
-      height: '180px'
+      width: '220px',
+      height: '220px',
+      cursor: 'pointer',
+      '@media (max-width: 767px)': {
+        width: '100%',
+        height: '200px',
+      },
     },
     image: {
       width: '100%',
       height: '100%',
-      borderRadius: '25px',
-      padding: '10px',
+      borderRadius: '12px',
       objectFit: 'cover',
       transition: 'opacity 0.3s ease-in-out',
-      opacity: imageLoaded ? 1 : 0
+      opacity: imageLoaded ? 1 : 0,
     },
     header: {
-      marginBottom: '8px'
+      marginBottom: '12px',
     },
     titleWrapper: {
       display: 'flex',
       alignItems: 'center',
-      marginBottom: '8px'
+      marginBottom: '12px',
     },
     foodTypeIcon: {
-      width: '24px',
-      marginRight: '8px'
+      width: '28px',
+      marginRight: '12px',
     },
     title: {
-      fontSize: '16px',
-      fontWeight: 'bold',
-      margin: 0
-    },
-    description: {
-      fontSize: '14px',
-      color: '#666',
-      margin: '0 0 8px 0'
-    },
-    readMore: {
-      color: 'red',
-      cursor: 'pointer',
-      fontWeight: 'bold',
-      marginLeft: '5px'
-    },
-    price: {
       fontSize: '18px',
       fontWeight: 'bold',
-      color: 'red'
+      margin: 0,
+    },
+    description: {
+      fontSize: '16px',
+      color: '#666',
+      margin: '0 0 12px 0',
+    },
+    readMore: {
+      color: '#e5004b',
+      cursor: 'pointer',
+      fontWeight: 'bold',
+      marginLeft: '8px',
+    },
+    price: {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      color: '#e5004b',
     },
     quantityControls: {
       display: 'flex',
       alignItems: 'center',
-      gap: '8px'
+      gap: '12px',
     },
     quantityDisplay: {
-      width: '32px',
+      width: '40px',
       textAlign: 'center',
-      fontSize: '16px'
+      fontSize: '16px',
     },
     addToCartButton: {
       position: 'absolute',
-      bottom: 18,
-      left: 50,
-      right: 0,
-      borderRadius: '8px',
-      padding: '8px',
+      bottom: 24,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      borderRadius: '12px',
+      padding: '12px 24px',
       border: 'none',
-      background: 'red',
+      background: '#e5004b',
       color: 'white',
       cursor: 'pointer',
       transition: 'background 0.3s',
-      width: '50%',
+      width: '60%',
       fontSize: '16px',
       fontWeight: 'bold',
+      '@media (max-width: 767px)': {
+        width: '80%',
+        bottom: 16,
+      },
     },
     disabledAddToCartButton: {
       background: '#d9d9d9',
-      cursor: 'not-allowed'
+      cursor: 'not-allowed',
     },
     loaderContainer: {
       position: 'absolute',
@@ -349,8 +389,8 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      background: '#f5f5f5'
-    }
+      background: '#f5f5f5',
+    },
   };
 
   const getFoodTypeIcon = (type) => {
@@ -402,7 +442,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     if (recommendations?.length > 0) {
       setShowRecommendations(true);
     }
-    triggerAnimation();
+    // triggerAnimation();
     if (onItemAdded) onItemAdded();
   };
 
@@ -417,6 +457,10 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     }
   };
 
+  const handleImageClick = () => {
+    setShowCookingRequest(true);
+  };
+
   const handleAnimationComplete = () => {
     setShowAnimation(false);
   };
@@ -429,12 +473,49 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     return { x: window.innerWidth - 60, y: 40 };
   };
 
-  const imageUrl = getImageUrl(item.image);
+  const handleCookingRequestChange = (e) => {
+    setCookingRequest(e.target.value);
+  };
 
+  const handleCookingRequestSubmit = () => {
+    // Save the cooking request to state or send it to the server
+    console.log('Cooking request:', cookingRequest);
+    setShowCookingRequest(false);
+  };
+
+  const imageUrl = getImageUrl(item.image);
 
   return (
     <>
       <div style={styles.card}>
+        <div style={styles.imageSection} onClick={handleImageClick}>
+          <img
+            src={imageUrl}
+            alt={item.name}
+            style={styles.image}
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              console.error('Error loading image:', e);
+              e.target.src = '/path-to-your-fallback-image.jpg';
+            }}
+          />
+
+          {quantity === 0 && (
+            <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
+              <button
+                onClick={item.isAvailable ? handleAddToCart : undefined}
+                disabled={!item.isAvailable}
+                style={{
+                  ...styles.addToCartButton,
+                  ...(item.isAvailable ? {} : styles.disabledAddToCartButton),
+                }}
+              >
+                ADD
+              </button>
+            </Tooltip>
+          )}
+        </div>
+
         <div style={styles.contentSection}>
           <div>
             <div style={styles.titleWrapper}>
@@ -474,37 +555,39 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
             </div>
           )}
         </div>
-
-        <div style={styles.imageSection}>
-          <img
-            src={imageUrl}
-            alt={item.name}
-            style={styles.image}
-            onLoad={() => setImageLoaded(true)}
-            onError={(e) => {
-              console.error('Error loading image:', e);
-              e.target.src = '/path-to-your-fallback-image.jpg';
-            }}
-          />
-
-          {quantity === 0 && (
-            <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
-              <button
-                onClick={item.isAvailable ? handleAddToCart : undefined}
-                disabled={!item.isAvailable}
-                style={{
-                  ...styles.addToCartButton,
-                  ...(item.isAvailable ? {} : styles.disabledAddToCartButton)
-                }}
-              >
-                ADD
-              </button>
-            </Tooltip>
-          )}
-        </div>
       </div>
 
-      <RecommendationSection 
+      <Drawer
+        visible={showCookingRequest}
+        onClose={() => setShowCookingRequest(false)}
+        placement="bottom"
+        height="auto"
+        bodyStyle={styles.cookingRequestDrawer}
+      >
+        <div style={styles.cookingRequestTitle}>Add Customization Notes</div>
+        <Input.TextArea
+          maxLength={100}
+          placeholder="e.g., Don't make it too spicy"
+          value={cookingRequest}
+          onChange={handleCookingRequestChange}
+          rows={3}
+          style={styles.cookingRequestTextarea}
+        />
+        <div style={styles.cookingRequestTags}>
+          <Tag color="#e5004b">Extra Spicy</Tag>
+          <Tag color="#ff8c00">Less Spicy</Tag>
+          <Tag color="#9b59b6">Double Spicy</Tag>
+          <Tag color="#1890ff">Non Spicy</Tag>
+        </div>
+        <div style={styles.cookingRequestTags}>
+          <Button type="primary" onClick={handleCookingRequestSubmit}>
+            Submit
+          </Button>
+          <Button onClick={() => setShowCookingRequest(false)}>Cancel</Button>
+        </div>
+      </Drawer>
+
+      <RecommendationSection
         isVisible={showRecommendations}
         recommendations={recommendations}
         onAddToCart={(recommendedItem) => {
@@ -513,7 +596,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
         }}
       />
     </>
-  );  
+  );
 };
 
 export default MenuItem;
