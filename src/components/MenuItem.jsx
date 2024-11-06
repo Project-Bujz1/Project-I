@@ -226,10 +226,9 @@
 
 
 
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Tooltip, Input, Tag, Drawer } from 'antd';
-import { MinusOutlined, PlusOutlined, CloseOutlined } from '@ant-design/icons';
+import { MinusOutlined, PlusOutlined, CloseOutlined, EditOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
@@ -250,6 +249,16 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const itemRef = useRef(null);
 
   const styles = {
+    editIcon: {
+      position: 'absolute',
+      top: 12,
+      right: 12,
+      backgroundColor: '#fff',
+      borderRadius: '50%',
+      padding: 8,
+      cursor: 'pointer',
+      boxShadow: '0 2px 6px rgba(0, 0, 0, 0.15)',
+    },
     card: {
       display: 'flex',
       background: '#fff',
@@ -430,7 +439,6 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     setShowAnimation(true);
   };
 
-
   const handleAddToCart = () => {
     if (quantity === 0) {
       addToCart(item);
@@ -458,6 +466,10 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   };
 
   const handleImageClick = () => {
+    // Remove this function and update the image onClick handler below
+  };
+
+  const handleEditIconClick = () => {
     setShowCookingRequest(true);
   };
 
@@ -488,7 +500,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   return (
     <>
       <div style={styles.card}>
-        <div style={styles.imageSection} onClick={handleImageClick}>
+        <div style={styles.imageSection}>
           <img
             src={imageUrl}
             alt={item.name}
@@ -499,6 +511,10 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
               e.target.src = '/path-to-your-fallback-image.jpg';
             }}
           />
+
+          <div style={styles.editIcon} onClick={handleEditIconClick}>
+            <EditOutlined />
+          </div>
 
           {quantity === 0 && (
             <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
