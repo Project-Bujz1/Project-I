@@ -699,37 +699,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   return (
     <>
       <div style={styles.card}>
-        <div style={styles.imageSection}>
-          <img
-            src={imageUrl}
-            alt={item.name}
-            style={styles.image}
-            onLoad={() => setImageLoaded(true)}
-            onError={(e) => {
-              console.error('Error loading image:', e);
-              e.target.src = '/path-to-your-fallback-image.jpg';
-            }}
-          />
-          <div style={styles.editIcon} onClick={handleEditIconClick}>
-            <EditOutlined />
-          </div>
-
-          {quantity === 0 && (
-            <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
-              <button
-                onClick={item.isAvailable ? handleAddToCart : undefined}
-                disabled={!item.isAvailable}
-                style={{
-                  ...styles.addToCartButton,
-                  ...(item.isAvailable ? {} : styles.disabledAddToCartButton),
-                }}
-              >
-                ADD
-              </button>
-            </Tooltip>
-          )}
-        </div>
-
+        
         <div style={styles.contentSection}>
           <div>
             <div style={styles.titleWrapper}>
@@ -767,6 +737,37 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
                 danger
               />
             </div>
+          )}
+      </div>
+
+        <div style={styles.imageSection}>
+          <img
+            src={imageUrl}
+            alt={item.name}
+            style={styles.image}
+            onLoad={() => setImageLoaded(true)}
+            onError={(e) => {
+              console.error('Error loading image:', e);
+              e.target.src = '/path-to-your-fallback-image.jpg';
+            }}
+          />
+                    <div style={styles.editIcon} onClick={handleEditIconClick}>
+            <EditOutlined />
+          </div>
+
+          {quantity === 0 && (
+            <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
+              <button
+                onClick={item.isAvailable ? handleAddToCart : undefined}
+                disabled={!item.isAvailable}
+              style={{
+                ...styles.addToCartButton,
+                ...(item.isAvailable ? {} : styles.disabledAddToCartButton)
+              }}
+              >
+                ADD
+              </button>
+            </Tooltip>
           )}
         </div>
       </div>
