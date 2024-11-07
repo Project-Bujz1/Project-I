@@ -246,6 +246,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const [animationStartPosition, setAnimationStartPosition] = useState({ x: 0, y: 0 });
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
   const itemRef = useRef(null);
 
   const styles = {
@@ -281,18 +282,69 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       justifyContent: 'space-between',
     },
     cookingRequestDrawer: {
-      background: '#fff',
+      background: '#f5f5f5',
       padding: '24px',
-      borderRadius: '16px 16px 0 0',
+      borderRadius: '20px 20px 0 0',
       boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.15)',
     },
     cookingRequestTitle: {
-      fontSize: '18px',
+      fontSize: '24px',
       fontWeight: 'bold',
-      marginBottom: '16px',
+      marginBottom: '24px',
+      color: '#333',
     },
     cookingRequestTextarea: {
-      marginBottom: '16px',
+      marginBottom: '24px',
+      border: '1px solid #ccc',
+      borderRadius: '8px',
+      padding: '12px',
+      fontSize: '16px',
+      resize: 'none',
+    },
+    cookingRequestTags: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '16px',
+    },
+    cookingRequestTagItem: {
+      backgroundColor: '#fff',
+      borderRadius: '20px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s, color 0.3s',
+      '&:hover': {
+        backgroundColor: '#e5004b',
+        color: '#fff',
+      },
+    },
+    cookingRequestActions: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: '16px',
+      marginTop: '24px',
+    },
+    cookingRequestActionButton: {
+      backgroundColor: '#e5004b',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px 24px',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s',
+      '&:hover': {
+        backgroundColor: '#c80041',
+      },
+      '&:last-child': {
+        backgroundColor: '#f5f5f5',
+        color: '#333',
+        '&:hover': {
+          backgroundColor: '#e5e5e5',
+        },
+      },
     },
     cookingRequestTags: {
       display: 'flex',
@@ -400,6 +452,132 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       justifyContent: 'center',
       background: '#f5f5f5',
     },
+    cookingRequestDrawer: {
+      background: '#f8f8f8',
+      padding: 0,
+      borderRadius: '20px 20px 0 0',
+      boxShadow: '0 -4px 12px rgba(0, 0, 0, 0.15)',
+      overflow: 'hidden',
+    },
+    selectedItemHeader: {
+      backgroundColor: '#fff',
+      padding: '20px',
+      borderBottom: '1px solid #eee',
+      display: 'flex',
+      alignItems: 'center',
+      gap: '16px',
+    },
+    selectedItemImage: {
+      width: '80px',
+      height: '80px',
+      borderRadius: '12px',
+      objectFit: 'cover',
+    },
+    selectedItemDetails: {
+      flex: 1,
+    },
+    selectedItemName: {
+      fontSize: '18px',
+      fontWeight: 'bold',
+      color: '#333',
+      marginBottom: '4px',
+    },
+    selectedItemPrice: {
+      fontSize: '16px',
+      color: '#e5004b',
+      fontWeight: 'bold',
+    },
+    cookingRequestContent: {
+      padding: '24px',
+    },
+    cookingRequestTitle: {
+      fontSize: '20px',
+      fontWeight: 'bold',
+      marginBottom: '20px',
+      color: '#333',
+    },
+    cookingRequestTextarea: {
+      marginBottom: '24px',
+      borderRadius: '12px',
+      padding: '16px',
+      fontSize: '16px',
+      resize: 'none',
+      border: '2px solid #eee',
+      transition: 'border-color 0.3s',
+      '&:focus': {
+        borderColor: '#e5004b',
+        boxShadow: 'none',
+      },
+    },
+    cookingRequestTags: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: '12px',
+      marginBottom: '24px',
+    },
+    cookingRequestTagItem: {
+      backgroundColor: '#fff',
+      border: '2px solid #eee',
+      borderRadius: '20px',
+      padding: '8px 16px',
+      fontSize: '14px',
+      fontWeight: '500',
+      cursor: 'pointer',
+      transition: 'all 0.3s',
+      color: '#666',
+      '&:hover': {
+        backgroundColor: '#e5004b',
+        color: '#fff',
+        borderColor: '#e5004b',
+      },
+    },
+    selectedTagItem: {
+      backgroundColor: '#e5004b',
+      color: '#fff',
+      borderColor: '#e5004b',
+    },
+    cookingRequestActions: {
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: '16px',
+      borderTop: '1px solid #eee',
+      padding: '20px',
+      backgroundColor: '#fff',
+    },
+    submitButton: {
+      backgroundColor: '#e5004b',
+      color: '#fff',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px 32px',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s',
+      '&:hover': {
+        backgroundColor: '#c80041',
+      },
+    },
+    cancelButton: {
+      backgroundColor: '#f5f5f5',
+      color: '#666',
+      border: 'none',
+      borderRadius: '8px',
+      padding: '12px 32px',
+      fontSize: '16px',
+      fontWeight: 'bold',
+      cursor: 'pointer',
+      transition: 'background-color 0.3s',
+      '&:hover': {
+        backgroundColor: '#e5e5e5',
+      },
+    },
+    commonSpiceOptions: [
+      { id: 1, label: 'Extra Spicy' },
+      { id: 2, label: 'Less Spicy' },
+      { id: 3, label: 'Double Spicy' },
+      { id: 4, label: 'Non Spicy' },
+    ],
   };
 
   const getFoodTypeIcon = (type) => {
@@ -477,6 +655,15 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     setShowAnimation(false);
   };
 
+  const handleTagClick = (tagId) => {
+    setSelectedTags((prev) => {
+      if (prev.includes(tagId)) {
+        return prev.filter((id) => id !== tagId);
+      }
+      return [...prev, tagId];
+    });
+  };
+
   const getCartIconPosition = () => {
     if (cartIconRef?.current) {
       const rect = cartIconRef.current.getBoundingClientRect();
@@ -491,6 +678,18 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
 
   const handleCookingRequestSubmit = () => {
     // Save the cooking request to state or send it to the server
+    if (quantity === 0) {
+      addToCart(item);
+    } else {
+      updateQuantity(item.id, quantity + 1);
+    }
+    setQuantity(quantity + 1);
+    // Only show recommendations if they exist for this item
+    if (recommendations?.length > 0) {
+      setShowRecommendations(true);
+    }
+    // triggerAnimation();
+    if (onItemAdded) onItemAdded();
     console.log('Cooking request:', cookingRequest);
     setShowCookingRequest(false);
   };
@@ -511,7 +710,6 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
               e.target.src = '/path-to-your-fallback-image.jpg';
             }}
           />
-
           <div style={styles.editIcon} onClick={handleEditIconClick}>
             <EditOutlined />
           </div>
@@ -574,34 +772,65 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       </div>
 
       <Drawer
-        visible={showCookingRequest}
-        onClose={() => setShowCookingRequest(false)}
-        placement="bottom"
-        height="auto"
-        bodyStyle={styles.cookingRequestDrawer}
-      >
-        <div style={styles.cookingRequestTitle}>Add Customization Notes</div>
+      visible={showCookingRequest}
+      onClose={() => setShowCookingRequest(false)}
+      placement="bottom"
+      height="auto"
+      bodyStyle={styles.cookingRequestDrawer}
+    >
+      <div style={styles.selectedItemHeader}>
+        <img 
+          src={getImageUrl(item.image)} 
+          alt={item.name}
+          style={styles.selectedItemImage}
+        />
+        <div style={styles.selectedItemDetails}>
+          <div style={styles.selectedItemName}>{item.name}</div>
+          <div style={styles.selectedItemPrice}>₹{item.price}</div>
+        </div>
+        {/* <CloseOutlined 
+          onClick={() => setShowCookingRequest(false)}
+          style={{ cursor: 'pointer', fontSize: '20px', color: '#666' }}
+        /> */}
+      </div>
+
+      <div style={styles.cookingRequestContent}>
+        <div style={styles.cookingRequestTitle}>Add Special Instructions</div>
         <Input.TextArea
           maxLength={100}
-          placeholder="e.g., Don't make it too spicy"
+          placeholder="Add your cooking preferences here..."
           value={cookingRequest}
           onChange={handleCookingRequestChange}
           rows={3}
           style={styles.cookingRequestTextarea}
         />
+        
+        <div style={styles.cookingRequestTitle}>Common Preferences</div>
         <div style={styles.cookingRequestTags}>
-          <Tag color="#e5004b">Extra Spicy</Tag>
-          <Tag color="#ff8c00">Less Spicy</Tag>
-          <Tag color="#9b59b6">Double Spicy</Tag>
-          <Tag color="#1890ff">Non Spicy</Tag>
+          {styles.commonSpiceOptions.map((option) => (
+            <div
+              key={option.id}
+              style={{
+                ...styles.cookingRequestTagItem,
+                ...(selectedTags.includes(option.id) ? styles.selectedTagItem : {}),
+              }}
+              onClick={() => handleTagClick(option.id)}
+            >
+              {option.label}
+            </div>
+          ))}
         </div>
-        <div style={styles.cookingRequestTags}>
-          <Button type="primary" onClick={handleCookingRequestSubmit}>
-            Submit
-          </Button>
-          <Button onClick={() => setShowCookingRequest(false)}>Cancel</Button>
-        </div>
-      </Drawer>
+      </div>
+
+      <div style={styles.cookingRequestActions}>
+        <button style={styles.cancelButton} onClick={() => setShowCookingRequest(false)}>
+          Cancel
+        </button>
+        <button style={styles.submitButton} onClick={handleCookingRequestSubmit}>
+          Add to Cart
+        </button>
+      </div>
+    </Drawer>
 
       <RecommendationSection
         isVisible={showRecommendations}
