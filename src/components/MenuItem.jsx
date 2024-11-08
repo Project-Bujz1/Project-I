@@ -707,12 +707,13 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
               <h3 style={styles.title}>{item.name}</h3>
             </div>
             <p style={styles.description}>
-              {isDescriptionExpanded ? item.description : getTruncatedDescription(item.description)}
-              {item.description.length > 50 && (
+              <span>{item.description}</span>
+              {/* {isDescriptionExpanded ? item?.description : getTruncatedDescription(item?.description)}
+              {item?.description.length > 50 && (
                 <span onClick={toggleDescription} style={styles.readMore}>
                   {isDescriptionExpanded ? ' ' : '... Read more'}
                 </span>
-              )}
+              )} */}
             </p>
             <div style={styles.price}>₹{item.price}</div>
           </div>

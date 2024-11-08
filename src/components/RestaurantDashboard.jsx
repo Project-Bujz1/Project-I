@@ -23,7 +23,7 @@
 //   useEffect(() => {
 //     const fetchRestaurantData = async () => {
 //       try {
-//         const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`);
+//         const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`);
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch restaurant data');
 //         }
@@ -31,7 +31,7 @@
 //         if (data.length > 0) {
 //           setRestaurant(data[0]);
 //           // Fetch settings if they exist, otherwise use defaults
-//           const settingsResponse = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${orgId}`);
+//           const settingsResponse = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${orgId}`);
 //           if (settingsResponse.ok) {
 //             const settingsData = await settingsResponse.json();
 //             setSettings(settingsData);
@@ -55,7 +55,7 @@
 //       const updatedSettings = { ...settings, [key]: value };
 //       setSettings(updatedSettings);
 
-//       const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${orgId}`, {
+//       const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${orgId}`, {
 //         method: 'PUT',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -215,9 +215,9 @@
 //     const fetchData = async () => {
 //       try {
 //         const [restaurantResponse, settingsResponse, orderHistoryResponse] = await Promise.all([
-//           fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`),
-//           fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${orgId}`),
-//           fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history?orgId=${orgId}`)
+//           fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`),
+//           fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${orgId}`),
+//           fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history?orgId=${orgId}`)
 //         ]);
 
 //         if (!restaurantResponse.ok) throw new Error('Failed to fetch restaurant data');
@@ -250,7 +250,7 @@
 //       const updatedSettings = { ...settings, [key]: value };
 //       setSettings(updatedSettings);
 
-//       const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${orgId}`, {
+//       const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${orgId}`, {
 //         method: 'PUT',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify(updatedSettings),
@@ -696,9 +696,9 @@
 //     const fetchData = async () => {
 //       try {
 //         const [restaurantRes, historyRes, settingsRes] = await Promise.all([
-//           axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`),
-//           axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/history`),
-//           axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/settings?orgId=${orgId}`)
+//           axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`),
+//           axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history`),
+//           axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings?orgId=${orgId}`)
 //         ]);
 
 //         setRestaurant(restaurantRes.data[0]);
@@ -718,7 +718,7 @@
 //   const updateSettings = async (key, value) => {
 //     try {
 //       const updatedSettings = { ...settings, [key]: value };
-//       await axios.patch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${settings.id}`, updatedSettings);
+//       await axios.patch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${settings.id}`, updatedSettings);
 //       setSettings(updatedSettings);
 //       notification.success({ message: 'Settings updated successfully' });
 //     } catch (error) {
@@ -1057,9 +1057,9 @@
 //     const fetchData = async () => {
 //       try {
 //         const [restaurantRes, historyRes, settingsRes] = await Promise.all([
-//           axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`),
-//           axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/history`),
-//           axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/settings?orgId=${orgId}`)
+//           axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants?orgId=${orgId}`),
+//           axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history`),
+//           axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings?orgId=${orgId}`)
 //         ]);
 
 //         setRestaurant(restaurantRes.data[0]);
@@ -1079,7 +1079,7 @@
 //   const updateSettings = async (key, value) => {
 //     try {
 //       const updatedSettings = { ...settings, [key]: value };
-//       await axios.patch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${settings.id}`, updatedSettings);
+//       await axios.patch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${settings.id}`, updatedSettings);
 //       setSettings(updatedSettings);
 //       notification.success({ message: 'Settings updated successfully' });
 //     } catch (error) {
@@ -1443,9 +1443,9 @@ export const RestaurantDashboard = () => {
     const fetchData = async () => {
       try {
         const [restaurantRes, historyRes, settingsRes] = await Promise.all([
-          axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json`),
-          axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json`),
-          axios.get(`https://stage-smart-server-default-rtdb.firebaseio.com/settings.json`)
+          axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json`),
+          axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json`),
+          axios.get(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings.json`)
         ]);
     
         // Convert data from Firebase objects to arrays and filter by orgId if needed
@@ -1474,7 +1474,7 @@ export const RestaurantDashboard = () => {
   const updateSettings = async (key, value) => {
     try {
       const updatedSettings = { ...settings, [key]: value };
-      await axios.patch(`https://stage-smart-server-default-rtdb.firebaseio.com/settings/${settings.id}`, updatedSettings);
+      await axios.patch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/settings/${settings.id}`, updatedSettings);
       setSettings(updatedSettings);
       notification.success({ message: 'Settings updated successfully' });
     } catch (error) {

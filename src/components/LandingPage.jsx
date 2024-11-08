@@ -196,7 +196,7 @@
 //     const fetchRestaurants = async () => {
 //         setIsLoadingRestaurants(true);
 //         try {
-//           const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/restaurants.json');
+//           const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json');
 //           if (!response.ok) {
 //             throw new Error('Failed to fetch restaurants');
 //           }

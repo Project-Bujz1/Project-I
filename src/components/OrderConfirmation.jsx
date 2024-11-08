@@ -11,7 +11,7 @@ function OrderConfirmation() {
   useEffect(() => {
     const fetchOrderStatus = async () => {
       try {
-        const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history/${orderId}.json`);
+        const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch order status');

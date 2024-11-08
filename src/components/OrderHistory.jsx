@@ -33,7 +33,7 @@
 //   const fetchOrders = async () => {
 //     try {
 //       setLoading(true);
-//       const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json');
+//       const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json');
 //       if (!response.ok) throw new Error('Failed to fetch order history');
       
 //       const data = await response.json();
@@ -60,7 +60,7 @@
 
 //   const handleDelete = async (orderId) => {
 //     try {
-//       const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json');
+//       const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json');
 //       if (!response.ok) throw new Error('Failed to fetch order history for deletion');
       
 //       const data = await response.json();
@@ -69,7 +69,7 @@
 //       if (!firebaseKeyToDelete) throw new Error('Order not found in Firebase');
   
 //       const deleteResponse = await fetch(
-//         `https://stage-smart-server-default-rtdb.firebaseio.com/history/${firebaseKeyToDelete}.json`,
+//         `https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${firebaseKeyToDelete}.json`,
 //         { method: 'DELETE' }
 //       );
   
@@ -314,7 +314,7 @@ function OrderHistory() {
       setLoading(true);
       
       // Fetch all order history from Firebase
-      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json');
+      const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json');
       if (!response.ok) {
         throw new Error('Failed to fetch order history');
       }
@@ -348,7 +348,7 @@ function OrderHistory() {
   const handleDelete = async (orderId) => {
     try {
       // Fetch the current order history
-      const response = await fetch('https://stage-smart-server-default-rtdb.firebaseio.com/history.json');
+      const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json');
       if (!response.ok) {
         throw new Error('Failed to fetch order history for deletion');
       }
@@ -364,7 +364,7 @@ function OrderHistory() {
       }
   
       // Delete the order at the found Firebase key
-      const deleteResponse = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history/${firebaseKeyToDelete}.json`, {
+      const deleteResponse = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${firebaseKeyToDelete}.json`, {
         method: 'DELETE',
       });
   

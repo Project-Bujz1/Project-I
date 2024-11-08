@@ -7,6 +7,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryNavigator from '../components/BillSummary';
 import CartFooter from '../components/CartFooter';
 import FoodTypeFilter from '../components/FoodTypeFilter';
+import HomeCarousel from '../components/HomeCarousel';
+import WelcomeSection from '../components/WelcomeSection';
 
 function Home({ cartIconRef, onItemAdded, searchTerm }) {
   const [categories, setCategories] = useState([]);
@@ -27,10 +29,10 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
   useEffect(() => {
     if (orgId) {
       Promise.all([
-        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/categories.json'),
-        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/subcategories.json'),
-        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_items.json'),
-        fetch('https://stage-smart-server-default-rtdb.firebaseio.com/menu_suggestions.json')
+        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/categories.json'),
+        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/subcategories.json'),
+        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_items.json'),
+        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_suggestions.json')
       ])
         .then(([catRes, subRes, menuRes, sugRes]) => 
           Promise.all([catRes.json(), subRes.json(), menuRes.json(), sugRes.json()])
@@ -241,7 +243,9 @@ useEffect(() => {
         }}
       />
       <CartFooter />
-      
+      { !selectedCategory && <HomeCarousel bannerImage = {"https://static.wixstatic.com/media/4430b8_c48862f5dd9645d6b0f868e50e85cea4~mv2.jpg/v1/fill/w_640,h_440,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_auto/4430b8_c48862f5dd9645d6b0f868e50e85cea4~mv2.jpg"} />}
+      { !selectedCategory && <WelcomeSection menuItems={menuItems} title="ENJOY YOUR DINING!" caption={"checkout for top recommended dishes"} emojis={"✨🎯"}/>}
+      {/* { !selectedCategory && <WelcomeSection menuItems={menuItems} title="TOP RATED FOR YOU!" caption={"Get flat discount on these top selled!"} emojis={"🍽️🔝"}/>} */}
       {searchTerm ? (
         <>
           <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '55px' }}>
@@ -258,7 +262,7 @@ useEffect(() => {
       ) : (
         <>
           {!selectedCategory && (
-            <>
+            <div>
               <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '20px' }}>Menu Categories</h2>
               {loading.categories ? (
                 <FoodLoader />
@@ -273,7 +277,7 @@ useEffect(() => {
                   ))}
                 </div>
               )}
-            </>
+            </div>
           )}
 
           {selectedCategory && !selectedSubcategory && (

@@ -14,7 +14,7 @@ const QREntry = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [progress, setProgress] = useState(0);
-    const API_URL = 'https://stage-smart-server-default-rtdb.firebaseio.com/restaurants';
+    const API_URL = 'https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants';
 
     const animationStyles = `
         @keyframes float {

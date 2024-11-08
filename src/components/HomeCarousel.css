@@ -1,0 +1,67 @@
+  .carousel-item {
+    height: 100%; /* Ensures full height */
+    width: 100%; /* Ensures full width */
+    background-size: cover; /* Ensures the image covers the entire container */
+    background-position: center; /* Centers the image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+  }
+  
+  .banner-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.restaurant-banner {
+    width: 100%;
+    margin-top: 32px;
+    height: 150px;
+    max-width: 800px; /* Adjust based on design needs */
+    border-radius: 8px; /* Optional for rounded corners */
+}
+
+  .carousel-item::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0; /* Ensure this covers the full container */
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 15px;
+    background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+  }
+  .carousel-item::after {
+  background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0));
+  }
+  
+  .carousel-item:hover {
+    transform: scale(1.05);
+  }
+  
+  
+  .carousel-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: #fff;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  }
+  
+  .carousel-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  
+  .carousel-description {
+    font-size: 16px;
+    margin: 0;
+  }
+  

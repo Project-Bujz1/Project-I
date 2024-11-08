@@ -112,7 +112,7 @@ const MyOrders = () => {
           throw new Error('Organization ID or Table Number not found in localStorage');
         }
     
-        const response = await fetch(`https://stage-smart-server-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
+        const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch orders');

@@ -47,7 +47,7 @@ const { Option } = Select;
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
-const API_URL = 'https://stage-smart-server-default-rtdb.firebaseio.com';
+const API_URL = 'https://smart-server-stage-db-default-rtdb.firebaseio.com';
 
 // Theme colors
 const theme = {
