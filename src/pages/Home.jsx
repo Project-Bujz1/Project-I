@@ -282,7 +282,8 @@ useEffect(() => {
 
           {selectedCategory && !selectedSubcategory && (
             <>
-              <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px' }}>
+              <button className="back-button" onClick={handleBackToCategories} style={{ marginTop: '24px', marginBottom: '0px', position: 'sticky',
+ }}>
                 ← Back to Categories
               </button>
               <h2 className="section-title">{selectedCategory.name}</h2>
@@ -321,9 +322,9 @@ useEffect(() => {
       style={{
         position: 'sticky',
         top: 90,
-        // backgroundColor: '#fff',
+        backgroundColor: '#fff',
         zIndex: 1000,
-        padding: '10px 0',
+        // padding: '10px 0',
         // boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
         borderRadius: '10px',
         display: 'flex',
@@ -341,7 +342,7 @@ useEffect(() => {
       <FoodTypeFilter onFilterChange={handleFilterChange} />
     </div>
     
-    <h2 className="section-title">{selectedSubcategory.name}</h2>
+    <h2 className="section-title" style={{marginTop : '10px'}}>{selectedSubcategory.name}</h2>
     {loading.menuItems ? (
                 <div className="loading-animation"
                 style={{

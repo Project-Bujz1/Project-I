@@ -12,7 +12,7 @@
     transition: transform 0.3s ease;
     height: 150px; /* Adjust this value as needed */
   overflow: hidden; /* Ensures the image doesn’t spill over */
-  margin-top: 5px;
+  margin-top: 30px;
   }
   
   .banner-container {
