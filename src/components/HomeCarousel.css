@@ -1,6 +1,5 @@
   .carousel-item {
-    height: 100%; /* Ensures full height */
-    width: 100%; /* Ensures full width */
+
     background-size: cover; /* Ensures the image covers the entire container */
     background-position: center; /* Centers the image */
     display: flex;
@@ -11,6 +10,9 @@
     overflow: hidden;
     border-radius: 15px;
     transition: transform 0.3s ease;
+    height: 150px; /* Adjust this value as needed */
+  overflow: hidden; /* Ensures the image doesn’t spill over */
+  margin-top: 5px;
   }
   
   .banner-container {
@@ -35,10 +37,6 @@
     bottom: 0;
     background: rgba(0, 0, 0, 0.4);
     border-radius: 15px;
-    background: linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
-  }
-  .carousel-item::after {
-  background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0));
   }
   
   .carousel-item:hover {
