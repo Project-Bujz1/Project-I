@@ -1,100 +1,32 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryCard from '../components/CategoryCard';
 import SubcategoryCard from '../components/SubcategoryCard';
 import MenuItem from '../components/MenuItem';
 import FoodLoader from '../components/FoodLoader';
-import { useLocation, useNavigate } from 'react-router-dom';
 import CategoryNavigator from '../components/BillSummary';
 import CartFooter from '../components/CartFooter';
 import FoodTypeFilter from '../components/FoodTypeFilter';
 import HomeCarousel from '../components/HomeCarousel';
 import WelcomeSection from '../components/WelcomeSection';
+import { useMenu } from '../contexts/MenuProvider';
 
 function Home({ cartIconRef, onItemAdded, searchTerm }) {
-  const [categories, setCategories] = useState([]);
-  const [subcategories, setSubcategories] = useState([]);
-  const [menuItems, setMenuItems] = useState([]);
-  const [recommendations, setRecommendations] = useState({});
+  const { 
+    categories, 
+    subcategories, 
+    menuItems, 
+    recommendations,
+    loading 
+  } = useMenu();
+
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [loading, setLoading] = useState({ categories: true, subcategories: true, menuItems: true });
   const [searchResults, setSearchResults] = useState([]);
   const [filters, setFilters] = useState({ veg: true, nonVeg: true });
   
-  const orgId = localStorage.getItem('orgId');
-
   const location = useLocation();
   const navigate = useNavigate();
-  // Modified fetchData to include recommendations
-  useEffect(() => {
-    if (orgId) {
-      Promise.all([
-        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/categories.json'),
-        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/subcategories.json'),
-        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_items.json'),
-        fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_suggestions.json')
-      ])
-        .then(([catRes, subRes, menuRes, sugRes]) => 
-          Promise.all([catRes.json(), subRes.json(), menuRes.json(), sugRes.json()])
-        )
-        .then(([catData, subData, menuData, sugData]) => {
-          // Process categories
-          if (catData) {
-            const matchedCategories = Object.entries(catData)
-              .map(([id, category]) => ({ id, ...category }))
-              .filter(category => category.orgId === parseInt(orgId));
-            setCategories(matchedCategories);
-          }
-
-          // Process subcategories
-          if (subData) {
-            const matchedSubcategories = Object.entries(subData)
-              .map(([id, subcategory]) => ({ id, ...subcategory }))
-              .filter(subcategory => subcategory.orgId === parseInt(orgId));
-            setSubcategories(matchedSubcategories);
-          }
-
-          // Process menu items and suggestions together
-          if (menuData) {
-            const menuItemsArray = Object.entries(menuData)
-              .map(([id, item]) => ({ id, ...item }))
-              .filter(item => item.orgId === parseInt(orgId));
-            setMenuItems(menuItemsArray);
-
-            // Process recommendations
-            if (sugData) {
-              const processedRecommendations = {};
-              Object.entries(sugData).forEach(([itemId, suggestionIds]) => {
-                const suggestedItems = menuItemsArray.filter(menuItem => 
-                  suggestionIds.some(suggestion => 
-                    suggestion.name === menuItem.name && 
-                    suggestion.orgId.toString() === orgId
-                  )
-                );
-                if (suggestedItems.length > 0) {
-                  processedRecommendations[itemId] = suggestedItems;
-                }
-              });
-              setRecommendations(processedRecommendations);
-            }
-          }
-
-          setLoading({
-            categories: false,
-            subcategories: false,
-            menuItems: false
-          });
-        })
-        .catch(error => {
-          console.error('Error fetching data:', error);
-          setLoading({
-            categories: false,
-            subcategories: false,
-            menuItems: false
-          });
-        });
-    }
-  }, [orgId]);
 
   // Search functionality
   useEffect(() => {
@@ -231,10 +163,10 @@ useEffect(() => {
   }, [subcategories, categories]);
   return (
     <div className="home-container" style={{  marginBottom: '150px',
-      paddingBottom: '70px', // Reduced padding to match new footer height
-      minHeight: '100vh',    // Ensure full viewport height
+      paddingBottom: '70px',
+      minHeight: '100vh',
       position: 'relative'  }}>
-      <CategoryNavigator
+ <CategoryNavigator
         onCategorySelect={setSelectedCategory}
         onSubcategorySelect={(subcategory) => {
           const category = categories.find(cat => cat.id === subcategory.categoryId);

@@ -21,6 +21,7 @@ import MyOrders from './components/MyOrders';
 import MenuItem from './components/MenuItem';
 import QREntry from './components/QREntry ';
 import MenuSuggestionManager from './components/MenuSuggestionManager';
+import { MenuProvider } from './contexts/MenuProvider';
 
 const App = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -35,6 +36,7 @@ const App = () => {
 
   return (
     <Router>
+      <MenuProvider>
       <CartProvider>
         <CartIconProvider>
           <div className="App">
@@ -88,6 +90,7 @@ const App = () => {
           </div>
         </CartIconProvider>
       </CartProvider>
+      </MenuProvider>
     </Router>
   );
 }
