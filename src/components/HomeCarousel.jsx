@@ -49,7 +49,7 @@ const HomeCarousel = (bannerImage) => {
         </div>
       )} */}
     
-    <Carousel autoplay dots={true} >
+    <Carousel autoplay dots={true} style={{marginTop : "35px"}}>
       {carouselImages.map((image) => (
         <div
           key={image.id}

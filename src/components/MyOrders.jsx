@@ -93,7 +93,7 @@ const MyOrders = () => {
       justifyContent: 'center',
       alignItems: 'center',
       minHeight: '200px',
-      marginTop: '75px'
+      marginTop: '275px'
     },
     emptyState: {
       textAlign: 'center',

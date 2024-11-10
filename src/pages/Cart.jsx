@@ -43,7 +43,7 @@ function Cart() {
   };
 
   return (
-    <div className="cart-container" style={{ marginTop: '115px', marginBottom: '200px',  padding: '20px' }}>
+    <div className="cart-container" style={{ marginTop: '135px', marginBottom: '200px',  padding: '20px' }}>
       <h2 className="cart-title">Your Cart</h2>
       {cart.length === 0 ? (
         <div

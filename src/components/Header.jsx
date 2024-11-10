@@ -1,186 +1,133 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Input, Badge, Tooltip, Modal, Rate } from 'antd';
-import { TiThMenu } from 'react-icons/ti';
-import { AiOutlineShoppingCart, AiOutlineFileText, AiFillPhone, AiFillMail, AiFillEnvironment, AiOutlineAudio } from 'react-icons/ai';
-import { IoPowerSharp } from "react-icons/io5";
 import { FaUtensils } from "react-icons/fa";
+import { AiOutlineShoppingCart, AiOutlineFileText, AiFillPhone, AiFillMail, AiFillEnvironment, AiOutlineAudio } from 'react-icons/ai';
+import { 
+  Search, 
+  MapPin, 
+  ShoppingCart, 
+  FileText, 
+  ChevronDown, 
+  LogOut 
+} from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
-import { useCartIcon } from '../contexts/CartIconContext';
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import './Header.css';
-import CartHitEffect from './CartHitEffect';
-import SpeechRecognitionUI from './SpeechRecognitionUI';
-import EnhancedSpeechSearch from './EnhancedSpeechSearch';
 
-const { Search } = Input;
-
-function Header({ toggleDrawer, onSearch }) {
-  const { cart } = useCart();
-  const cartIconRef = useCartIcon();
+function Header({ onSearch }) {
   const navigate = useNavigate();
   const location = useLocation();
-  const [showHitEffect, setShowHitEffect] = useState(false);
+  const { cart } = useCart();
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isSignOutModalVisible, setIsSignOutModalVisible] = useState(false);
+  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
   const [restaurantLogo, setRestaurantLogo] = useState('');
   const [isLogoModalVisible, setIsLogoModalVisible] = useState(false);
   const [role, setRole] = useState(localStorage.getItem('role'));
   const [restaurantDetails, setRestaurantDetails] = useState(null);
-  const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
-  const menuItems = ["Fish", "Chicken", "Pizza", "Burger", "Pasta"];
 
-  // Speech recognition state
-  const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  const searchPlaceholders = [
+    "Search for your favorite dishes...",
+    "Craving something specific?",
+    "Explore our menu",
+    "What would you like to eat?",
+  ];
 
   useEffect(() => {
-    fetchRestaurantDetails();
+    const handleScroll = () => {
+      setIsCollapsed(window.scrollY > 80);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentPlaceholder((prevIndex) => (prevIndex + 1) % menuItems.length);
-    }, 2000);
+      setCurrentPlaceholder(prev => (prev + 1) % searchPlaceholders.length);
+    }, 3000);
 
     return () => clearInterval(interval);
-  }, [menuItems.length]);
+  }, []);
 
   useEffect(() => {
-    if (transcript) {
-      setSearchTerm(transcript);
-      if (onSearch) {
-        onSearch(transcript);
-      }
-      if (location.pathname !== '/home') {
-        navigate('/home');
-      }
-    }
-  }, [transcript, onSearch, location.pathname, navigate]);
+    // Fetch restaurant details
+    fetchRestaurantDetails();
+  }, []);
 
   const fetchRestaurantDetails = async () => {
     try {
       const orgId = localStorage.getItem('orgId');
-      
-      if (!orgId) {
-        console.error("No orgId found in localStorage");
-        return;
-      }
-  
-      // Add `.json` at the end of the Firebase Realtime Database URL
+      // Your existing fetch logic here
+      // This is just a placeholder
       const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json');
-      
-      if (response.ok) {
-        const data = await response.json();
-  
-        // Convert the object returned by Firebase to an array
-        if (data) {
-          const restaurant = Object.values(data).find(restaurant => restaurant.orgId === orgId);
-          
-          if (restaurant) {
-            setRestaurantDetails(restaurant);
-            setRestaurantLogo(restaurant.logo);
-          } else {
-            console.error("No restaurant found with the given orgId");
-          }
+      const data = await response.json();
+      setRestaurantDetails(data);
+      if (data) {
+        const restaurant = Object.values(data).find(restaurant => restaurant.orgId === orgId);
+        
+        if (restaurant) {
+          setRestaurantDetails(restaurant);
+          setRestaurantLogo(restaurant.logo);
         } else {
-          console.error("No data available in the database");
+          console.error("No restaurant found with the given orgId");
         }
       } else {
-        console.error("Error fetching restaurant data:", response.status);
+        console.error("No data available in the database");
       }
     } catch (error) {
-      console.error("Error fetching restaurant details:", error);
+      console.error('Error fetching restaurant details:', error);
     }
   };
-  
 
-  // Detect role change and navigate when logged out
-  useEffect(() => {
-    if (!role) {
-      navigate('/');
-    }
-  }, [role, navigate]);
-    const handleOrderSummaryClick = () => {
-      navigate('/summary-view');
-    };
-  
-    const handleSignOut = () => {
-      setIsSignOutModalVisible(true);
-    };
-  
-    const handleConfirmSignOut = () => {
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('role');
-      setRole(null); // Update the role state to null
-      setIsSignOutModalVisible(false);
-    };
-  
-    const handleCancelSignOut = () => {
-      setIsSignOutModalVisible(false);
-    };
-  
-    const triggerHitEffect = () => {
-      setShowHitEffect(true);
-      setTimeout(() => setShowHitEffect(false), 300);
-  };
-
-  const handleSearch = (value) => {
+  const handleSearch = (e) => {
+    const value = e.target.value;
     setSearchTerm(value);
     if (onSearch) {
       onSearch(value);
     }
-    if (location.pathname !== '/home') {
-      navigate('/home');
-    }
   };
-
   const handleLogoClick = () => {
     setIsLogoModalVisible(true);
   };
 
-  const handleVoiceSearch = () => {
-    if (!listening) {
-      SpeechRecognition.startListening({ continuous: true });
-    } else {
-      SpeechRecognition.stopListening();
-    }
-  };
-  
-  const handleSpeechResult = (result) => {
-    setSearchTerm(result);
-    if (onSearch) {
-      onSearch(result);
-    }
-    if (location.pathname !== '/home') {
-      navigate('/home');
-    }
+  const handleSignOut = () => {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('role');
+    navigate('/');
   };
 
   return (
-    <header className="header">
+    <header className={`header ${isCollapsed ? 'header--collapsed' : 'header--expanded'}`}>
       <div className="header__container">
         <div className="header__content">
-          <div className="header__left">
-            {/* <TiThMenu className="header__menu-button" onClick={toggleDrawer} /> */}
-            {localStorage.role === 'customer' ? (
-            <Link to="/home" className="header__logo">
-              <img src="/assets/logo-transparent-png.png" alt="Smart Server" className="header__logo-image" />
-    <span className="header__logo-text">Smart Server</span>
-  </Link>
-) : (
-  <div className="header__logo">
-    <img 
-      src={process.env.PUBLIC_URL + '/assets/logo-transparent-png.png'} 
-      alt="Smart Server" 
-      className="header__logo-image" 
-    />
-    <span className="header__logo-text">Smart Server</span>
-  </div>
-)}
+          <div className="header__top-row">
+            <div className="header__left">
+              <Link to="/home" className="header__logo">
+                <img 
+                  src="/assets/logo-transparent-png.png" 
+                  alt="Smart Server" 
+                  className="header__logo-image" 
+                />
+                <span className="header__logo-text">Smart Server</span>
+              </Link>
+            </div>
 
-          </div>
-         
-          <div className="header__right">
+            {role === 'customer' && (
+              <div className="header__location">
+                <MapPin size={20} />
+                <div>
+                  <div className="header__location-text">
+                    {restaurantDetails?.name || 'Restaurant Name'}
+                  </div>
+                  <div className="header__location-subtext">
+                    {restaurantDetails?.address || 'Loading address...'}
+                  </div>
+                </div>
+                {/* <ChevronDown size={16} /> */}
+              </div>
+            )}
+                      <div className="header__right">
           {restaurantLogo && (
               <div className="header__restaurant-logo-container">
                 <img 
@@ -191,107 +138,48 @@ function Header({ toggleDrawer, onSearch }) {
                 />
               </div>
             )}
-            {role === 'customer' && (
-              <>
-                {/* <Tooltip title="Order Summary">
-                  <AiOutlineFileText 
-                    onClick={handleOrderSummaryClick} 
-                    className="header__icon"
+            </div>
+
+            <div className="header__actions">
+              {/* {role === 'customer' && (
+                <>
+                  <FileText 
+                    className="header__icon" 
+                    onClick={() => navigate('/summary-view')} 
                   />
-                </Tooltip>
-                <Tooltip title="Cart">
-                  <Link to="/cart" className="header__cart-icon">
-                    <Badge count={cart.length} offset={[10, 0]}>
-                      <div ref={cartIconRef} style={{ position: 'relative' }}>
-                        <AiOutlineShoppingCart className="header__icon" style={{marginTop: "8px"}} />
-                        {showHitEffect && <CartHitEffect />}
-                      </div>
-                    </Badge>
+                  <Link to="/cart" className="header__cart-badge">
+                    <ShoppingCart className="header__icon" />
+                    {cart.length > 0 && (
+                      <span className="cart-count">{cart.length}</span>
+                    )}
                   </Link>
-                </Tooltip> */}
-              </>     
-            )}
-           {role !== 'customer' && <Tooltip title="Sign Out">
-              <IoPowerSharp
-                onClick={handleSignOut} 
-                className="header__icon"
-              />
-            </Tooltip>}          </div>
-        </div>
-        <div className="header__center">
-          {localStorage.getItem('role') !== "admin" && 
-            <EnhancedSpeechSearch 
-  onSearch={handleSearch}
-  placeholder={`Search for "${menuItems[currentPlaceholder]}"`}
-/>
-
-            }
-
+                </>
+              )} */}
+              {role !== 'customer' && (
+                <LogOut 
+                  className="header__icon" 
+                  onClick={handleSignOut} 
+                />
+              )}
+            </div>
           </div>
-      </div>
-            {/* Sign Out Confirmation Modal */}
-            <Modal
-        title="Confirm Sign Out"
-        visible={isSignOutModalVisible}
-        onOk={handleConfirmSignOut}
-        onCancel={handleCancelSignOut}
-        okText="Yes, Sign Out"
-        cancelText="Cancel"
-        style={{
-          content: {
-            background: 'linear-gradient(135deg, #ffffff, #fff0f0)',
-            borderRadius: '1rem',
-            overflow: 'hidden',
-            boxShadow: '0 10px 25px rgba(255, 0, 0, 0.1)',
-          }
-        }}
-        bodyStyle={{
-          padding: '12px',
-          fontSize: '1rem',
-          color: '#333333',
-        }}
-        headStyle={{
-          background: '#ff0000',
-          borderBottom: 'none',
-          padding: '8px 12px',
-        }}
-        titleStyle={{
-          color: '#ffffff',
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-        }}
-        footerStyle={{
-          borderTop: 'none',
-          padding: '8px 12px',
-        }}
-        okButtonProps={{
-          style: {
-            backgroundColor: '#ff0000',
-            borderColor: '#ff0000',
-            color: '#ffffff',
-            borderRadius: '0.5rem',
-            fontWeight: 'bold',
-            height: '30px',
-            padding: '0 20px',
-            transition: 'all 0.3s ease',
-          }
-        }}
-        cancelButtonProps={{
-          style: {
-            borderColor: '#ff0000',
-            color: '#ff0000',
-            borderRadius: '0.5rem',
-            fontWeight: 'bold',
-            height: '30px',
-            padding: '0 20px',
-            transition: 'all 0.3s ease',
-          }
-        }}
-      >
-        <p>Are you sure you want to sign out?</p>
-      </Modal>
 
-      {/* Enhanced Restaurant Logo Modal */}
+          {role !== 'admin' && (
+            <div className="header__search-row">
+              <div className="search-container">
+                <Search className="search-icon" size={20} />
+                <input
+                  type="text"
+                  className="search-input"
+                  placeholder={searchPlaceholders[currentPlaceholder]}
+                  value={searchTerm}
+                  onChange={handleSearch}
+                />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
       <Modal
         visible={isLogoModalVisible}
         onCancel={() => setIsLogoModalVisible(false)}
@@ -344,7 +232,6 @@ function Header({ toggleDrawer, onSearch }) {
           </div>
         )}
       </Modal>
-   {/* Add this right before the closing header tag */}
     </header>
   );
 }
