@@ -51,15 +51,23 @@
 import React from 'react';
 import { Typography } from 'antd';
 import './WelcomeSection.css';
+import { useCart } from '../contexts/CartContext';
 
 const { Text } = Typography;
 
 const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
+  const { addToCart } = useCart();
+
   const getImageUrl = (imageData) => {
     if (!imageData) return '';
     if (typeof imageData === 'string') return imageData;
     if (imageData.file?.url) return imageData.file.url;
     return '';
+  };
+
+  const handleAddToCart = (item, event) => {
+    event.stopPropagation();
+    addToCart(item);
   };
 
   return (
@@ -81,6 +89,12 @@ const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
                   alt={item.name}
                   className="menu-card-image"
                 />
+                <button 
+                  className="add-to-cart-button"
+                  onClick={(e) => handleAddToCart(item, e)}
+                >
+                  ADD
+                </button>
                 <div className="menu-card-content">
                   <h3 className="menu-card-title">{item.name}</h3>
                   <p className="menu-card-price">₹{item.price}</p>

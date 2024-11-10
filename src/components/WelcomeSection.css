@@ -120,6 +120,40 @@
     border-radius: 50%;
 }
 
+/* Add this to your existing CSS */
+.add-to-cart-button {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #ff0000;
+    color: white;
+    border: none;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    z-index: 2;
+}
+
+.add-to-cart-button:hover {
+    background-color: #cc0000;
+}
+
+/* Optional: Add a subtle shadow to make the button stand out */
+.add-to-cart-button {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive adjustment for the button */
+@media (max-width: 767px) {
+    .add-to-cart-button {
+        padding: 3px 10px;
+        font-size: 11px;
+    }
+}
+
 /* Responsive adjustments */
 @media (max-width: 767px) {
     .menu-card {
