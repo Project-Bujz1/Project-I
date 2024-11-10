@@ -17,7 +17,8 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     subcategories, 
     menuItems, 
     recommendations,
-    loading 
+    loading,
+    dataInitialized  
   } = useMenu();
 
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -198,6 +199,8 @@ useEffect(() => {
               <h2 className="section-title" style={{ fontFamily: 'Nerko One, sans-serif', fontSize: '30px', textAlign: 'center', marginTop: '20px' }}>Menu Categories</h2>
               {loading.categories ? (
                 <FoodLoader />
+              ) : dataInitialized && categories.length === 0 ? (
+                <p style={{ textAlign: 'center' }}>No categories available.</p>
               ) : (
                 <div className="card-grid">
                   {categories.map((category) => (
