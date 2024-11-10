@@ -65,6 +65,14 @@ const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
     return '';
   };
 
+    // Function to shuffle the array
+    const getRandomItems = (items, count) => {
+      const shuffled = [...items].sort(() => 0.5 - Math.random());
+      return shuffled.slice(0, count);
+    };
+  
+    const randomMenuItems = getRandomItems(menuItems, 10);
+
   const handleAddToCart = (item, event) => {
     event.stopPropagation();
     addToCart(item);
@@ -81,7 +89,7 @@ const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
       </Text>
       <div className="menu-scroll-container">
         <div className="menu-items">
-          {menuItems.slice(0, 10).map((item) => (
+        {randomMenuItems.map((item) => (
             <div key={item.id} className="menu-card">
               <div className="menu-card-image-container">
                 <img
