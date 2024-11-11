@@ -8,6 +8,7 @@ import FoodLoader from '../components/FoodLoader';
 
 function OrderSummary() {
   const { cart } = useCart();
+  const { clearCart } = useCart();
   const navigate = useNavigate();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [suggestedItems, setSuggestedItems] = useState([]);
@@ -145,7 +146,7 @@ function OrderSummary() {
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify({ type: 'newOrder', order: orderDetails }));
       };
-  
+      clearCart();
       navigate(`/waiting/${orderId}`); // Use the generated orderId for navigation
     } catch (error) {
       console.error('Failed to save order', error);

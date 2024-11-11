@@ -123,7 +123,7 @@ const MyOrders = () => {
         const filteredOrders = ordersArray.filter(order => 
           order.orgId === orgId && 
           order.tableNumber === tableNumber && 
-          order.status !== 'completed'
+           !['completed','cancelled'].includes(order.status)
         );
     
         setOrders(filteredOrders);

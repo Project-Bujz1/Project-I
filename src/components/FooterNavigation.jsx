@@ -12,7 +12,7 @@ const FooterNavigation = () => {
     { path: '/home', icon: Home, label: 'Menu' },
     { path: '/cart', icon: ShoppingBag, label: 'Cart' },
     { path: '/summary-view', icon: FileText, label: 'Summary' },
-    { path: '/my-orders', icon: History, label: 'Orders' }
+    { path: '/my-orders', icon: History, label: 'My Order' }
   ];
 
   const adminLinks = [
