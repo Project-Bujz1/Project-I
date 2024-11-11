@@ -167,7 +167,11 @@ function OrderSummary() {
   };
 
   if (loading) {
-    return <FoodLoader />;
+    return(
+      <div style={{marginTop: '350px'}}>
+        <FoodLoader />
+      </div>
+    )
   }
   const handleBubbleClick = () => {
     setIsModalVisible(true);
@@ -184,7 +188,7 @@ function OrderSummary() {
   }
 
   return (
-    <div className="order-summary-container" style={{ marginTop: '115px' ,           marginBottom: '200px',
+    <div className="order-summary-container" style={{ marginTop: '145px' ,           marginBottom: '200px',
     }}>
       <h2 className="order-summary-title">Confirm Order</h2>
       {cart.map((item) => (
