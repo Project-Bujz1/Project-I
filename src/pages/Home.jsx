@@ -176,8 +176,8 @@ useEffect(() => {
         }}
       />
       <CartFooter />
-      { !selectedCategory && <HomeCarousel bannerImage = {"https://static.wixstatic.com/media/4430b8_c48862f5dd9645d6b0f868e50e85cea4~mv2.jpg/v1/fill/w_640,h_440,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_auto/4430b8_c48862f5dd9645d6b0f868e50e85cea4~mv2.jpg"} />}
-      { !selectedCategory && <WelcomeSection menuItems={menuItems} title="ENJOY YOUR DINING!" caption={"checkout for top recommended dishes"} emojis={"✨🎯"}/>}
+      {!searchTerm && !selectedCategory && <HomeCarousel bannerImage = {"https://static.wixstatic.com/media/4430b8_c48862f5dd9645d6b0f868e50e85cea4~mv2.jpg/v1/fill/w_640,h_440,fp_0.50_0.50,q_80,usm_0.66_1.00_0.01,enc_auto/4430b8_c48862f5dd9645d6b0f868e50e85cea4~mv2.jpg"} />}
+      {!searchTerm && !selectedCategory && <WelcomeSection menuItems={menuItems} title="ENJOY YOUR DINING!" caption={"checkout for top recommended dishes"} emojis={"✨🎯"}/>}
       {/* { !selectedCategory && <WelcomeSection menuItems={menuItems} title="TOP RATED FOR YOU!" caption={"Get flat discount on these top selled!"} emojis={"🍽️🔝"}/>} */}
       {searchTerm ? (
         <>

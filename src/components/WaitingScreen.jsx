@@ -647,6 +647,7 @@
 // };
 
 // export default WaitingScreen;
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch, Progress, Tooltip } from 'antd';
@@ -870,9 +871,43 @@ const WaitingScreen = () => {
       message.error('Failed to cancel the order. Please try again.');
     }
   };
-  const handleCompleteOrder = () => {
-    clearCart(); // Clear the cart when order is completed
-    setIsModalVisible(true);
+  const handleCompleteOrder = async () => {
+    try {
+      const orgId = localStorage.getItem('orgId');
+      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'completed',
+          statusMessage: 'Your order has been completed',
+          orgId: orgId,
+        }),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to update the order status');
+      }
+  
+      setOrder(prevOrder => ({ ...prevOrder, status: 'completed', statusMessage: 'Your order has been completed' }));
+  
+      // Send WebSocket message to notify admin
+      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+        const message = JSON.stringify({
+          type: 'statusUpdate',
+          orderId: orderId,
+          orgId: orgId,
+          status: 'completed',
+          statusMessage: 'Order has been completed'
+        });
+        ws.current.send(message);
+      }
+  
+      clearCart(); // Clear the cart when order is completed
+      setIsModalVisible(true); // Show the feedback modal
+    } catch (error) {
+      console.error('Failed to update the order status', error);
+      message.error('Failed to complete the order. Please try again.');
+    }
   };
 
   const handleSubmitFeedback = async () => {
