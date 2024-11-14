@@ -1,54 +1,4 @@
-// import React from 'react';
-// import { Emoji } from 'react-apple-emojis';
-// import { Card, Typography, Space } from 'antd';
-// import './WelcomeSection.css'; // Import custom styles
-
-// const { Title, Text } = Typography;
-
-// const getImageUrl = (imageData) => {
-//     if (!imageData) return '';
-//     if (typeof imageData === 'string') return imageData;
-//     if (imageData.file?.url) return imageData.file.url;
-//     return '';
-//   };
-
-//   const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
-//     return (
-//     <div className="welcome-section">
-//       <div className="welcome-header">
-//       <Text style={{ fontSize: 30 }}>{emojis}</Text>
-//         <h1 className="welcome-title">{title}😊</h1>
-//       </div>
-//       <Text className="welcome-subtitle">
-//         {caption}
-//       </Text>
-//       <div className="menu-items">
-//         {menuItems.slice(0, 10).map((item) => (
-//           <Card
-//             key={item.id}
-//             hoverable
-//             className="menu-card"
-//             cover={
-//               <img
-//                 src={getImageUrl(item.image)}
-//                 alt={item.name}
-//                 className="menu-card-image"
-//               />
-//             }
-//           >
-//             {/* <Space direction="vertical" size={0}>
-//               <Title level={5} className="menu-card-title">{item.name}</Title>
-//               <Text type="secondary" className="menu-card-price">₹{item.price}</Text>
-//             </Space> */}
-//           </Card>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default WelcomeSection;
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Typography } from 'antd';
 import './WelcomeSection.css';
 import { useCart } from '../contexts/CartContext';
@@ -65,13 +15,14 @@ const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
     return '';
   };
 
-    // Function to shuffle the array
+  // Memoize the random items so they don't change on re-renders
+  const randomMenuItems = useMemo(() => {
     const getRandomItems = (items, count) => {
       const shuffled = [...items].sort(() => 0.5 - Math.random());
       return shuffled.slice(0, count);
     };
-  
-    const randomMenuItems = getRandomItems(menuItems, 10);
+    return getRandomItems(menuItems, 10);
+  }, [menuItems]); // Only re-shuffle when menuItems changes
 
   const handleAddToCart = (item, event) => {
     event.stopPropagation();
@@ -89,7 +40,7 @@ const WelcomeSection = ({ menuItems, title, caption, emojis }) => {
       </Text>
       <div className="menu-scroll-container">
         <div className="menu-items">
-        {randomMenuItems.map((item) => (
+          {randomMenuItems.map((item) => (
             <div key={item.id} className="menu-card">
               <div className="menu-card-image-container">
                 <img
