@@ -118,7 +118,13 @@ function OrderSummary() {
     const orderDetails = {
       id: orderId, // Use the generated order ID
       orgId: orgId,
-      items: cart,
+      items: cart.map((item) => ({
+        ...item,
+        customization: {
+          specialInstructions: item.specialInstructions,
+          selectedTags: item.selectedTags,
+        },
+      })),
       total: total.toFixed(2),
       tableNumber,
       timestamp: new Date().toISOString(),

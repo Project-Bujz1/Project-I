@@ -234,6 +234,7 @@ import { useCartIcon } from '../contexts/CartIconContext';
 import FlyingItemAnimation from './FlyingItemAnimation';
 import FoodLoader from './FoodLoader';
 import RecommendationSection from './RecommendationSection';
+import CookingRequestDrawer from './CookingRequestDrawer';
 
 const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const [showRecommendations, setShowRecommendations] = useState(false);
@@ -752,9 +753,11 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
               e.target.src = '/path-to-your-fallback-image.jpg';
             }}
           />
-                    <div style={styles.editIcon} onClick={handleEditIconClick}>
-            <EditOutlined />
-          </div>
+      {quantity > 0 && (
+        <div style={styles.editIcon} onClick={handleEditIconClick}>
+          <EditOutlined />
+        </div>
+      )}
 
           {quantity === 0 && (
             <Tooltip title={item.isAvailable ? '' : 'This item is currently unavailable'}>
@@ -773,66 +776,18 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
         </div>
       </div>
 
-      <Drawer
-      visible={showCookingRequest}
-      onClose={() => setShowCookingRequest(false)}
-      placement="bottom"
-      height="auto"
-      bodyStyle={styles.cookingRequestDrawer}
-    >
-      <div style={styles.selectedItemHeader}>
-        <img 
-          src={getImageUrl(item.image)} 
-          alt={item.name}
-          style={styles.selectedItemImage}
-        />
-        <div style={styles.selectedItemDetails}>
-          <div style={styles.selectedItemName}>{item.name}</div>
-          <div style={styles.selectedItemPrice}>₹{item.price}</div>
-        </div>
-        {/* <CloseOutlined 
-          onClick={() => setShowCookingRequest(false)}
-          style={{ cursor: 'pointer', fontSize: '20px', color: '#666' }}
-        /> */}
-      </div>
+      <CookingRequestDrawer
+        visible={showCookingRequest}
+        onClose={() => setShowCookingRequest(false)}
+        onSubmit={handleCookingRequestSubmit}
+        onTagClick={handleTagClick}
+        selectedTags={selectedTags}
+        cookingRequest={cookingRequest}
+        onCookingRequestChange={handleCookingRequestChange}
+        item={item}
+      />
 
-      <div style={styles.cookingRequestContent}>
-        <div style={styles.cookingRequestTitle}>Add Special Instructions</div>
-        <Input.TextArea
-          maxLength={100}
-          placeholder="Add your cooking preferences here..."
-          value={cookingRequest}
-          onChange={handleCookingRequestChange}
-          rows={3}
-          style={styles.cookingRequestTextarea}
-        />
-        
-        <div style={styles.cookingRequestTitle}>Common Preferences</div>
-        <div style={styles.cookingRequestTags}>
-          {styles.commonSpiceOptions.map((option) => (
-            <div
-              key={option.id}
-              style={{
-                ...styles.cookingRequestTagItem,
-                ...(selectedTags.includes(option.id) ? styles.selectedTagItem : {}),
-              }}
-              onClick={() => handleTagClick(option.id)}
-            >
-              {option.label}
-            </div>
-          ))}
-        </div>
-      </div>
 
-      <div style={styles.cookingRequestActions}>
-        <button style={styles.cancelButton} onClick={() => setShowCookingRequest(false)}>
-          Cancel
-        </button>
-        <button style={styles.submitButton} onClick={handleCookingRequestSubmit}>
-          Add to Cart
-        </button>
-      </div>
-    </Drawer>
 
       <RecommendationSection
         isVisible={showRecommendations}
