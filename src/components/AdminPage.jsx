@@ -455,7 +455,8 @@ const AdminOrderComponent = () => {
       case 'preparing': return 'Your order is being prepared';
       case 'ready': return 'Your order is ready for pickup';
       case 'delayed': return 'Your order is delayed. We apologize for the inconvenience';
-      case 'completed': return 'Your order is completed.'
+      case 'completed': return 'Your order is completed.';
+      case 'cancelled': return 'Your order is cancelled';
       default: return 'Order status unknown';
     }
   };
@@ -715,7 +716,7 @@ const AdminOrderComponent = () => {
                         marginBottom: '10px'
                       }}
                       onChange={(newStatus) => handleUpdateStatus(order.id, newStatus)}
-                      disabled={order.status === 'cancelled'}
+                      // disabled={order.status === 'cancelled'}
                     >
                       {['pending', 'preparing', 'ready', 'delayed', 'cancelled', 'completed']?.map((status) => (
                         <Option key={status} value={status}>

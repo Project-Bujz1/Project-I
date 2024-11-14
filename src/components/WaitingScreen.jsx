@@ -705,9 +705,9 @@ const WaitingScreen = () => {
       '/assets/taken-2.gif'
     ],
     cancelled: [
+      '/assets/waiting-gif-1.gif',
       '/assets/pending1-1.gif',
-      '/assets/pending1-3.gif',
-      '/assets/pending3-3.gif'
+      '/assets/pending1-3.gif'
     ]
   };
 
@@ -809,6 +809,8 @@ const WaitingScreen = () => {
         return <ExclamationCircleOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />;
       case 'completed':
         return <CheckOutlined style={{ fontSize: '48px', color: '#52c41a' }} />;
+      case 'cancelled' :
+        return <ExclamationCircleOutlined style={{ fontSize: '48px', color: '#ff4d4f' }} />;
       default:
         console.warn(`Unknown status: ${status}`);
         return <QuestionOutlined style={{ fontSize: '48px', color: '#8c8c8c' }} />;
