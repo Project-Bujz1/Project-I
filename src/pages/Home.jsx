@@ -43,7 +43,13 @@ function Home({ cartIconRef, onItemAdded, searchTerm }) {
     }
   }, [searchTerm, menuItems]);
   
-
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  }, [selectedCategory, selectedSubcategory]);
+  
 // Mobile Back Navigation Handler
 useEffect(() => {
   const handleBrowserBack = (event) => {

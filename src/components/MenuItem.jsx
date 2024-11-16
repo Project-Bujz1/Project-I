@@ -249,6 +249,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [selectedTags, setSelectedTags] = useState([]);
   const itemRef = useRef(null);
+  const descriptionRef = useRef(null);
 
   const styles = {
     editIcon: {
@@ -280,7 +281,11 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       padding: '24px',
       display: 'flex',
       flexDirection: 'column',
-      justifyContent: 'space-between',
+      position: 'relative', // Added for absolute positioning of controls
+      minHeight: '220px', // Ensure minimum height
+    },
+    descriptionWrapper: {
+      marginBottom: '48px', // Space for controls
     },
     cookingRequestDrawer: {
       background: '#f5f5f5',
@@ -396,22 +401,36 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
       fontSize: '16px',
       color: '#666',
       margin: '0 0 12px 0',
+      position: 'relative',
+      maxHeight: isDescriptionExpanded ? 'none' : '48px', // Roughly 2 lines of text
+      overflow: 'hidden',
+      transition: 'max-height 0.3s ease-out',
     },
     readMore: {
       color: '#e5004b',
       cursor: 'pointer',
-      fontWeight: 'bold',
-      marginLeft: '8px',
-    },
-    price: {
-      fontSize: '20px',
-      fontWeight: 'bold',
-      color: '#e5004b',
+      fontWeight: '500',
+      display: 'inline-block',
+      marginLeft: '4px',
+      userSelect: 'none',
     },
     quantityControls: {
       display: 'flex',
       alignItems: 'center',
       gap: '12px',
+      position: 'absolute',
+      bottom: '24px',
+      left: '24px',
+    },
+    gradient: {
+      display: !isDescriptionExpanded ? 'block' : 'none',
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      height: '24px',
+      background: 'linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%)',
+      pointerEvents: 'none',
     },
     quantityDisplay: {
       width: '40px',
@@ -581,6 +600,20 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     ],
   };
 
+  // Function to check if description needs truncation
+  const needsTruncation = () => {
+    if (descriptionRef.current) {
+      return descriptionRef.current.scrollHeight > 48; // 48px is our max-height for collapsed state
+    }
+    return false;
+  };
+
+  const toggleDescription = (e) => {
+    e.stopPropagation();
+    setIsDescriptionExpanded(!isDescriptionExpanded);
+  };
+
+  // Rest of your existing functions...
   const getFoodTypeIcon = (type) => {
     switch (type) {
       case 'veg':
@@ -592,9 +625,6 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
     }
   };
 
-  const toggleDescription = () => {
-    setIsDescriptionExpanded((prev) => !prev);
-  };
 
   const getTruncatedDescription = (text) => {
     return text.length > 50 ? `${text.substring(0, 50)}...` : text;
@@ -696,26 +726,28 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
   };
 
   const imageUrl = getImageUrl(item.image);
-
   return (
     <>
       <div style={styles.card}>
-        
         <div style={styles.contentSection}>
           <div>
             <div style={styles.titleWrapper}>
-              <h1>{getFoodTypeIcon(item.foodType)}</h1>
+              {getFoodTypeIcon(item.foodType)}
               <h3 style={styles.title}>{item.name}</h3>
             </div>
-            <p style={styles.description}>
-              <span>{item.description}</span>
-              {/* {isDescriptionExpanded ? item?.description : getTruncatedDescription(item?.description)}
-              {item?.description.length > 50 && (
+            <div style={styles.descriptionWrapper}>
+              <div style={styles.description} ref={descriptionRef}>
+                {item.description}
+                {needsTruncation() && !isDescriptionExpanded && (
+                  <div style={styles.gradient} />
+                )}
+              </div>
+              {needsTruncation() && (
                 <span onClick={toggleDescription} style={styles.readMore}>
-                  {isDescriptionExpanded ? ' ' : '... Read more'}
+                  {isDescriptionExpanded ? 'Show less' : 'Read more'}
                 </span>
-              )} */}
-            </p>
+              )}
+            </div>
             <div style={styles.price}>₹{item.price}</div>
           </div>
 
@@ -740,7 +772,7 @@ const MenuItem = ({ item, onItemAdded, recommendations }) => {
               />
             </div>
           )}
-      </div>
+        </div>
 
         <div style={styles.imageSection}>
           <img
