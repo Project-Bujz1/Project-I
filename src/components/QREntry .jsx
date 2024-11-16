@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import {
   Utensils, Coffee, Pizza, ChefHat, Apple, Beer, 
   UtensilsCrossed, Sandwich, Wine, Soup, Cookie, Beef,
-  BookOpen, Star, Clock, Bell, GlassWater
+  BookOpen, Star, Clock, Bell, GlassWater, MapPin, AlertTriangle
 } from 'lucide-react';
 import { Card, Typography, Spin, Alert, Progress } from 'antd';
 const { Title, Text } = Typography;
@@ -14,45 +14,95 @@ const QREntry = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [progress, setProgress] = useState(0);
+    const [locationVerified, setLocationVerified] = useState(false);
+    const [locationError, setLocationError] = useState(null);
     const API_URL = 'https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants';
 
+    const MAX_DISTANCE_KM = 0.5; // Maximum allowed distance in kilometers
+
+    // Function to calculate distance between two points using Haversine formula
+    const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+            Math.sin(dLat/2) * Math.sin(dLat/2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+            Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c; // Distance in kilometers
+    };
+
+    // Function to verify user's location
+    const verifyLocation = async (restaurantData) => {
+        try {
+            const position = await new Promise((resolve, reject) => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+            });
+
+            const userLat = position.coords.latitude;
+            const userLon = position.coords.longitude;
+            const restaurantLat = restaurantData.position[0];
+            const restaurantLon = restaurantData.position[1];
+
+            const distance = calculateDistance(
+                userLat, userLon,
+                restaurantLat, restaurantLon
+            );
+
+            if (distance <= MAX_DISTANCE_KM) {
+                setLocationVerified(true);
+                return true;
+            } else {
+                setLocationError(`You appear to be ${distance.toFixed(2)}km away from ${restaurantData.name}. Please visit the restaurant to place an order.`);
+                return false;
+            }
+        } catch (err) {
+            setLocationError("Unable to verify your location. Please enable location services and try again.");
+            return false;
+        }
+    };
+
     const animationStyles = `
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(5deg); }
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.7; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-        @keyframes shine {
-            0% { background-position: -200% center; }
-            100% { background-position: 200% center; }
-        }
-        .floating-icon {
-            animation: float 3s ease-in-out infinite;
-            position: absolute;
-            color: #ff4d4d;
-            opacity: 0.2;
-            filter: drop-shadow(0 4px 8px rgba(255, 77, 77, 0.3));
-        }
-        .pulse-icon {
-            animation: pulse 2s ease-in-out infinite;
-        }
-        .gradient-text {
-            background: linear-gradient(45deg, #ff4d4d, #ff8080, #ff4d4d);
-            background-size: 200% auto;
-            color: transparent;
-            background-clip: text;
-            -webkit-background-clip: text;
-            animation: shine 3s linear infinite;
-        }
-    `;
+    @keyframes float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-20px) rotate(5deg); }
+    }
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.1); opacity: 1; }
+    }
+    @keyframes shine {
+        0% { background-position: -200% center; }
+        100% { background-position: 200% center; }
+    }
+    .floating-icon {
+        animation: float 3s ease-in-out infinite;
+        position: absolute;
+        color: #ff4d4d;
+        opacity: 0.2;
+        filter: drop-shadow(0 4px 8px rgba(255, 77, 77, 0.3));
+    }
+    .pulse-icon {
+        animation: pulse 2s ease-in-out infinite;
+    }
+    .gradient-text {
+        background: linear-gradient(45deg, #ff4d4d, #ff8080, #ff4d4d);
+        background-size: 200% auto;
+        color: transparent;
+        background-clip: text;
+        -webkit-background-clip: text;
+        animation: shine 3s linear infinite;
+    }
+`;
 
     useEffect(() => {
         const fetchRestaurantData = async () => {
             try {
-                // Simulate loading progress
                 const progressInterval = setInterval(() => {
                     setProgress(prev => (prev < 90 ? prev + 10 : prev));
                 }, 200);
@@ -69,14 +119,20 @@ const QREntry = () => {
 
                 if (restaurantData) {
                     setRestaurant(restaurantData);
-                    localStorage.setItem('role', 'customer');
-                    localStorage.setItem('orgId', orgId);
-                    localStorage.setItem('tableNumber', tableNumber);
+                    
+                    // Verify location before proceeding
+                    const isLocationVerified = await verifyLocation(restaurantData);
+                    
+                    if (isLocationVerified) {
+                        localStorage.setItem('role', 'customer');
+                        localStorage.setItem('orgId', orgId);
+                        localStorage.setItem('tableNumber', tableNumber);
 
-                    setTimeout(() => {
-                        sessionStorage.setItem('justSetOrgIdAndTable', 'true');
-                        window.location.href = '/home';
-                    }, 1500);
+                        setTimeout(() => {
+                            sessionStorage.setItem('justSetOrgIdAndTable', 'true');
+                            window.location.href = '/home';
+                        }, 1500);
+                    }
                 } else {
                     throw new Error('Restaurant not found');
                 }
@@ -143,6 +199,39 @@ const QREntry = () => {
                                 '100%': '#ff8080',
                             }}
                         />
+                    </div>
+                </Card>
+            </div>
+        );
+    }
+
+    if (locationError) {
+        return (
+            <div style={containerStyle}>
+                <Card style={cardStyle}>
+                    <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                        <AlertTriangle
+                            size={64}
+                            color="#ff4d4d"
+                            style={{ marginBottom: '20px' }}
+                        />
+                        <Title level={3} style={{ color: '#ff4d4d', marginBottom: '20px' }}>
+                            Location Verification Failed
+                        </Title>
+                        <Text style={{ display: 'block', marginBottom: '20px' }}>
+                            {locationError}
+                        </Text>
+                        <div style={{ 
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                            color: '#666',
+                            fontSize: '14px'
+                        }}>
+                            <MapPin size={16} />
+                            <Text>Please scan the QR code when you're at the restaurant</Text>
+                        </div>
                     </div>
                 </Card>
             </div>
