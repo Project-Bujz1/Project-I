@@ -109,34 +109,91 @@ function OrderSummary() {
       return;
     }
   
-    setLoading(true);
-  
-    const orgId = localStorage.getItem('orgId');
-  
-    const orderId = generateOrderId(); // Generate the custom order ID
-  
-    const orderDetails = {
-      id: orderId, // Use the generated order ID
-      orgId: orgId,
-      items: cart.map((item) => ({
-        ...item,
-        customization: {
-          specialInstructions: item.specialInstructions,
-          selectedTags: item.selectedTags,
-        },
-      })),
-      total: total.toFixed(2),
-      tableNumber,
-      timestamp: new Date().toISOString(),
-      status: 'pending',
-      statusMessage: 'Your order is being processed',
-      description: description
-    };
-  
+    // Location verification before processing order
     try {
-      // Use the generated orderId as the key when saving to Firebase
+      setLoading(true);
+      
+      // First fetch restaurant data to get its location
+      const orgId = localStorage.getItem('orgId');
+      const restaurantResponse = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json`);
+      
+      if (!restaurantResponse.ok) {
+        throw new Error('Failed to fetch restaurant data');
+      }
+  
+      const restaurantsData = await restaurantResponse.json();
+      const restaurantArray = Object.values(restaurantsData);
+      const restaurant = restaurantArray.find(r => r.orgId === orgId);
+  
+      if (!restaurant || !restaurant.position) {
+        throw new Error('Restaurant location data not found');
+      }
+  
+      // Get user's current location
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        });
+      });
+  
+      // Calculate distance between user and restaurant
+      const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c; // Distance in kilometers
+      };
+  
+      const distance = calculateDistance(
+        position.coords.latitude,
+        position.coords.longitude,
+        restaurant.position[0],
+        restaurant.position[1]
+      );
+  
+      const MAX_DISTANCE_KM = 0.5; // 500 meters
+      if (distance > MAX_DISTANCE_KM) {
+        showErrorModal(`You seem to be ${distance.toFixed(2)}km away from ${restaurant.name}. Orders can only be placed when you're at the restaurant.`);
+        setLoading(false);
+        return;
+      }
+  
+      // If location is verified, proceed with order processing
+      const orderId = generateOrderId();
+  
+      const orderDetails = {
+        id: orderId,
+        orgId: orgId,
+        items: cart.map((item) => ({
+          ...item,
+          customization: {
+            specialInstructions: item.specialInstructions,
+            selectedTags: item.selectedTags,
+          },
+        })),
+        total: total.toFixed(2),
+        tableNumber,
+        timestamp: new Date().toISOString(),
+        status: 'pending',
+        statusMessage: 'Your order is being processed',
+        description: description,
+        // Add location data to order for verification purposes
+        orderLocation: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          verifiedDistance: distance.toFixed(3)
+        }
+      };
+  
       const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
-        method: 'PUT', // Use PUT to set the data at the specific key
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
@@ -147,16 +204,26 @@ function OrderSummary() {
         throw new Error('Failed to save order');
       }
   
-      // Initialize WebSocket connection to notify about the new order
+      // Initialize WebSocket connection
       ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify({ type: 'newOrder', order: orderDetails }));
       };
+  
       clearCart();
-      navigate(`/waiting/${orderId}`); // Use the generated orderId for navigation
+      navigate(`/waiting/${orderId}`);
+  
     } catch (error) {
-      console.error('Failed to save order', error);
-      showErrorModal('Failed to place order. Please try again.');
+      console.error('Error during order placement:', error);
+      if (error.code === 1) { // GeolocationPositionError.PERMISSION_DENIED
+        showErrorModal('Location access denied. Please enable location services to place your order.');
+      } else if (error.code === 2) { // GeolocationPositionError.POSITION_UNAVAILABLE
+        showErrorModal('Unable to determine your location. Please ensure you have a stable internet connection.');
+      } else if (error.code === 3) { // GeolocationPositionError.TIMEOUT
+        showErrorModal('Location request timed out. Please try again.');
+      } else {
+        showErrorModal(error.message || 'Failed to place order. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -269,51 +336,7 @@ function OrderSummary() {
         </div>
       )}
 
-      {/* <Modal
-      title="Add Extra Items for Dining"
-      visible={isModalVisible}
-      onCancel={() => setIsModalVisible(false)}
-      footer={null}
-      centered
-      bodyStyle={{ padding: '20px', backgroundColor: '#fff' }}
-      style={{ borderRadius: '10px' }}
-    >
-      <div className="suggestions-container">
-        {suggestedItems.map((item) => (
-          <div key={item.name} className="suggestion-item" style={{ marginBottom: '15px', display: 'flex', alignItems: 'center', border: '2px solid red', borderRadius: '8px', padding: '10px', boxShadow: '0 0 10px rgba(255, 0, 0, 0.5)', transition: 'box-shadow 0.3s ease-in-out' }}>
-            <img src={item.image} alt={item.name} style={{ width: '50px', marginRight: '10px' }} />
-            <div>
-              <p style={{ margin: 0, fontWeight: 'bold', color: 'red' }}>{item.name}</p>
-              <p style={{ margin: 0, fontSize: '12px', color: '#555' }}>{item.quote}</p>
-              <Button
-                type="primary"
-                size="small"
-                onClick={() => handleAddSuggestion(item)}
-                icon={<PlusCircleOutlined />}
-                style={{
-                  backgroundColor: 'white',
-                  color: 'red',
-                  border: '2px solid red',
-                  borderRadius: '5px',
-                  transition: 'background-color 0.3s ease, color 0.3s ease',
-                  boxShadow: '0 0 5px rgba(255, 0, 0, 0.7)',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'red';
-                  e.currentTarget.style.color = 'white';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'white';
-                  e.currentTarget.style.color = 'red';
-                }}
-              >
-                <CheckOutlined style={{ marginRight: '5px' }} /> Add
-              </Button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </Modal> */}
+    
     <Modal
   title="Special Treats on Us!"
   visible={isModalVisible}
