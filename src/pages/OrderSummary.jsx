@@ -5,9 +5,6 @@ import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import './OrderSummary.css'; // Assuming you're using CSS modules or a custom CSS file
 import FoodLoader from '../components/FoodLoader';
-import {
- MapPin, AlertTriangle
-} from 'lucide-react';
 
 function OrderSummary() {
   const { cart } = useCart();
@@ -27,8 +24,6 @@ function OrderSummary() {
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [description, setDescription] = useState('');
   const ws = useRef(null);
-  const [verifyingLocation, setVerifyingLocation] = useState(false);
-  const MAX_DISTANCE_KM = 0.5; // Maximum allowed distance in kilometers
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
@@ -102,56 +97,6 @@ function OrderSummary() {
     // Combine to form the order ID
     return `ORD-${date}-${randomDigits}`;
   };
-  // Function to calculate distance between two points using Haversine formula
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Earth's radius in kilometers
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = 
-      Math.sin(dLat/2) * Math.sin(dLat/2) +
-      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-      Math.sin(dLon/2) * Math.sin(dLon/2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    return R * c; // Distance in kilometers
-  };
-
-  // Function to verify user's location against restaurant location
-  const verifyLocation = async (restaurantData) => {
-    try {
-      const position = await new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject, {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        });
-      });
-
-      const userLat = position.coords.latitude;
-      const userLon = position.coords.longitude;
-      const restaurantLat = restaurantData.position[0];
-      const restaurantLon = restaurantData.position[1];
-
-      const distance = calculateDistance(
-        userLat, userLon,
-        restaurantLat, restaurantLon
-      );
-
-      if (distance <= MAX_DISTANCE_KM) {
-        return { verified: true };
-      } else {
-        return { 
-          verified: false, 
-          error: `You appear to be ${distance.toFixed(2)}km away from ${restaurantData.name}. Orders can only be placed from within the restaurant.`
-        };
-      }
-    } catch (err) {
-      return { 
-        verified: false, 
-        error: "Unable to verify your location. Please enable location services and try again."
-      };
-    }
-  };
-
   const handlePayClick = async () => {
     if (!tableNumber) {
       showErrorModal('Please enter your table number');
@@ -163,59 +108,64 @@ function OrderSummary() {
       showErrorModal(`Please enter a valid table number between 1 and ${seatingCapacity}`);
       return;
     }
-
-    setVerifyingLocation(true);
-    
+  
+    // Location verification before processing order
     try {
-      // Fetch restaurant data to get location
-      const orgId = localStorage.getItem('orgId');
-      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json`);
+      setLoading(true);
       
-      if (!response.ok) {
+      // First fetch restaurant data to get its location
+      const orgId = localStorage.getItem('orgId');
+      const restaurantResponse = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json`);
+      
+      if (!restaurantResponse.ok) {
         throw new Error('Failed to fetch restaurant data');
       }
-
-      const data = await response.json();
-      const restaurantArray = Object.values(data);
-      const restaurantData = restaurantArray.find(r => r.orgId === orgId);
-
-      if (!restaurantData) {
-        throw new Error('Restaurant data not found');
+  
+      const restaurantsData = await restaurantResponse.json();
+      const restaurantArray = Object.values(restaurantsData);
+      const restaurant = restaurantArray.find(r => r.orgId === orgId);
+  
+      if (!restaurant || !restaurant.position) {
+        throw new Error('Restaurant location data not found');
       }
-
-      // Verify location
-      const locationCheck = await verifyLocation(restaurantData);
-      
-      if (!locationCheck.verified) {
-        Modal.error({
-          title: 'Location Verification Failed',
-          content: (
-            <div style={{ textAlign: 'center' }}>
-              <AlertTriangle 
-                size={48} 
-                color="#ff4d4d" 
-                style={{ marginBottom: '16px' }}
-              />
-              <p>{locationCheck.error}</p>
-              <div style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                marginTop: '16px',
-                color: '#666'
-              }}>
-                <MapPin size={16} style={{ marginRight: '8px' }} />
-                <span>Please place your order when you're at the restaurant</span>
-              </div>
-            </div>
-          ),
-          centered: true,
+  
+      // Get user's current location
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
         });
+      });
+  
+      // Calculate distance between user and restaurant
+      const calculateDistance = (lat1, lon1, lat2, lon2) => {
+        const R = 6371; // Earth's radius in kilometers
+        const dLat = (lat2 - lat1) * Math.PI / 180;
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c; // Distance in kilometers
+      };
+  
+      const distance = calculateDistance(
+        position.coords.latitude,
+        position.coords.longitude,
+        restaurant.position[0],
+        restaurant.position[1]
+      );
+  
+      const MAX_DISTANCE_KM = 0.5; // 500 meters
+      if (distance > MAX_DISTANCE_KM) {
+        showErrorModal(`You seem to be ${distance.toFixed(2)}km away from ${restaurant.name}. Orders can only be placed when you're at the restaurant.`);
+        setLoading(false);
         return;
       }
-
-      // Proceed with order placement
-      setLoading(true);
+  
+      // If location is verified, proceed with order processing
       const orderId = generateOrderId();
   
       const orderDetails = {
@@ -233,10 +183,16 @@ function OrderSummary() {
         timestamp: new Date().toISOString(),
         status: 'pending',
         statusMessage: 'Your order is being processed',
-        description: description
+        description: description,
+        // Add location data to order for verification purposes
+        orderLocation: {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+          verifiedDistance: distance.toFixed(3)
+        }
       };
   
-      const orderResponse = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -244,7 +200,7 @@ function OrderSummary() {
         body: JSON.stringify(orderDetails),
       });
   
-      if (!orderResponse.ok) {
+      if (!response.ok) {
         throw new Error('Failed to save order');
       }
   
@@ -253,16 +209,23 @@ function OrderSummary() {
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify({ type: 'newOrder', order: orderDetails }));
       };
-      
+  
       clearCart();
       navigate(`/waiting/${orderId}`);
-      
+  
     } catch (error) {
-      console.error('Failed to process order:', error);
-      showErrorModal(error.message || 'Failed to place order. Please try again.');
+      console.error('Error during order placement:', error);
+      if (error.code === 1) { // GeolocationPositionError.PERMISSION_DENIED
+        showErrorModal('Location access denied. Please enable location services to place your order.');
+      } else if (error.code === 2) { // GeolocationPositionError.POSITION_UNAVAILABLE
+        showErrorModal('Unable to determine your location. Please ensure you have a stable internet connection.');
+      } else if (error.code === 3) { // GeolocationPositionError.TIMEOUT
+        showErrorModal('Location request timed out. Please try again.');
+      } else {
+        showErrorModal(error.message || 'Failed to place order. Please try again.');
+      }
     } finally {
       setLoading(false);
-      setVerifyingLocation(false);
     }
   };
 
