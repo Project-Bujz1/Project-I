@@ -32,7 +32,7 @@ function BillSummary() {
   useEffect(() => {
     const fetchRestaurantInfo = async () => {
       try {
-        const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json`);
+        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants.json`);
 
         if (response.ok) {
           const data = await response.json();

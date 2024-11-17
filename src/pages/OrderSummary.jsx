@@ -36,7 +36,7 @@ function OrderSummary() {
           return;
         }
     
-        const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/restaurants.json'); // Add .json
+        const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants.json'); // Add .json
         if (!response.ok) {
           throw new Error('Failed to fetch restaurant data');
         }
@@ -135,7 +135,7 @@ function OrderSummary() {
   
     try {
       // Use the generated orderId as the key when saving to Firebase
-      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
         method: 'PUT', // Use PUT to set the data at the specific key
         headers: {
           'Content-Type': 'application/json',

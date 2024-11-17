@@ -105,8 +105,8 @@ const MenuSuggestionManager = () => {
       setLoading(true);
       try {
         const [menuResponse, suggestionsResponse] = await Promise.all([
-          fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_items.json'),
-          fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_suggestions.json')
+          fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_items.json'),
+          fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_suggestions.json')
         ]);
         const menuData = await menuResponse.json();
         const suggestionsData = await suggestionsResponse.json();
@@ -177,7 +177,7 @@ const MenuSuggestionManager = () => {
         [selectedItem.id]: selectedSuggestions,
       };
 
-      const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_suggestions.json', {
+      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_suggestions.json', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

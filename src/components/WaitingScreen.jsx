@@ -27,8 +27,8 @@
 //     const fetchOrder = async () => {
 //       try {
 //         const orgId = localStorage.getItem('orgId'); // Get the orgId from localStorage
-//         // const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json?orderBy="id"&equalTo="${orderId}"&orgId="${orgId}"`);
-//         const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json?id=${orderId}&orgId=${orgId}`);
+//         // const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?orderBy="id"&equalTo="${orderId}"&orgId="${orgId}"`);
+//         const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?id=${orderId}&orgId=${orgId}`);
 
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch order');
@@ -116,7 +116,7 @@
 //   const handleCancelOrder = async () => {
 //     try {
 //       const orgId = localStorage.getItem('orgId');
-//       const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+//       const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
 //         method: 'PATCH',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ 
@@ -168,7 +168,7 @@
 //     };
   
 //     try {
-//       const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/feedback.json', {
+//       const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/feedback.json', {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -346,7 +346,7 @@
 //     const fetchOrder = async () => {
 //       try {
 //         const orgId = localStorage.getItem('orgId');
-//         const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
+//         const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
   
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch order');
@@ -447,7 +447,7 @@
 //   const handleCancelOrder = async () => {
 //     try {
 //       const orgId = localStorage.getItem('orgId');
-//       const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+//       const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
 //         method: 'PATCH',
 //         headers: { 'Content-Type': 'application/json' },
 //         body: JSON.stringify({ 
@@ -505,7 +505,7 @@
 //     };
   
 //     try {
-//       const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/feedback.json', {
+//       const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/feedback.json', {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -729,7 +729,7 @@ const WaitingScreen = () => {
     const fetchOrder = async () => {
       try {
         const orgId = localStorage.getItem('orgId');
-        const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
+        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
   
         if (!response.ok) {
           throw new Error('Failed to fetch order');
@@ -838,7 +838,7 @@ const WaitingScreen = () => {
     // Proceed with cancellation logic
     try {
       const orgId = localStorage.getItem('orgId');
-      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -876,7 +876,7 @@ const WaitingScreen = () => {
   const handleCompleteOrder = async () => {
     try {
       const orgId = localStorage.getItem('orgId');
-      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -925,7 +925,7 @@ const WaitingScreen = () => {
     };
   
     try {
-      const response = await fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/feedback.json', {
+      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/feedback.json', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

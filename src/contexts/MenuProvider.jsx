@@ -32,25 +32,25 @@
 //       });
 
 //       Promise.all([
-//         fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/categories.json')
+//         fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/categories.json')
 //           .then(res => res.json())
 //           .then(data => {
 //             setLoading(prev => ({ ...prev, categories: false }));
 //             return data;
 //           }),
-//         fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/subcategories.json')
+//         fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/subcategories.json')
 //           .then(res => res.json())
 //           .then(data => {
 //             setLoading(prev => ({ ...prev, subcategories: false }));
 //             return data;
 //           }),
-//         fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_items.json')
+//         fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_items.json')
 //           .then(res => res.json())
 //           .then(data => {
 //             setLoading(prev => ({ ...prev, menuItems: false }));
 //             return data;
 //           }),
-//         fetch('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_suggestions.json')
+//         fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_suggestions.json')
 //           .then(res => res.json())
 //       ])
 //         .then(([catData, subData, menuData, sugData]) => {
@@ -192,7 +192,7 @@ export function MenuProvider({ children }) {
       try {
         // Fetch categories first since they're needed immediately
         setLoading(prev => ({ ...prev, categories: true }));
-        const catData = await fetchData('https://smart-server-stage-db-default-rtdb.firebaseio.com/categories.json');
+        const catData = await fetchData('https://smart-server-menu-database-default-rtdb.firebaseio.com/categories.json');
         const processedCategories = catData ? 
           Object.entries(catData)
             .map(([id, category]) => ({ id, ...category }))
@@ -204,9 +204,9 @@ export function MenuProvider({ children }) {
 
         // Fetch other data in parallel
         const [subData, menuData, sugData] = await Promise.all([
-          fetchData('https://smart-server-stage-db-default-rtdb.firebaseio.com/subcategories.json'),
-          fetchData('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_items.json'),
-          fetchData('https://smart-server-stage-db-default-rtdb.firebaseio.com/menu_suggestions.json')
+          fetchData('https://smart-server-menu-database-default-rtdb.firebaseio.com/subcategories.json'),
+          fetchData('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_items.json'),
+          fetchData('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_suggestions.json')
         ]);
 
         const processedSubcategories = subData ?

@@ -85,7 +85,7 @@
 //       const statusMessage = getStatusMessage(newStatus);
   
 //       // PATCH the order status in Firebase
-//       const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {  // Add .json
+//       const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {  // Add .json
 //         method: 'PATCH',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -148,7 +148,7 @@
 //         //   throw new Error('No orgId found in localStorage');
 //         // }
     
-//         const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json`); // Add .json to the URL
+//         const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json`); // Add .json to the URL
 //         if (!response.ok) {
 //           throw new Error('Failed to fetch orders');
 //         }
@@ -405,7 +405,7 @@ const AdminOrderComponent = () => {
       const statusMessage = getStatusMessage(newStatus);
   
       // PATCH the order status in Firebase
-      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -463,7 +463,7 @@ const AdminOrderComponent = () => {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`https://smart-server-stage-db-default-rtdb.firebaseio.com/history.json`);
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json`);
       if (!response.ok) {
         throw new Error('Failed to fetch orders');
       }
