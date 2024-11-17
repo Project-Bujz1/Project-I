@@ -295,8 +295,13 @@ const AdminOrderComponent = () => {
   const audioRef = useRef(new Audio(notificationSound));
   const orgId = localStorage.getItem('orgId');
 
-  // Your existing WebSocket and data fetching logic remains the same
+  // Filter out cancelled and completed orders
+  const activeOrders = orders.filter(order => 
+    !['cancelled', 'completed'].includes(order.status)
+  );
 
+  
+  
   const getStatusConfig = (status) => {
     const configs = {
       pending: {
@@ -470,13 +475,16 @@ const AdminOrderComponent = () => {
   
       const data = await response.json();
   
-      // Convert Firebase object to an array, using the key as the id
-      const ordersArray = Object.entries(data).map(([key, order]) => ({
-        ...order,
-        id: order.id || key // Use the order's id if it exists, otherwise use the Firebase key
-      })).filter(order => order.orgId === orgId);
+      const ordersArray = Object.entries(data)
+        .map(([key, order]) => ({
+          ...order,
+          id: order.id || key
+        }))
+        .filter(order => 
+          order.orgId === orgId && 
+          !['cancelled', 'completed'].includes(order.status)
+        );
   
-      // Sort orders by timestamp
       const sortedOrders = ordersArray?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       setOrders(sortedOrders);
     } catch (error) {
@@ -586,9 +594,9 @@ const AdminOrderComponent = () => {
           </div>
         </div>
 
-        {orders.length === 0 ? (
+        {activeOrders.length === 0 ? (
           <Empty
-            description="No orders yet"
+            description="No active orders"
             style={{
               background: 'white',
               padding: '40px',
@@ -603,7 +611,7 @@ const AdminOrderComponent = () => {
             gap: '20px',
             padding: '10px'
           }}>
-            {orders?.map(order => (
+            {activeOrders.map(order => (
               <Badge.Ribbon
                 key={order.id}
                 text={getStatusConfig(order.status).text}
