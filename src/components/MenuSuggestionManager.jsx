@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Typography, Input, message, Modal, Spin, Button, Avatar } from 'antd';
 import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -8,7 +9,7 @@ const { Search } = Input;
 const styles = {
   container: {
     padding: '24px',
-    marginTop: "250px",
+    marginTop: "40px",
     maxWidth: '1200px',
     margin: '0 auto',
   },
@@ -23,12 +24,13 @@ const styles = {
   menuCard: {
     marginBottom: '16px',
     position: 'relative',
+    paddingBottom: '60px',
   },
   imageContainer: {
     width: '120px',
     height: '120px',
-    marginRight: '16px',
     overflow: 'hidden',
+    flexShrink: 0,
   },
   image: {
     width: '100%',
@@ -38,6 +40,9 @@ const styles = {
   itemContent: {
     display: 'flex',
     alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: '16px',
+    marginBottom: '16px',
   },
   price: {
     color: '#ff4d4f',
@@ -48,7 +53,7 @@ const styles = {
   addSuggestionsButton: {
     position: 'absolute',
     right: '24px',
-    bottom: '24px',
+    bottom: '16px',
     backgroundColor: '#ff4d4f',
     color: '#fff',
   },
@@ -76,6 +81,9 @@ const styles = {
     display: 'flex',
     gap: '8px',
     flexWrap: 'wrap',
+    width: '100%',
+    minHeight: '40px',
+    marginBottom: '8px',
   },
   tagImage: {
     borderRadius: '50%',
@@ -83,6 +91,7 @@ const styles = {
     height: '32px',
   },
   loadingContainer: {
+    marginTop: "250px",
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -219,7 +228,7 @@ const MenuSuggestionManager = () => {
   if (loading) {
     return (
       <div style={styles.loadingContainer}>
-        <Spin size="large" />
+        <FoodLoader />
       </div>
     );
   }
