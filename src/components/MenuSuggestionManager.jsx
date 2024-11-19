@@ -11,7 +11,7 @@ const styles = {
     padding: '24px',
     marginTop: "40px",
     maxWidth: '1200px',
-    margin: '0 auto',
+    // margin: '0 auto',
   },
   header: {
     color: '#ff4d4f',
