@@ -1,0 +1,222 @@
+const MenuInsights = ({ menuItems, orders, categories }) => {
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const calculateCategoryMetrics = () => {
+    const categoryStats = {};
+    
+    // Initialize categories
+    categories.forEach(cat => {
+      categoryStats[cat.id] = {
+        id: cat.id,
+        name: cat.name,
+        revenue: 0,
+        orders: 0,
+        itemsSold: 0,
+        averageOrderValue: 0,
+        topItems: [],
+        growth: 0 // Compared to previous period
+      };
+    });
+
+    // Calculate metrics
+    orders.forEach(order => {
+      if (order.status === 'completed' && Array.isArray(order.items)) {
+        order.items.forEach(item => {
+          const menuItem = menuItems.find(mi => mi.id === item.id);
+          if (menuItem && menuItem.categoryId) {
+            const stats = categoryStats[menuItem.categoryId];
+            if (stats) {
+              stats.revenue += (item.price * item.quantity) || 0;
+              stats.orders += 1;
+              stats.itemsSold += item.quantity || 1;
+              
+              // Track item performance
+              const existingItem = stats.topItems.find(ti => ti.id === item.id);
+              if (existingItem) {
+                existingItem.quantity += item.quantity;
+                existingItem.revenue += item.price * item.quantity;
+              } else {
+                stats.topItems.push({
+                  id: item.id,
+                  name: menuItem.name,
+                  quantity: item.quantity,
+                  revenue: item.price * item.quantity
+                });
+              }
+            }
+          }
+        });
+      }
+    });
+
+    // Calculate averages and sort top items
+    Object.values(categoryStats).forEach(cat => {
+      cat.averageOrderValue = cat.revenue / cat.orders || 0;
+      cat.topItems.sort((a, b) => b.revenue - a.revenue);
+      cat.topItems = cat.topItems.slice(0, 3); // Keep top 3 items
+    });
+
+    return Object.values(categoryStats);
+  };
+
+  if (loading) {
+    return (
+      <div style={styles.loaderContainer}>
+        <FoodLoader />
+      </div>
+    );
+  }
+
+  const categoryMetrics = calculateCategoryMetrics();
+
+  return (
+    <div style={styles.menuInsightsContainer}>
+      {/* Category Overview Cards */}
+      <Row gutter={[16, 16]}>
+        {categoryMetrics.map(category => (
+          <Col xs={24} sm={12} lg={8} key={category.id}>
+            <Card 
+              title={
+                <Space>
+                  <AppstoreOutlined style={{ color: '#ff4d4f' }} />
+                  <Text strong>{category.name}</Text>
+                </Space>
+              }
+              style={styles.categoryCard}
+            >
+              <Space direction="vertical" style={{ width: '100%' }}>
+                {/* Key Metrics */}
+                <Row gutter={[8, 8]}>
+                  <Col span={12}>
+                    <Statistic
+                      title="Revenue"
+                      value={category.revenue}
+                      prefix="₹"
+                      formatter={value => value.toLocaleString('en-IN')}
+                      valueStyle={{ fontSize: '16px', color: '#ff4d4f' }}
+                    />
+                  </Col>
+                  <Col span={12}>
+                    <Statistic
+                      title="Items Sold"
+                      value={category.itemsSold}
+                      valueStyle={{ fontSize: '16px' }}
+                    />
+                  </Col>
+                </Row>
+
+                {/* Performance Bar */}
+                <div>
+                  <Text type="secondary">Category Performance</Text>
+                  <Progress 
+                    percent={(category.revenue / Math.max(...categoryMetrics.map(c => c.revenue)) * 100).toFixed(1)} 
+                    size="small" 
+                    strokeColor="#ff4d4f" 
+                  />
+                </div>
+
+                {/* Top Items */}
+                <div>
+                  <Text type="secondary">Top Selling Items:</Text>
+                  <List
+                    size="small"
+                    dataSource={category.topItems}
+                    renderItem={(item, index) => (
+                      <List.Item>
+                        <Space>
+                          <Badge count={index + 1} style={styles.rankBadge} />
+                          <Text>{item.name}</Text>
+                          <Text type="secondary">({item.quantity} sold)</Text>
+                        </Space>
+                      </List.Item>
+                    )}
+                  />
+                </div>
+
+                {/* Quick Stats */}
+                <Row gutter={[8, 8]}>
+                  <Col span={12}>
+                    <Card size="small">
+                      <Statistic
+                        title="Avg Order Value"
+                        value={category.averageOrderValue}
+                        prefix="₹"
+                        precision={2}
+                        formatter={value => value.toLocaleString('en-IN')}
+                        valueStyle={{ fontSize: '14px' }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card size="small">
+                      <Statistic
+                        title="Orders"
+                        value={category.orders}
+                        valueStyle={{ fontSize: '14px' }}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+              </Space>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* Category Comparison Chart */}
+      <Card title="Category Revenue Comparison" style={styles.chartCard}>
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={categoryMetrics}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
+              dataKey="name" 
+              angle={0}
+              interval={0}
+              tick={{ fontSize: 12 }}
+            />
+            <YAxis
+              label={{ value: 'Revenue (₹)', angle: -90, position: 'insideLeft' }}
+            />
+            <Tooltip
+              formatter={(value, name) => [`₹${value.toLocaleString('en-IN')}`, name]}
+            />
+            <Bar dataKey="revenue" fill="#ff4d4f" />
+          </BarChart>
+        </ResponsiveContainer>
+      </Card>
+    </div>
+  );
+};
+
+// Add these styles
+const additionalStyles = {
+  menuInsightsContainer: {
+    padding: '16px',
+    background: '#f5f5f5'
+  },
+  categoryCard: {
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+  },
+  rankBadge: {
+    backgroundColor: '#ff4d4f',
+    color: 'white',
+    borderRadius: '50%',
+    width: '20px',
+    height: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    fontSize: '12px'
+  },
+  chartCard: {
+    marginTop: '16px',
+    borderRadius: '12px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+  }
+};
