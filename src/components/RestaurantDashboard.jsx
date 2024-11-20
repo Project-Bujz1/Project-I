@@ -34,8 +34,12 @@ const getStatusCardStyle = (status) => ({
   height: '100%'
 });
 
+const formatDecimal = (number) => {
+  return Number(parseFloat(number).toFixed(2)).toString();
+};
+
 const formatCurrency = (value) => {
-  return `₹${value.toLocaleString('en-IN')}`;
+  return `₹${formatDecimal(value).toLocaleString('en-IN')}`;
 };
 
 const calculateGrowthRate = (current, previous) => {
@@ -1015,11 +1019,11 @@ export const RestaurantDashboard = () => {
                 title={<Text strong>Total Revenue</Text>}
                 value={metrics.totalRevenue}
                 prefix="₹"
-                formatter={value => value.toLocaleString('en-IN')}
+                formatter={value => formatDecimal(value).toLocaleString('en-IN')}
                 valueStyle={styles.statValue}
               />
               <Progress 
-                percent={metrics.completionRate} 
+                percent={Number(metrics.completionRate).toFixed(1)} 
                 size="small" 
                 status="active"
                 strokeColor="#52c41a"
@@ -1043,8 +1047,7 @@ export const RestaurantDashboard = () => {
                 title={<Text strong>Avg Order Value</Text>}
                 value={metrics.avgOrderValue}
                 prefix="₹"
-                precision={2}
-                formatter={value => value.toLocaleString('en-IN')}
+                formatter={value => formatDecimal(value).toLocaleString('en-IN')}
                 valueStyle={styles.statValue}
               />
             </Card>
@@ -1055,10 +1058,10 @@ export const RestaurantDashboard = () => {
                 title={<Text strong>Completion Rate</Text>}
                 value={metrics.completionRate}
                 suffix="%"
-                precision={1}
+                formatter={value => formatDecimal(value)}
                 valueStyle={styles.statValue}
               />
-              <Text type="danger">{metrics.cancellationRate.toFixed(1)}% cancelled</Text>
+              <Text type="danger">{formatDecimal(metrics.cancellationRate)}% cancelled</Text>
             </Card>
           </Col>
         </Row>
@@ -1074,7 +1077,7 @@ export const RestaurantDashboard = () => {
                   title={category.name}
                   description={
                     <Space direction="vertical" size="small">
-                      <Text>Revenue: ₹{category.revenue.toLocaleString('en-IN')}</Text>
+                      <Text>Revenue: {formatCurrency(category.revenue)}</Text>
                       <Text>Orders: {category.orders}</Text>
                       <Text>Items Sold: {category.items}</Text>
                     </Space>
@@ -1082,7 +1085,7 @@ export const RestaurantDashboard = () => {
                 />
                 <Progress 
                   type="circle" 
-                  percent={((category.orders / metrics.completedOrders) * 100).toFixed(1)} 
+                  percent={Number((category.orders / metrics.completedOrders * 100).toFixed(1))} 
                   width={50}
                 />
               </List.Item>
@@ -1106,7 +1109,7 @@ export const RestaurantDashboard = () => {
                   title={
                     <Space>
                       <Text>#{order.id}</Text>
-                      <Text>₹{parseFloat(order.total).toLocaleString('en-IN')}</Text>
+                      <Text>{formatCurrency(order.total)}</Text>
                     </Space>
                   }
                   description={
@@ -1150,7 +1153,11 @@ export const RestaurantDashboard = () => {
 
     const topItems = Object.values(itemSales)
       .sort((a, b) => b.revenue - a.revenue)
-      .slice(0, 5);
+      .slice(0, 5)
+      .map(item => ({
+        ...item,
+        revenue: Number(item.revenue.toFixed(2))  // Format revenue to 2 decimal places
+      }));
 
     return (
       <List
@@ -1167,11 +1174,14 @@ export const RestaurantDashboard = () => {
               description={
                 <Space direction="vertical" size="small">
                   <Text>Quantity Sold: {item.quantity}</Text>
-                  <Text>Revenue: ₹{item.revenue.toLocaleString('en-IN')}</Text>
+                  <Text>Revenue: ₹{item.revenue.toFixed(2).toLocaleString('en-IN')}</Text>
                 </Space>
               }
             />
-            <Progress percent={(item.quantity / topItems[0].quantity) * 100} />
+            <Progress 
+              percent={Number((item.quantity / topItems[0].quantity * 100).toFixed(2))} 
+              strokeColor="#ff4d4f"
+            />
           </List.Item>
         )}
       />
