@@ -510,32 +510,34 @@ const RestaurantManagement = () => {
       {loading && <RestaurantLoader />}
       {restaurant ? (
         <>
-          {/* Profile Header */}
-          <div style={{
-            textAlign: 'center',
-            marginBottom: '2rem',
-            backgroundColor: 'white',
-            padding: '1.5rem',
-            borderRadius: '0.5rem',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          }}>
-            <div onClick={triggerFileInput} style={logoContainerStyle}>
-              {restaurant.logo ? (
-                <img src={restaurant.logo} alt="Restaurant logo" style={logoStyle} />
-              ) : (
-                <PlusCircle size={48} color="#FF0000" />
-              )}
+          {/* Only show Profile Header when no section is active */}
+          {!activeSection && (
+            <div style={{
+              textAlign: 'center',
+              marginBottom: '2rem',
+              backgroundColor: 'white',
+              padding: '1.5rem',
+              borderRadius: '0.5rem',
+              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            }}>
+              <div onClick={triggerFileInput} style={logoContainerStyle}>
+                {restaurant.logo ? (
+                  <img src={restaurant.logo} alt="Restaurant logo" style={logoStyle} />
+                ) : (
+                  <PlusCircle size={48} color="#FF0000" />
+                )}
+              </div>
+              <input 
+                type="file" 
+                ref={fileInputRef}
+                onChange={handleLogoChange} 
+                style={{ display: 'none' }}
+                accept="image/*"
+              />
+              <h2 style={{ color: '#333', marginTop: '1rem' }}>{restaurant.name}</h2>
+              <p style={{ color: '#666' }}>{restaurant.email}</p>
             </div>
-            <input 
-              type="file" 
-              ref={fileInputRef}
-              onChange={handleLogoChange} 
-              style={{ display: 'none' }}
-              accept="image/*"
-            />
-            <h2 style={{ color: '#333', marginTop: '1rem' }}>{restaurant.name}</h2>
-            <p style={{ color: '#666' }}>{restaurant.email}</p>
-          </div>
+          )}
 
           {/* Show section content if active, otherwise show menu */}
           {activeSection ? (
