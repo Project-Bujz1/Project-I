@@ -1,10 +1,25 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Modal, Button, Checkbox, Input } from 'antd';
-import { CoffeeOutlined, SmileOutlined,ExclamationCircleOutlined, PlusCircleOutlined, CheckOutlined } from '@ant-design/icons';
+import { CoffeeOutlined, SmileOutlined,ExclamationCircleOutlined, PlusCircleOutlined, CheckOutlined, } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { MapPin } from 'lucide-react';
 import './OrderSummary.css'; // Assuming you're using CSS modules or a custom CSS file
 import FoodLoader from '../components/FoodLoader';
+
+const MAX_DISTANCE_KM = 0.5; // Maximum allowed distance in kilometers
+
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+  const R = 6371; // Earth's radius in kilometers
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  return R * c; // Distance in kilometers
+};
 
 function OrderSummary() {
   const { cart } = useCart();
@@ -98,65 +113,111 @@ function OrderSummary() {
     return `ORD-${date}-${randomDigits}`;
   };
   const handlePayClick = async () => {
-    if (!tableNumber) {
-      showErrorModal('Please enter your table number');
-      return;
-    }
-  
-    const tableNum = parseInt(tableNumber);
-    if (isNaN(tableNum) || tableNum < 1 || tableNum > seatingCapacity) {
-      showErrorModal(`Please enter a valid table number between 1 and ${seatingCapacity}`);
-      return;
-    }
-  
-    setLoading(true);
-  
-    const orgId = localStorage.getItem('orgId');
-  
-    const orderId = generateOrderId(); // Generate the custom order ID
-  
-    const orderDetails = {
-      id: orderId, // Use the generated order ID
-      orgId: orgId,
-      items: cart.map((item) => ({
-        ...item,
-        customization: {
-          specialInstructions: item.specialInstructions,
-          selectedTags: item.selectedTags,
-        },
-      })),
-      total: total.toFixed(2),
-      tableNumber,
-      timestamp: new Date().toISOString(),
-      status: 'pending',
-      statusMessage: 'Your order is being processed',
-      description: description
-    };
-  
     try {
-      // Use the generated orderId as the key when saving to Firebase
-      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
-        method: 'PUT', // Use PUT to set the data at the specific key
+      setLoading(true);
+
+      // 1. Get restaurant location from Firebase
+      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants.json');
+      if (!response.ok) {
+        throw new Error('Failed to fetch restaurant data');
+      }
+
+      const restaurants = await response.json();
+      const orgId = localStorage.getItem('orgId');
+      const restaurantArray = Object.values(restaurants);
+      const restaurant = restaurantArray.find(r => r.orgId === orgId);
+
+      if (!restaurant || !restaurant.position) {
+        throw new Error('Restaurant location not found');
+      }
+
+      // 2. Get user's current location
+      const position = await new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject, {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0
+        });
+      });
+
+      // 3. Calculate distance
+      const distance = calculateDistance(
+        position.coords.latitude,
+        position.coords.longitude,
+        restaurant.position[0],
+        restaurant.position[1]
+      );
+
+      // 4. Verify distance
+      if (distance > MAX_DISTANCE_KM) {
+        showErrorModal(
+          <div style={{ textAlign: 'center' }}>
+            <MapPin style={{ fontSize: '24px', marginBottom: '10px' }} />
+            <p>You appear to be {distance.toFixed(2)}km away from {restaurant.name}.</p>
+            <p>Please place your order when you're at the restaurant.</p>
+          </div>
+        );
+        return;
+      }
+
+      // Continue with existing order placement logic
+      if (!tableNumber) {
+        showErrorModal('Please enter your table number');
+        return;
+      }
+
+      const tableNum = parseInt(tableNumber);
+      if (isNaN(tableNum) || tableNum < 1 || tableNum > seatingCapacity) {
+        showErrorModal(`Please enter a valid table number between 1 and ${seatingCapacity}`);
+        return;
+      }
+
+      const orderId = generateOrderId();
+      const orderDetails = {
+        id: orderId,
+        orgId: orgId,
+        items: cart.map((item) => ({
+          ...item,
+          customization: {
+            specialInstructions: item.specialInstructions,
+            selectedTags: item.selectedTags,
+          },
+        })),
+        total: total.toFixed(2),
+        tableNumber,
+        timestamp: new Date().toISOString(),
+        status: 'pending',
+        statusMessage: 'Your order is being processed',
+        description: description
+      };
+
+      const orderResponse = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(orderDetails),
       });
-  
-      if (!response.ok) {
+
+      if (!orderResponse.ok) {
         throw new Error('Failed to save order');
       }
-  
-      // Initialize WebSocket connection to notify about the new order
+
       ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
       ws.current.onopen = () => {
         ws.current.send(JSON.stringify({ type: 'newOrder', order: orderDetails }));
       };
+      
       clearCart();
-      navigate(`/waiting/${orderId}`); // Use the generated orderId for navigation
+      navigate(`/waiting/${orderId}`);
+
     } catch (error) {
-      console.error('Failed to save order', error);
-      showErrorModal('Failed to place order. Please try again.');
+      console.error('Error:', error);
+      if (error.code === 1) { // GeolocationPositionError.PERMISSION_DENIED
+        showErrorModal('Please enable location services to place your order.');
+      } else {
+        showErrorModal('Failed to place order. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
