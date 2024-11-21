@@ -373,145 +373,411 @@ const RestaurantManagement = () => {
         return (
           <form onSubmit={onSubmit}>
             {activeSection === 'basic' ? (
-              // Basic Information Form
-              <div style={sectionStyle}>
-                <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Basic Information</h2>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={labelStyle}>
-                    <Utensils size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                    Restaurant Name
-                  </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={restaurant?.name || ''}
-                    onChange={handleInputChange}
-                    style={inputStyle}
-                    placeholder="e.g. Red Plate Bistro"
-                  />
-                </div>
+              // Enhanced Basic Information Form
+              <div style={{
+                background: 'white',
+                borderRadius: '1.5rem',
+                padding: '1.5rem',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+              }}>
+                <h2 style={{ 
+                  color: '#FF0000',
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <Utensils size={24} />
+                  Basic Information
+                </h2>
 
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  <div style={{ flex: 1 }}>
-                    <label style={labelStyle}>
-                      <Phone size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                      Phone
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem'
+                }}>
+                  {/* Restaurant Name Field */}
+                  <div style={{
+                    background: '#F8F9FA',
+                    padding: '1rem',
+                    borderRadius: '1rem',
+                  }}>
+                    <label style={{
+                      display: 'block',
+                      color: '#666',
+                      fontSize: '0.9rem',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Restaurant Name
                     </label>
                     <input
-                      type="tel"
-                      name="phone"
-                      value={restaurant?.phone || ''}
+                      type="text"
+                      name="name"
+                      value={restaurant?.name || ''}
                       onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="(123) 456-7890"
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        fontSize: '1rem',
+                        backgroundColor: 'white',
+                        transition: 'all 0.2s ease'
+                      }}
+                      placeholder="e.g. Red Plate Bistro"
                     />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <label style={labelStyle}>
-                      <Mail size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={restaurant?.email || ''}
-                      onChange={handleInputChange}
-                      style={inputStyle}
-                      placeholder="info@restaurant.com"
-                    />
+
+                  {/* Contact Information */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '1rem',
+                  }}>
+                    {/* Phone Field */}
+                    <div style={{
+                      background: '#F8F9FA',
+                      padding: '1rem',
+                      borderRadius: '1rem',
+                    }}>
+                      <label style={{
+                        display: 'block',
+                        color: '#666',
+                        fontSize: '0.9rem',
+                        marginBottom: '0.5rem'
+                      }}>
+                        Phone Number
+                      </label>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'white',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        padding: '0.75rem',
+                      }}>
+                        <Phone size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={restaurant?.phone || ''}
+                          onChange={handleInputChange}
+                          style={{
+                            border: 'none',
+                            outline: 'none',
+                            width: '100%',
+                            fontSize: '1rem'
+                          }}
+                          placeholder="(123) 456-7890"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Email Field */}
+                    <div style={{
+                      background: '#F8F9FA',
+                      padding: '1rem',
+                      borderRadius: '1rem',
+                    }}>
+                      <label style={{
+                        display: 'block',
+                        color: '#666',
+                        fontSize: '0.9rem',
+                        marginBottom: '0.5rem'
+                      }}>
+                        Email Address
+                      </label>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'white',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        padding: '0.75rem',
+                      }}>
+                        <Mail size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                        <input
+                          type="email"
+                          name="email"
+                          value={restaurant?.email || ''}
+                          onChange={handleInputChange}
+                          style={{
+                            border: 'none',
+                            outline: 'none',
+                            width: '100%',
+                            fontSize: '1rem'
+                          }}
+                          placeholder="info@restaurant.com"
+                        />
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             ) : (
-              // Location Information Form
-              <div style={sectionStyle}>
-                <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Location Settings</h2>
-                <div style={{ marginBottom: '1rem' }}>
-                  <label style={labelStyle}>
-                    <MapPin size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                    Address
-                  </label>
-                  <textarea 
-                    name="address"
-                    value={restaurant?.address || ''}
-                    onChange={handleInputChange}
-                    style={{ ...inputStyle, height: '5rem' }} 
-                    placeholder="123 Restaurant Street, City, Country"
-                  />
-                  
-                  <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-                    <button type="button" onClick={getCurrentLocation} style={{ ...buttonStyle, flex: 1 }}>
-                      <Crosshair size={18} style={{ marginRight: '0.5rem' }} />
+              // Enhanced Location Settings Form
+              <div style={{
+                background: 'white',
+                borderRadius: '1.5rem',
+                padding: '1.5rem',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+              }}>
+                <h2 style={{ 
+                  color: '#FF0000',
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <MapPin size={24} />
+                  Location Settings
+                </h2>
+
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem'
+                }}>
+                  {/* Address Field */}
+                  <div style={{
+                    background: '#F8F9FA',
+                    padding: '1rem',
+                    borderRadius: '1rem',
+                  }}>
+                    <label style={{
+                      display: 'block',
+                      color: '#666',
+                      fontSize: '0.9rem',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Address
+                    </label>
+                    <textarea
+                      name="address"
+                      value={restaurant?.address || ''}
+                      onChange={handleInputChange}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        fontSize: '1rem',
+                        backgroundColor: 'white',
+                        minHeight: '100px',
+                        resize: 'vertical'
+                      }}
+                      placeholder="Enter your restaurant's address"
+                    />
+                  </div>
+
+                  {/* Location Buttons */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+                    gap: '1rem',
+                  }}>
+                    <button
+                      type="button"
+                      onClick={getCurrentLocation}
+                      style={{
+                        background: 'linear-gradient(135deg, #FF0000, #FF4444)',
+                        color: 'white',
+                        border: 'none',
+                        padding: '1rem',
+                        borderRadius: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.9rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    >
+                      <Crosshair size={18} />
                       Use Current Location
                     </button>
-                    <button type="button" onClick={() => setShowMap(!showMap)} style={{ ...buttonStyle, flex: 1 }}>
-                      <MapIcon size={18} style={{ marginRight: '0.5rem' }} />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowMap(!showMap)}
+                      style={{
+                        background: showMap ? '#FFE5E5' : 'linear-gradient(135deg, #FF0000, #FF4444)',
+                        color: showMap ? '#FF0000' : 'white',
+                        border: 'none',
+                        padding: '1rem',
+                        borderRadius: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                        fontSize: '0.9rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'transform 0.2s ease',
+                      }}
+                    >
+                      <MapIcon size={18} />
                       {showMap ? 'Hide Map' : 'Show Map'}
                     </button>
                   </div>
-                </div>
 
-                {/* Map and search components */}
-                {showMap && (
-                  <>
-                    <div style={searchContainerStyle}>
-                      <input
-                        type="text"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        placeholder="Search for a location"
-                        style={inputStyle}
-                      />
-                      <button type="button" onClick={searchLocation} style={{ ...buttonStyle, marginTop: '0.5rem' }}>
-                        <Search size={18} style={{ marginRight: '0.5rem' }} />
-                        Search
-                      </button>
-                      {searchResults.length > 0 && (
-                        <div style={searchResultsStyle}>
-                          {searchResults.map((result, index) => (
-                            <div
-                              key={index}
-                              onClick={() => selectSearchResult(result)}
-                              style={searchResultItemStyle}
-                            >
-                              {result.display_name}
-                            </div>
-                          ))}
+                  {/* Map and Search Components */}
+                  {showMap && (
+                    <div style={{
+                      background: '#F8F9FA',
+                      padding: '1rem',
+                      borderRadius: '1rem',
+                    }}>
+                      <div style={{
+                        marginBottom: '1rem',
+                        position: 'relative',
+                      }}>
+                        <div style={{
+                          display: 'flex',
+                          gap: '0.5rem',
+                        }}>
+                          <input
+                            type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search for a location"
+                            style={{
+                              flex: 1,
+                              padding: '0.75rem',
+                              border: '2px solid #FFE5E5',
+                              borderRadius: '0.75rem',
+                              fontSize: '1rem',
+                              backgroundColor: 'white',
+                            }}
+                          />
+                          <button
+                            type="button"
+                            onClick={searchLocation}
+                            style={{
+                              background: 'linear-gradient(135deg, #FF0000, #FF4444)',
+                              color: 'white',
+                              border: 'none',
+                              padding: '0.75rem 1.5rem',
+                              borderRadius: '0.75rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.5rem',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Search size={18} />
+                            Search
+                          </button>
                         </div>
-                      )}
+
+                        {/* Search Results */}
+                        {searchResults.length > 0 && (
+                          <div style={{
+                            position: 'absolute',
+                            top: '100%',
+                            left: 0,
+                            right: 0,
+                            background: 'white',
+                            borderRadius: '0.75rem',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
+                            marginTop: '0.5rem',
+                            maxHeight: '200px',
+                            overflowY: 'auto',
+                            zIndex: 1000,
+                          }}>
+                            {searchResults.map((result, index) => (
+                              <div
+                                key={index}
+                                onClick={() => selectSearchResult(result)}
+                                style={{
+                                  padding: '0.75rem 1rem',
+                                  cursor: 'pointer',
+                                  borderBottom: index !== searchResults.length - 1 ? '1px solid #FFE5E5' : 'none',
+                                  ':hover': {
+                                    backgroundColor: '#FFE5E5',
+                                  }
+                                }}
+                              >
+                                {result.display_name}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Map Container */}
+                      <div style={{
+                        height: '300px',
+                        borderRadius: '0.75rem',
+                        overflow: 'hidden',
+                        border: '2px solid #FFE5E5',
+                      }}>
+                        <MapContainer
+                          center={restaurant.position || [0, 0]}
+                          zoom={13}
+                          style={{ height: '100%' }}
+                          ref={mapRef}
+                        >
+                          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                          {restaurant.position && (
+                            <Marker position={restaurant.position} icon={customIcon}>
+                              <Popup>
+                                <div style={{
+                                  backgroundColor: 'red',
+                                  color: 'white',
+                                  padding: '10px',
+                                  borderRadius: '5px',
+                                  textAlign: 'center',
+                                }}>
+                                  <h3>{restaurant.name}</h3>
+                                  <p>{restaurant.address}</p>
+                                </div>
+                              </Popup>
+                            </Marker>
+                          )}
+                          <MapEvents />
+                        </MapContainer>
+                      </div>
                     </div>
-                    <div style={{ height: '300px', marginBottom: '1rem' }}>
-                    <MapContainer center={restaurant.position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
-                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                    {restaurant.position && (
-                      <Marker position={restaurant.position} icon={customIcon}>
-<Popup>
-          <div style={{
-            backgroundColor: 'red',
-            color: 'white',
-            padding: '10px',
-            borderRadius: '5px',
-            textAlign: 'center',
-          }}>
-            <h3>{restaurant.name}</h3>
-            <p>{restaurant.address}</p>
-          </div>
-        </Popup>                </Marker>
-                    )}
-                    <MapEvents />
-                  </MapContainer>
-                    </div>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
             )}
 
-            {/* Original Save Information Button */}
-            <button type="submit" style={{ ...buttonStyle, marginTop: '1rem' }}>
+            {/* Enhanced Save Button */}
+            <button
+              type="submit"
+              style={{
+                background: 'linear-gradient(135deg, #FF0000, #FF4444)',
+                color: 'white',
+                border: 'none',
+                padding: '1rem',
+                borderRadius: '0.75rem',
+                width: '100%',
+                marginTop: '1.5rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+                transition: 'transform 0.2s ease',
+              }}
+            >
               {loading ? (
                 <Loader2 size={24} className="animate-spin" />
               ) : (
-                'Save Information'
+                <>
+                  <RefreshCcw size={18} />
+                  Save Changes
+                </>
               )}
             </button>
           </form>
