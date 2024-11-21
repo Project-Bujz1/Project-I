@@ -301,22 +301,40 @@ const RestaurantManagement = () => {
   };
 
   const logoContainerStyle = {
-    width: '150px',
-    height: '150px',
-    borderRadius: '50%',
-    border: '2px dashed #FF0000',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    cursor: 'pointer',
-    overflow: 'hidden',
-    margin: '0 auto 1rem auto',
+    position: 'relative',
+    width: '120px',
+    height: '120px',
+    marginBottom: '1.5rem',
+    '@media (max-width: 768px)': {
+      width: '100px',
+      height: '100px',
+    },
   };
 
   const logoStyle = {
     width: '100%',
     height: '100%',
-    objectFit: 'cover',
+    borderRadius: '16px',
+    backgroundColor: '#f8f9fa',
+    border: '1px solid #eee',
+    overflow: 'hidden',
+    position: 'relative',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+    },
+  };
+
+  const profileHeaderStyle = {
+    position: 'relative',
+    width: '100%',
+    padding: '2rem 1rem',
+    backgroundColor: '#fff',
+    borderBottom: '1px solid #eee',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
   };
 
   const ProfileCard = ({ title, icon: Icon, onClick }) => (
@@ -1005,40 +1023,135 @@ const RestaurantManagement = () => {
         <>
           {/* Only show Profile Header when no section is active */}
           {!activeSection && (
-            <div style={{
-              textAlign: 'center',
-              marginBottom: '2rem',
-              backgroundColor: 'white',
-              padding: '1.5rem',
-              borderRadius: '0.5rem',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            }}>
-              <div onClick={triggerFileInput} style={logoContainerStyle}>
-                {restaurant.logo ? (
-                  <img src={restaurant.logo} alt="Restaurant logo" style={logoStyle} />
-                ) : (
-                  <PlusCircle size={48} color="#FF0000" />
+            <div style={{ backgroundColor: '#fff' }}>
+              <div style={profileHeaderStyle}>
+                {/* Logo Section */}
+                <div style={logoContainerStyle}>
+                  <div
+                    style={logoStyle}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    {restaurant?.logo ? (
+                      <img
+                        src={restaurant.logo}
+                        alt={restaurant.name}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover',
+                        }}
+                      />
+                    ) : (
+                      <div style={{
+                        width: '100%',
+                        height: '100%',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.5rem',
+                      }}>
+                        <Camera size={24} color="#666" />
+                        <span style={{
+                          fontSize: '0.75rem',
+                          color: '#666',
+                          textAlign: 'center',
+                        }}>
+                          Add Logo
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Edit Badge */}
+                    <div style={{
+                      position: 'absolute',
+                      bottom: '8px',
+                      right: '8px',
+                      backgroundColor: 'rgba(0, 0, 0, 0.75)',
+                      color: 'white',
+                      width: '28px',
+                      height: '28px',
+                      borderRadius: '8px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Camera size={14} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Restaurant Info */}
+                <div style={{
+                  textAlign: 'center',
+                  marginBottom: '1rem',
+                }}>
+                  <h1 style={{
+                    fontSize: '1.25rem',
+                    fontWeight: '600',
+                    color: '#1a1a1a',
+                    marginBottom: '0.25rem',
+                  }}>
+                    {restaurant?.name}
+                  </h1>
+                  <p style={{
+                    fontSize: '0.875rem',
+                    color: '#666',
+                  }}>
+                    {restaurant?.email}
+                  </p>
+                </div>
+
+                {/* Update Logo Button */}
+                {restaurant?.logo && (
+                  <button
+                    onClick={handleLogoSave}
+                    disabled={loading}
+                    style={{
+                      backgroundColor: 'transparent',
+                      color: '#FF0000',
+                      border: '1px solid #FF0000',
+                      padding: '0.5rem 1rem',
+                      borderRadius: '8px',
+                      fontSize: '0.875rem',
+                      fontWeight: '500',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      cursor: loading ? 'not-allowed' : 'pointer',
+                      opacity: loading ? 0.7 : 1,
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        backgroundColor: 'rgba(255, 0, 0, 0.05)',
+                      },
+                    }}
+                  >
+                    {loading ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        <span>Updating...</span>
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCcw size={16} />
+                        <span>Update Logo</span>
+                      </>
+                    )}
+                  </button>
                 )}
+
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleLogoChange}
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                />
               </div>
-              <input 
-                type="file" 
-                ref={fileInputRef}
-                onChange={handleLogoChange} 
-                style={{ display: 'none' }}
-                accept="image/*"
-              />
-              <h2 style={{ color: '#333', marginTop: '1rem' }}>{restaurant.name}</h2>
-              <p style={{ color: '#666' }}>{restaurant.email}</p>
-              <button 
-                onClick={handleLogoSave} 
-                style={{ ...buttonStyle, maxWidth: '200px', margin: '1rem auto 0' }}
-              >
-                {loading ? (
-                  <Loader2 size={24} className="animate-spin" />
-                ) : (
-                  'Save'
-                )}
-              </button>
+
+              {/* Rest of your profile content */}
+              {/* ... */}
             </div>
           )}
 
