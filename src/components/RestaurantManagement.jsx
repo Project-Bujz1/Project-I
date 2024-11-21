@@ -770,7 +770,7 @@ const RestaurantManagement = () => {
                 {loading ? (
                   <Loader2 size={24} className="animate-spin" />
                 ) : (
-                  'Save Logo'
+                  'Save'
                 )}
               </button>
             </div>
@@ -779,12 +779,12 @@ const RestaurantManagement = () => {
           {/* Show section content if active, otherwise show menu */}
           {activeSection ? (
             <div>
-              <button 
+              {/* <button 
                 onClick={() => handleSectionClick(null)} 
                 style={{ ...buttonStyle, marginBottom: '1rem' }}
               >
                 Back to Profile
-              </button>
+              </button> */}
               {renderSection()}
             </div>
           ) : (
@@ -822,6 +822,90 @@ const RestaurantManagement = () => {
               />
             </div>
           )}
+          
+          {/* Only show version info when no section is active */}
+          {!activeSection && (
+            <div style={{
+              textAlign: 'center',
+              padding: '2rem',
+              marginTop: '2rem',
+              background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)',
+              borderRadius: '1rem',
+              boxShadow: '0 4px 6px rgba(255, 0, 0, 0.1)',
+            }}>
+              <div style={{
+                width: '100px',
+                height: '100px',
+                margin: '0 auto 1.5rem',
+                position: 'relative',
+              }}>
+                <div style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  background: 'linear-gradient(45deg, #FF0000 0%, #FF6B6B 100%)',
+                  borderRadius: '1rem',
+                  transform: 'rotate(45deg)',
+                  opacity: 0.1,
+                }} />
+                <div style={{
+                  position: 'absolute',
+                  top: '50%',
+                  left: '50%',
+                  transform: 'translate(-50%, -50%)',
+                }}>
+                  <Package size={48} color="#FF0000" />
+                </div>
+              </div>
+
+              <h3 style={{
+                color: '#FF0000',
+                marginBottom: '0.75rem',
+                fontSize: '1.5rem',
+                fontWeight: 'bold',
+              }}>
+                Smart Server
+              </h3>
+
+              <div style={{
+                display: 'inline-block',
+                padding: '0.5rem 1rem',
+                backgroundColor: '#FFF',
+                borderRadius: '2rem',
+                boxShadow: '0 2px 4px rgba(255, 0, 0, 0.1)',
+                marginBottom: '1rem',
+              }}>
+                <span style={{
+                  color: '#FF0000',
+                  fontWeight: 'bold',
+                }}>
+                  v{versionInfo.version}
+                </span>
+              </div>
+
+              <div style={{
+                fontSize: '0.9rem',
+                color: '#666',
+                marginBottom: '0.5rem',
+              }}>
+                Build {versionInfo.buildNumber}
+              </div>
+
+              <div style={{
+                marginTop: '1.5rem',
+                padding: '1rem',
+                borderTop: '1px solid rgba(255, 0, 0, 0.1)',
+                fontSize: '0.8rem',
+                color: '#999',
+              }}>
+                © {new Date().getFullYear()} Smart Server
+                <br />
+                All rights reserved.
+              </div>
+            </div>
+          )}
         </>
       ) : (
         <div style={{ textAlign: 'center', color: '#FF0000' }}>
@@ -841,87 +925,6 @@ const RestaurantManagement = () => {
           background-color: #E60000;
         }
       `}</style>
-      
-      <div style={{
-        textAlign: 'center',
-        padding: '2rem',
-        marginTop: '2rem',
-        background: 'linear-gradient(135deg, #FFF5F5 0%, #FFFFFF 100%)',
-        borderRadius: '1rem',
-        boxShadow: '0 4px 6px rgba(255, 0, 0, 0.1)',
-      }}>
-        <div style={{
-          width: '100px',
-          height: '100px',
-          margin: '0 auto 1.5rem',
-          position: 'relative',
-        }}>
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'linear-gradient(45deg, #FF0000 0%, #FF6B6B 100%)',
-            borderRadius: '1rem',
-            transform: 'rotate(45deg)',
-            opacity: 0.1,
-          }} />
-          <div style={{
-            position: 'absolute',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-          }}>
-            <Package size={48} color="#FF0000" />
-          </div>
-        </div>
-
-        <h3 style={{
-          color: '#FF0000',
-          marginBottom: '0.75rem',
-          fontSize: '1.5rem',
-          fontWeight: 'bold',
-        }}>
-          Smart Server
-        </h3>
-
-        <div style={{
-          display: 'inline-block',
-          padding: '0.5rem 1rem',
-          backgroundColor: '#FFF',
-          borderRadius: '2rem',
-          boxShadow: '0 2px 4px rgba(255, 0, 0, 0.1)',
-          marginBottom: '1rem',
-        }}>
-          <span style={{
-            color: '#FF0000',
-            fontWeight: 'bold',
-          }}>
-            v{versionInfo.version}
-          </span>
-        </div>
-
-        <div style={{
-          fontSize: '0.9rem',
-          color: '#666',
-          marginBottom: '0.5rem',
-        }}>
-          Build {versionInfo.buildNumber}
-        </div>
-
-        <div style={{
-          marginTop: '1.5rem',
-          padding: '1rem',
-          borderTop: '1px solid rgba(255, 0, 0, 0.1)',
-          fontSize: '0.8rem',
-          color: '#999',
-        }}>
-          © {new Date().getFullYear()} Smart Server
-          <br />
-          All rights reserved.
-        </div>
-      </div>
     </div>
   );
 };
