@@ -16,6 +16,7 @@ import {
 } from '@ant-design/icons';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
 
@@ -24,6 +25,8 @@ function BillSummary() {
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [restaurantInfo, setRestaurantInfo] = useState(null);
+  const [orderData, setOrderData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const orgId = localStorage.getItem('orgId');
   
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -61,7 +64,79 @@ function BillSummary() {
     }
   }, [orgId]);
 
-  
+  useEffect(() => {
+    const fetchLastOrder = async () => {
+      try {
+        const tableNumber = localStorage.getItem('tableNumber');
+        const orgId = localStorage.getItem('orgId');
+        
+        const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json');
+        const data = await response.json();
+        
+        if (data) {
+          // Filter orders by orgId, tableNumber, and status not being 'completed'
+          const orders = Object.values(data)
+            .filter(order => 
+              order.orgId === orgId && 
+              order.tableNumber === tableNumber &&
+  (order.status !== 'cancelled' && order.status !== 'completed')
+  // Only get non-completed orders
+            )
+            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+
+          // Get the most recent non-completed order
+          const lastOrder = orders[0];
+          if (lastOrder) {
+            setOrderData(lastOrder);
+          } else {
+            setOrderData(null); // Clear orderData if no active orders found
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Error fetching last order:', error);
+        setLoading(false);
+      }
+    };
+
+    // If cart is empty, fetch the last active order
+    if (cart.length === 0) {
+      fetchLastOrder();
+    } else {
+      setOrderData(null);
+      setLoading(false);
+    }
+  }, [cart]);
+
+  if (loading) {
+    return <FoodLoader />;
+  }
+
+  // If cart is empty and no active order exists, show empty state
+  if (cart.length === 0 && !orderData) {
+    return (
+      <Card 
+        className="bill-summary-container"
+        style={{ 
+          maxWidth: 800, 
+          margin: '125px auto',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          textAlign: 'center'
+        }}
+      >
+        <Space direction="vertical" size="large" style={{ width: '100%', marginTop: '100px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <Space align="center">
+              <ShoppingCartOutlined style={{ fontSize: 24 }} />
+              <Title level={2} style={{ margin: 0 }}>No Active Orders</Title>
+            </Space>
+          </div>
+          <Text>Your cart is empty and there are no active orders for this table.</Text>
+        </Space>
+      </Card>
+    );
+  }
+
   const getImageUrl = (imageData) => {
     if (!imageData) return '';
     if (typeof imageData === 'string') return imageData;
@@ -74,11 +149,15 @@ function BillSummary() {
     setErrorModalVisible(true);
   };
   const handleDownloadBill = () => {
-    if (cart.length === 0) {
-      showErrorModal('No items in the cart to generate a bill.');
+    // Use orderData if cart is empty, otherwise use cart
+    const items = cart.length > 0 ? cart : (orderData ? orderData.items : []);
+    const orderTotal = cart.length > 0 ? total : (orderData ? parseFloat(orderData.total) : 0);
+
+    if (items.length === 0) {
+      showErrorModal('No items available to generate a bill.');
       return;
     }
-  
+
     if (!restaurantInfo) {
       showErrorModal('No restaurant details available.');
       return;
@@ -140,10 +219,16 @@ function BillSummary() {
     doc.text(`Table No: ${tableNumber}`, col1, yPos);
     doc.text(`Time: ${formattedTime}`, col2, yPos, { align: 'right' });
     
+    // Add order status if using orderData
+    if (orderData) {
+      yPos += 7;
+      doc.text(`Order Status: ${orderData.status}`, col1, yPos);
+    }
+    
     // Items table
     yPos += 15;
     const headers = [['Item', 'Qty', 'Price', 'Amount']];
-    const tableData = cart.map(item => [
+    const tableData = items.map(item => [
       item.name,
       item.quantity.toString(),
       `₹${Number(item.price).toFixed(2)}`,
@@ -179,7 +264,7 @@ function BillSummary() {
     yPos = doc.lastAutoTable.finalY + 10;
     doc.setFont('helvetica', 'bold');
     doc.text('Total:', col2 - 60, yPos);
-    doc.text(`₹${total.toFixed(2)}`, col2, yPos, { align: 'right' });
+    doc.text(`₹${orderTotal.toFixed(2)}`, col2, yPos, { align: 'right' });
     
     // Footer
     yPos = doc.internal.pageSize.height - 30;
@@ -214,7 +299,7 @@ function BillSummary() {
         </div>
 
         <List
-  dataSource={cart}
+  dataSource={cart.length > 0 ? cart : orderData.items}
   renderItem={item => {
     const price = Number(item.price) || 0; // Ensure price is a number, default to 0 if invalid
     return (
@@ -254,7 +339,9 @@ function BillSummary() {
         <div style={{ padding: '24px', background: '#f5f5f5', borderTop: '1px solid #e8e8e8' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Title level={4} style={{ margin: 0 }}>Total</Title>
-            <Title level={4} style={{ margin: 0 }}>₹{total.toFixed(2)}</Title>
+            <Title level={4} style={{ margin: 0 }}>
+              ₹{(cart.length > 0 ? total : parseFloat(orderData.total)).toFixed(2)}
+            </Title>
           </div>
         </div>
 
@@ -271,7 +358,8 @@ function BillSummary() {
             padding: '10px 20px',
             border: 'none',
             borderRadius: '5px',
-            cursor: 'pointer'}}
+            cursor: 'pointer'
+          }}
         >
           Download Bill
         </Button>
