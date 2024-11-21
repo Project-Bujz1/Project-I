@@ -529,6 +529,25 @@ const RestaurantManagement = () => {
     }
   };
 
+  // Add useEffect to handle browser back button
+  useEffect(() => {
+    const handlePopState = () => {
+      setActiveSection(null);
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  // Modify the section selection to add to browser history
+  const handleSectionClick = (section) => {
+    setActiveSection(section);
+    window.history.pushState({ section }, '');
+  };
+
   return (
     <div style={containerStyle}>
       {loading && <RestaurantLoader />}
@@ -577,7 +596,7 @@ const RestaurantManagement = () => {
           {activeSection ? (
             <div>
               <button 
-                onClick={() => setActiveSection(null)} 
+                onClick={() => handleSectionClick(null)} 
                 style={{ ...buttonStyle, marginBottom: '1rem' }}
               >
                 Back to Profile
@@ -590,32 +609,32 @@ const RestaurantManagement = () => {
               <ProfileCard 
                 title="Basic Information" 
                 icon={Utensils} 
-                onClick={() => setActiveSection('basic')} 
+                onClick={() => handleSectionClick('basic')} 
               />
               <ProfileCard 
                 title="Location Settings" 
                 icon={MapPin} 
-                onClick={() => setActiveSection('location')} 
+                onClick={() => handleSectionClick('location')} 
               />
               <ProfileCard 
                 title="Privacy Policy" 
                 icon={Shield} 
-                onClick={() => setActiveSection('privacy')} 
+                onClick={() => handleSectionClick('privacy')} 
               />
               <ProfileCard 
                 title="Refund Policy" 
                 icon={RefreshCcw} 
-                onClick={() => setActiveSection('refund')} 
+                onClick={() => handleSectionClick('refund')} 
               />
               <ProfileCard 
                 title="Terms & Conditions" 
                 icon={Settings} 
-                onClick={() => setActiveSection('terms')} 
+                onClick={() => handleSectionClick('terms')} 
               />
               <ProfileCard 
                 title="About Us" 
                 icon={Info} 
-                onClick={() => setActiveSection('about')} 
+                onClick={() => handleSectionClick('about')} 
               />
             </div>
           )}
