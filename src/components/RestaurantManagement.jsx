@@ -98,12 +98,23 @@ const RestaurantManagement = () => {
   };
 
   const handleLogoChange = (e) => {
-    if (e.target.files[0]) {
+    const file = e.target.files?.[0];
+    if (file) {
+      setLoading(true); // Add loading state while reading file
       const reader = new FileReader();
+      
       reader.onloadend = () => {
         setRestaurant(prev => ({ ...prev, logo: reader.result }));
+        setLoading(false); // Remove loading state after file is read
       };
-      reader.readAsDataURL(e.target.files[0]);
+      
+      reader.onerror = () => {
+        setLoading(false); // Remove loading state if there's an error
+        // You might want to add error handling here
+        console.error('Error reading file');
+      };
+      
+      reader.readAsDataURL(file);
     }
   };
 
