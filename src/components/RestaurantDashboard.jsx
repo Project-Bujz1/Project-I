@@ -308,7 +308,7 @@ const MenuInsights = ({ menuItems, orders, categories }) => {
                     title={item.name}
                     description={
                       <Space direction="vertical">
-                        <Tag color="blue">{item.category}</Tag>
+                        {/* <Tag color="blue">{item.category}</Tag> */}
                         <Text>Quantity Sold: {item.quantity}</Text>
                         <Text>Revenue: ₹{item.revenue.toLocaleString('en-IN')}</Text>
                       </Space>
@@ -454,11 +454,18 @@ const OrderAnalytics = ({ orders }) => {
       <Card title="Peak Hours Analysis" style={styles.card}>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={metrics.hourlyDistribution.map((count, hour) => ({
-            hour: `${hour}:00`,
+            hour: `${hour.toString().padStart(2, '0')}:00`,
             orders: count
           }))}>
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="hour" interval={2} />
+            <XAxis 
+              dataKey="hour" 
+              interval={2}
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              tick={{fontSize: 12}}
+            />
             <YAxis />
             <Tooltip />
             <Bar dataKey="orders" fill="#ff4d4f" />
