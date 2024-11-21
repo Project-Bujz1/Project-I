@@ -324,40 +324,6 @@ const MenuInsights = ({ menuItems, orders, categories }) => {
           </Card>
         </Col>
 
-        <Col xs={24}>
-          <Card title="Category Distribution">
-            {categories.map(category => {
-              const categoryItems = calculateItemPerformance()
-                .filter(item => item.category === category.name);
-              const totalRevenue = categoryItems.reduce((sum, item) => sum + item.revenue, 0);
-              const totalQuantity = categoryItems.reduce((sum, item) => sum + item.quantity, 0);
-
-              return (
-                <Card.Grid key={category.id} style={{ width: '100%', padding: '16px' }}>
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    <Text strong>{category.name}</Text>
-                    <Row gutter={16}>
-                      <Col span={12}>
-                        <Statistic
-                          title="Revenue"
-                          value={totalRevenue}
-                          prefix="₹"
-                          formatter={value => value.toLocaleString('en-IN')}
-                        />
-                      </Col>
-                      <Col span={12}>
-                        <Statistic
-                          title="Items Sold"
-                          value={totalQuantity}
-                        />
-                      </Col>
-                    </Row>
-                  </Space>
-                </Card.Grid>
-              );
-            })}
-          </Card>
-        </Col>
       </Row>
     </div>
   );
@@ -1073,32 +1039,7 @@ export const RestaurantDashboard = () => {
           </Col>
         </Row>
 
-        {/* Category Performance */}
-        <Card title="Category Performance" style={styles.sectionCard}>
-          <List
-            dataSource={metrics.categoryPerformance}
-            renderItem={(category) => (
-              <List.Item>
-                <List.Item.Meta
-                  avatar={<Avatar icon={<AppstoreOutlined />} style={styles.categoryAvatar} />}
-                  title={category.name}
-                  description={
-                    <Space direction="vertical" size="small">
-                      <Text>Revenue: {formatCurrency(category.revenue)}</Text>
-                      <Text>Orders: {category.orders}</Text>
-                      <Text>Items Sold: {category.items}</Text>
-                    </Space>
-                  }
-                />
-                <Progress 
-                  type="circle" 
-                  percent={Number((category.orders / metrics.completedOrders * 100).toFixed(1))} 
-                  width={50}
-                />
-              </List.Item>
-            )}
-          />
-        </Card>
+
 
         {/* Recent Orders */}
         <Card title="Recent Orders" style={styles.sectionCard}>
