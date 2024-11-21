@@ -18,10 +18,10 @@ const FooterNavigation = () => {
   const adminLinks = [
     { path: '/admin', icon: ChefHat, label: 'Orders' },
     { path: '/menu-management', icon: Settings, label: 'Menu' },
-    { path: '/management', icon: User, label: 'Profile' },
-    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { path: '/order-history', icon: History, label: 'History' },
-    { path: '/menu-suggestion', icon: Lightbulb, label: 'Suggestion'}
+    { path: '/menu-suggestion', icon: Lightbulb, label: 'Suggestion'},
+    { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/management', icon: User, label: 'Profile' },
   ];
 
   const links = role === 'customer' ? customerLinks : adminLinks;
