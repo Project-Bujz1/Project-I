@@ -512,55 +512,195 @@ const RestaurantManagement = () => {
         );
 
       case 'privacy':
+        return (
+          <div style={sectionStyle}>
+            <h2 style={{ color: '#FF0000', marginBottom: '1.5rem' }}>Privacy Policy</h2>
+            <div style={{ color: '#333', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '1.5rem' }}>
+                At Smart Server, we take your privacy seriously. This policy outlines how we collect, use, and protect your personal information.
+              </p>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Information We Collect</h3>
+              <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Basic contact information (name, email, phone number)</li>
+                <li style={{ marginBottom: '0.5rem' }}>Restaurant details and preferences</li>
+                <li style={{ marginBottom: '0.5rem' }}>Order history and transaction data</li>
+                <li style={{ marginBottom: '0.5rem' }}>Device information and usage statistics</li>
+              </ul>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>How We Use Your Information</h3>
+              <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Provide and improve our services</li>
+                <li style={{ marginBottom: '0.5rem' }}>Process transactions and orders</li>
+                <li style={{ marginBottom: '0.5rem' }}>Send important updates and notifications</li>
+                <li style={{ marginBottom: '0.5rem' }}>Enhance platform security and prevent fraud</li>
+              </ul>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Data Security</h3>
+              <p style={{ marginBottom: '1.5rem' }}>
+                We implement industry-standard security measures to protect your data. This includes encryption, secure servers, and regular security audits.
+              </p>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Contact Us</h3>
+              <p>For privacy-related inquiries, please contact us at:</p>
+              <p style={{ marginBottom: '0.5rem' }}><strong>Email:</strong> support@smartserver.in</p>
+              <p style={{ marginBottom: '1.5rem' }}><strong>Phone:</strong> +91 955 331 3334</p>
+
+              <div style={{ 
+                borderTop: '1px solid #FFE5E5', 
+                paddingTop: '1.5rem', 
+                marginTop: '1.5rem',
+                fontSize: '0.9rem',
+                color: '#666' 
+              }}>
+                <p>Last updated: {new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'refund':
+        return (
+          <div style={sectionStyle}>
+            <h2 style={{ color: '#FF0000', marginBottom: '1.5rem' }}>Refund Policy</h2>
+            <div style={{ color: '#333', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '1.5rem' }}>
+                Smart Server is committed to ensuring customer satisfaction. This policy outlines our refund procedures for our services.
+              </p>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Subscription Refunds</h3>
+              <p style={{ marginBottom: '1.5rem' }}>
+                We offer a 7-day money-back guarantee on new subscriptions. Refund requests must be submitted within 7 days of the initial purchase.
+              </p>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Eligible Refunds</h3>
+              <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Service unavailability due to technical issues</li>
+                <li style={{ marginBottom: '0.5rem' }}>Incorrect subscription charges</li>
+                <li style={{ marginBottom: '0.5rem' }}>Duplicate transactions</li>
+              </ul>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Refund Process</h3>
+              <ol style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Submit a refund request via email</li>
+                <li style={{ marginBottom: '0.5rem' }}>Include order details and reason for refund</li>
+                <li style={{ marginBottom: '0.5rem' }}>Receive confirmation within 48 hours</li>
+                <li style={{ marginBottom: '0.5rem' }}>Refund processed within 5-7 business days</li>
+              </ol>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Contact Information</h3>
+              <p style={{ marginBottom: '0.5rem' }}><strong>Email:</strong> support@smartserver.in</p>
+              <p style={{ marginBottom: '1.5rem' }}><strong>Phone:</strong> +91 955 331 3334</p>
+
+              <div style={{ 
+                borderTop: '1px solid #FFE5E5', 
+                paddingTop: '1.5rem', 
+                marginTop: '1.5rem',
+                fontSize: '0.9rem',
+                color: '#666' 
+              }}>
+                <p>Last updated: {new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+          </div>
+        );
+
       case 'terms':
-      // ... existing code ...
+        return (
+          <div style={sectionStyle}>
+            <h2 style={{ color: '#FF0000', marginBottom: '1.5rem' }}>Terms & Conditions</h2>
+            <div style={{ color: '#333', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '1.5rem' }}>
+                By using Smart Server's platform and services, you agree to comply with and be bound by the following terms and conditions.
+              </p>
 
-case 'about':
-  return (
-    <div style={sectionStyle}>
-      <h2 style={{ color: '#FF0000', marginBottom: '1.5rem' }}>About Us</h2>
-      <div style={{ color: '#333', lineHeight: '1.6' }}>
-        <p style={{ marginBottom: '1.5rem' }}>
-          Smart Server is a cutting-edge digital restaurant management platform that transforms traditional dining experiences through innovative technology solutions. As industry leaders in restaurant digitization, we specialize in providing seamless QR-based ordering systems that enhance both customer satisfaction and operational efficiency.
-        </p>
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Service Usage</h3>
+              <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Users must be 18 years or older</li>
+                <li style={{ marginBottom: '0.5rem' }}>Accurate information must be provided during registration</li>
+                <li style={{ marginBottom: '0.5rem' }}>Account credentials must not be shared</li>
+                <li style={{ marginBottom: '0.5rem' }}>Platform must be used in compliance with local laws</li>
+              </ul>
 
-        <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Our Mission</h3>
-        <p style={{ marginBottom: '1.5rem' }}>
-          We are dedicated to revolutionizing the restaurant industry by providing state-of-the-art digital solutions that streamline operations, reduce wait times, and create exceptional dining experiences. Our platform empowers restaurants to embrace digital transformation while maintaining their unique identity and service quality.
-        </p>
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Subscription Terms</h3>
+              <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Subscription fees are billed in advance</li>
+                <li style={{ marginBottom: '0.5rem' }}>Automatic renewal unless cancelled</li>
+                <li style={{ marginBottom: '0.5rem' }}>30-day notice required for cancellation</li>
+              </ul>
 
-        <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Key Features</h3>
-        <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
-          <li style={{ marginBottom: '0.5rem' }}>Dynamic QR-based digital menu system</li>
-          <li style={{ marginBottom: '0.5rem' }}>Real-time order management</li>
-          <li style={{ marginBottom: '0.5rem' }}>Seamless payment integration</li>
-          <li style={{ marginBottom: '0.5rem' }}>Comprehensive analytics and reporting</li>
-          <li style={{ marginBottom: '0.5rem' }}>Custom branding solutions</li>
-        </ul>
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Intellectual Property</h3>
+              <p style={{ marginBottom: '1.5rem' }}>
+                All content, features, and functionality are owned by Smart Server and protected by international copyright laws.
+              </p>
 
-        <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Contact Information</h3>
-        <p style={{ marginBottom: '0.5rem' }}>
-          <strong>Customer Support:</strong> +91 955 331 3334
-        </p>
-        <p style={{ marginBottom: '1.5rem' }}>
-          <strong>Email:</strong> support@smartserver.in
-        </p>
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Limitation of Liability</h3>
+              <p style={{ marginBottom: '1.5rem' }}>
+                Smart Server shall not be liable for any indirect, incidental, special, consequential, or punitive damages resulting from your use of the service.
+              </p>
 
-        <div style={{ 
-          borderTop: '1px solid #FFE5E5', 
-          paddingTop: '1.5rem', 
-          marginTop: '1.5rem',
-          fontSize: '0.9rem',
-          color: '#666' 
-        }}>
-          <p>
-            © {new Date().getFullYear()} Smart Server. All rights reserved.
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Contact Information</h3>
+              <p style={{ marginBottom: '0.5rem' }}><strong>Email:</strong> support@smartserver.in</p>
+              <p style={{ marginBottom: '1.5rem' }}><strong>Phone:</strong> +91 955 331 3334</p>
+
+              <div style={{ 
+                borderTop: '1px solid #FFE5E5', 
+                paddingTop: '1.5rem', 
+                marginTop: '1.5rem',
+                fontSize: '0.9rem',
+                color: '#666' 
+              }}>
+                <p>Last updated: {new Date().toLocaleDateString()}</p>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'about':
+        return (
+          <div style={sectionStyle}>
+            <h2 style={{ color: '#FF0000', marginBottom: '1.5rem' }}>About Us</h2>
+            <div style={{ color: '#333', lineHeight: '1.6' }}>
+              <p style={{ marginBottom: '1.5rem' }}>
+                Smart Server is a cutting-edge digital restaurant management platform that transforms traditional dining experiences through innovative technology solutions. As industry leaders in restaurant digitization, we specialize in providing seamless QR-based ordering systems that enhance both customer satisfaction and operational efficiency.
+              </p>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Our Mission</h3>
+              <p style={{ marginBottom: '1.5rem' }}>
+                We are dedicated to revolutionizing the restaurant industry by providing state-of-the-art digital solutions that streamline operations, reduce wait times, and create exceptional dining experiences. Our platform empowers restaurants to embrace digital transformation while maintaining their unique identity and service quality.
+              </p>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Key Features</h3>
+              <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
+                <li style={{ marginBottom: '0.5rem' }}>Dynamic QR-based digital menu system</li>
+                <li style={{ marginBottom: '0.5rem' }}>Real-time order management</li>
+                <li style={{ marginBottom: '0.5rem' }}>Seamless payment integration</li>
+                <li style={{ marginBottom: '0.5rem' }}>Comprehensive analytics and reporting</li>
+                <li style={{ marginBottom: '0.5rem' }}>Custom branding solutions</li>
+              </ul>
+
+              <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Contact Information</h3>
+              <p style={{ marginBottom: '0.5rem' }}>
+                <strong>Customer Support:</strong> +91 955 331 3334
+              </p>
+              <p style={{ marginBottom: '1.5rem' }}>
+                <strong>Email:</strong> support@smartserver.in
+              </p>
+
+              <div style={{ 
+                borderTop: '1px solid #FFE5E5', 
+                paddingTop: '1.5rem', 
+                marginTop: '1.5rem',
+                fontSize: '0.9rem',
+                color: '#666' 
+              }}>
+                <p>
+                  © {new Date().getFullYear()} Smart Server. All rights reserved.
+                </p>
+              </div>
+            </div>
+          </div>
+        );
 
       default:
         return null;
