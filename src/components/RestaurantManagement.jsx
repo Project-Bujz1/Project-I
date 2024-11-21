@@ -122,28 +122,49 @@ const RestaurantManagement = () => {
     fileInputRef.current.click();
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = async () => {
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
+      try {
+        setLoading(true);
+        const position = await new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(resolve, reject);
+        });
+        
         const { latitude, longitude } = position.coords;
+        
+        // Update restaurant position
         setRestaurant(prev => ({ ...prev, position: [latitude, longitude] }));
-        setShowMap(true);
-        fetchAddress(latitude, longitude);
-      }, (error) => {
-        console.error("Error getting location:", error);
-      });
+        
+        // Fetch and update address
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+        const data = await response.json();
+        
+        // Update restaurant data in state
+        setRestaurant(prev => ({ ...prev, address: data.display_name }));
+        
+        // Save to database
+        const { id, ...restaurantData } = restaurant;
+        await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants/${id}.json`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            position: [latitude, longitude],
+            address: data.display_name
+          }),
+        });
+
+        // Show success message (you can implement your own toast/notification system)
+        console.log("Location updated successfully");
+        
+      } catch (error) {
+        console.error("Error getting or saving location:", error);
+      } finally {
+        setLoading(false);
+      }
     } else {
       console.error("Geolocation is not supported by this browser.");
-    }
-  };
-
-  const fetchAddress = async (lat, lon) => {
-    try {
-      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`);
-      const data = await response.json();
-      setRestaurant(prev => ({ ...prev, address: data.display_name }));
-    } catch (error) {
-      console.error("Error fetching address:", error);
     }
   };
 
@@ -167,14 +188,32 @@ const RestaurantManagement = () => {
     setSearchQuery('');
   };
 
+  const fetchAddress = async (lat, lng) => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+      );
+      const data = await response.json();
+      
+      if (data.display_name) {
+        setRestaurant(prev => ({
+          ...prev,
+          address: data.display_name
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching address:", error);
+    }
+  };
+
   const MapEvents = () => {
     const map = useMap();
     
     React.useEffect(() => {
-      if (restaurant.position) {
+      if (restaurant?.position) {
         map.setView(restaurant.position, 13);
       }
-    }, [restaurant.position, map]);
+    }, [restaurant?.position, map]);
 
     map.on('click', (e) => {
       setRestaurant(prev => ({ ...prev, position: [e.latlng.lat, e.latlng.lng] }));
@@ -486,14 +525,47 @@ const RestaurantManagement = () => {
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
+                      disabled={loading}
                     >
-                      <Crosshair size={20} />
-                      Use Current Location
+                      {loading ? (
+                        <>
+                          <Loader2 size={20} className="animate-spin" />
+                          Updating Location...
+                        </>
+                      ) : (
+                        <>
+                          <Crosshair size={20} />
+                          Use Current Location
+                        </>
+                      )}
                     </button>
 
                     <button
                       type="button"
                       onClick={() => setShowMap(true)}
+                      style={{
+                        background: 'white',
+                        color: '#FF0000',
+                        border: '2px solid #FFE5E5',
+                        padding: '1rem',
+                        borderRadius: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: '0.75rem',
+                        fontSize: '1rem',
+                        fontWeight: '500',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                      disabled={loading}
+                    >
+                      <MapIcon size={20} />
+                      Choose on Map
+                    </button>
+
+                    <button
+                      type="submit"
                       style={{
                         background: 'linear-gradient(135deg, #FF0000, #FF4444)',
                         color: 'white',
@@ -509,30 +581,19 @@ const RestaurantManagement = () => {
                         cursor: 'pointer',
                         transition: 'transform 0.2s ease',
                       }}
+                      disabled={loading}
                     >
-                      <MapIcon size={20} />
-                      Show Map
-                    </button>
-
-                    <button
-                      type="submit"
-                      style={{
-                        background: '#FF0000',
-                        color: 'white',
-                        border: 'none',
-                        padding: '1rem',
-                        borderRadius: '0.75rem',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        gap: '0.75rem',
-                        fontSize: '1rem',
-                        fontWeight: '500',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      <RefreshCcw size={20} />
-                      Save Changes
+                      {loading ? (
+                        <>
+                          <Loader2 size={20} className="animate-spin" />
+                          Saving Changes...
+                        </>
+                      ) : (
+                        <>
+                          <RefreshCcw size={20} />
+                          Save Changes
+                        </>
+                      )}
                     </button>
                   </div>
                 </>
