@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Utensils, MapPin, Phone, Mail, Clock, Users, ChefHat, DollarSign, Camera, Loader2, PlusCircle, MapIcon, Crosshair, Search } from 'lucide-react';
+import { Utensils, MapPin, Phone, Mail, Clock, Users, ChefHat, DollarSign, Camera, Loader2, PlusCircle, MapIcon, Crosshair, Search, Settings, Shield, RefreshCcw, Info, ChevronRight } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -17,6 +17,7 @@ const RestaurantManagement = () => {
   const [searchResults, setSearchResults] = useState([]);
   const fileInputRef = useRef(null);
   const mapRef = useRef(null);
+  const [activeSection, setActiveSection] = useState(null);
 
   const customIcon = new L.Icon({
     iconUrl: markerIcon,
@@ -231,14 +232,16 @@ const RestaurantManagement = () => {
   );
 
   const containerStyle = {
-    maxWidth: '800px',
-    margin: '2rem auto',
-    padding: '2rem',
-    backgroundColor: 'white',
-    boxShadow: '0 4px 12px rgba(255, 0, 0, 0.1)',
-    borderRadius: '0.5rem',
-    fontFamily: 'Arial, sans-serif',
-    marginTop: '85px'
+    maxWidth: '100%',
+    margin: '0 auto',
+    padding: '1rem',
+    backgroundColor: '#f5f5f5',
+    minHeight: '100vh',
+    marginTop: '85px',
+    '@media (min-width: 768px)': {
+      maxWidth: '800px',
+      padding: '2rem',
+    },
   };
 
   const headerStyle = {
@@ -308,138 +311,148 @@ const RestaurantManagement = () => {
     objectFit: 'cover',
   };
 
+  const ProfileCard = ({ title, icon: Icon, onClick }) => (
+    <div 
+      onClick={onClick}
+      style={{
+        backgroundColor: 'white',
+        padding: '1rem',
+        borderRadius: '0.5rem',
+        marginBottom: '1rem',
+        border: '1px solid #FFE5E5',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <Icon size={24} color="#FF0000" />
+        <span style={{ color: '#333', fontWeight: 'bold' }}>{title}</span>
+      </div>
+      <ChevronRight size={20} color="#666" />
+    </div>
+  );
 
-  return (
-    <div style={containerStyle}>
-      {loading && <RestaurantLoader />}
-      {restaurant ? (
-        <>
-          <h1 style={headerStyle}>Restaurant Management</h1>
+  const renderSection = () => {
+    switch (activeSection) {
+      case 'basic':
+      case 'location':
+        return (
           <form onSubmit={onSubmit}>
-          <div style={sectionStyle}>
-          <h2 style={{ color: '#FF0000', marginBottom: '1rem', textAlign: 'center' }}>Restaurant Logo</h2>
-          <div onClick={triggerFileInput} style={logoContainerStyle}>
-            {restaurant.logo ? (
-              <img src={restaurant.logo} alt="Restaurant logo" style={logoStyle} />
-            ) : (
-              <PlusCircle size={48} color="#FF0000" />
-            )}
-          </div>
-          <input 
-            type="file" 
-            ref={fileInputRef}
-            onChange={handleLogoChange} 
-            style={{ display: 'none' }}
-            accept="image/*"
-          />
-          <p style={{ textAlign: 'center', color: '#666', marginBottom: '1rem' }}>
-            Click to upload or change logo
-          </p>
-        </div>
+            {activeSection === 'basic' ? (
+              // Basic Information Form
+              <div style={sectionStyle}>
+                <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Basic Information</h2>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={labelStyle}>
+                    <Utensils size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                    Restaurant Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={restaurant?.name || ''}
+                    onChange={handleInputChange}
+                    style={inputStyle}
+                    placeholder="e.g. Red Plate Bistro"
+                  />
+                </div>
 
-        <div style={sectionStyle}>
-          <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Basic Information</h2>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={labelStyle}>
-              <Utensils size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-              Restaurant Name
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={restaurant.name}
-              onChange={handleInputChange}
-              style={inputStyle}
-              placeholder="e.g. Red Plate Bistro"
-            />
-          </div>
-
-          <div style={{ display: 'flex', gap: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>
-                <Phone size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Phone
-              </label>
-              <input
-                type="tel"
-                name="phone"
-                value={restaurant.phone}
-                onChange={handleInputChange}
-                style={inputStyle}
-                placeholder="(123) 456-7890"
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>
-                <Mail size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={restaurant.email}
-                onChange={handleInputChange}
-                style={inputStyle}
-                placeholder="info@redplatebistro.com"
-              />
-            </div>
-          </div>
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={labelStyle}>
-              <MapPin size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-              Address
-            </label>
-            <textarea 
-              name="address"
-              value={restaurant.address}
-              onChange={handleInputChange}
-              style={{ ...inputStyle, height: '5rem' }} 
-              placeholder="123 Gourmet Street, Foodie City, 12345"
-            ></textarea>
-            <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
-              <button type="button" onClick={getCurrentLocation} style={{ ...buttonStyle, flex: 1 }}>
-                <Crosshair size={18} style={{ marginRight: '0.5rem' }} />
-                Use Current Location
-              </button>
-              <button type="button" onClick={() => setShowMap(!showMap)} style={{ ...buttonStyle, flex: 1 }}>
-                <MapIcon size={18} style={{ marginRight: '0.5rem' }} />
-                {showMap ? 'Hide Map' : 'Show Map'}
-              </button>
-            </div>
-          </div>
-          {showMap && (
-            <>
-              <div style={searchContainerStyle}>
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search for a location"
-                  style={inputStyle}
-                />
-                <button type="button" onClick={searchLocation} style={{ ...buttonStyle, marginTop: '0.5rem' }}>
-                  <Search size={18} style={{ marginRight: '0.5rem' }} />
-                  Search
-                </button>
-                {searchResults.length > 0 && (
-                  <div style={searchResultsStyle}>
-                    {searchResults.map((result, index) => (
-                      <div
-                        key={index}
-                        onClick={() => selectSearchResult(result)}
-                        style={searchResultItemStyle}
-                      >
-                        {result.display_name}
-                      </div>
-                    ))}
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>
+                      <Phone size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={restaurant?.phone || ''}
+                      onChange={handleInputChange}
+                      style={inputStyle}
+                      placeholder="(123) 456-7890"
+                    />
                   </div>
-                )}
+                  <div style={{ flex: 1 }}>
+                    <label style={labelStyle}>
+                      <Mail size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={restaurant?.email || ''}
+                      onChange={handleInputChange}
+                      style={inputStyle}
+                      placeholder="info@restaurant.com"
+                    />
+                  </div>
+                </div>
               </div>
-              <div style={{ height: '300px', marginBottom: '1rem' }}>
-              <MapContainer center={restaurant.position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              {restaurant.position && (
-                <Marker position={restaurant.position} icon={customIcon}>
+            ) : (
+              // Location Information Form
+              <div style={sectionStyle}>
+                <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Location Settings</h2>
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={labelStyle}>
+                    <MapPin size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
+                    Address
+                  </label>
+                  <textarea 
+                    name="address"
+                    value={restaurant?.address || ''}
+                    onChange={handleInputChange}
+                    style={{ ...inputStyle, height: '5rem' }} 
+                    placeholder="123 Restaurant Street, City, Country"
+                  />
+                  
+                  <div style={{ display: 'flex', gap: '1rem', marginTop: '0.5rem' }}>
+                    <button type="button" onClick={getCurrentLocation} style={{ ...buttonStyle, flex: 1 }}>
+                      <Crosshair size={18} style={{ marginRight: '0.5rem' }} />
+                      Use Current Location
+                    </button>
+                    <button type="button" onClick={() => setShowMap(!showMap)} style={{ ...buttonStyle, flex: 1 }}>
+                      <MapIcon size={18} style={{ marginRight: '0.5rem' }} />
+                      {showMap ? 'Hide Map' : 'Show Map'}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Map and search components */}
+                {showMap && (
+                  <>
+                    <div style={searchContainerStyle}>
+                      <input
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Search for a location"
+                        style={inputStyle}
+                      />
+                      <button type="button" onClick={searchLocation} style={{ ...buttonStyle, marginTop: '0.5rem' }}>
+                        <Search size={18} style={{ marginRight: '0.5rem' }} />
+                        Search
+                      </button>
+                      {searchResults.length > 0 && (
+                        <div style={searchResultsStyle}>
+                          {searchResults.map((result, index) => (
+                            <div
+                              key={index}
+                              onClick={() => selectSearchResult(result)}
+                              style={searchResultItemStyle}
+                            >
+                              {result.display_name}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <div style={{ height: '300px', marginBottom: '1rem' }}>
+                    <MapContainer center={restaurant.position || [0, 0]} zoom={13} style={{ height: '100%' }} ref={mapRef}>
+                    <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                    {restaurant.position && (
+                      <Marker position={restaurant.position} icon={customIcon}>
 <Popup>
           <div style={{
             backgroundColor: 'red',
@@ -452,54 +465,124 @@ const RestaurantManagement = () => {
             <p>{restaurant.address}</p>
           </div>
         </Popup>                </Marker>
-              )}
-              <MapEvents />
-            </MapContainer>
+                    )}
+                    <MapEvents />
+                  </MapContainer>
+                    </div>
+                  </>
+                )}
               </div>
-            </>
-          )}
-        </div>
-                 
-        <div style={sectionStyle}>
-          <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>Restaurant Details</h2>
-          <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem' }}>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>
-                <Users size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Table Count
-              </label>
-              <input
-                type="number"
-                name="seatingCapacity"
-                value={restaurant.seatingCapacity}
-                onChange={handleInputChange}
-                style={inputStyle}
-                min="1"
-                placeholder="e.g. 50"
-              />
-            </div>
-            <div style={{ flex: 1 }}>
-              <label style={labelStyle}>
-                <ChefHat size={18} style={{ marginRight: '0.5rem', verticalAlign: 'middle' }} />
-                Count
-              </label>
-              <input
-                type="text"
-                name="peopleCount"
-                value={restaurant.peopleCount}
-                onChange={handleInputChange}
-                style={inputStyle}
-                placeholder="e.g. 20, 45"
-              />
-            </div>
-          </div>
-        </div>
+            )}
 
-        <button type="submit" style={buttonStyle}>
-          <Utensils size={18} style={{ marginRight: '0.5rem' }} />
-          Save Restaurant Information
-        </button>
-      </form>
+            {/* Original Save Information Button */}
+            <button type="submit" style={{ ...buttonStyle, marginTop: '1rem' }}>
+              {loading ? (
+                <Loader2 size={24} className="animate-spin" />
+              ) : (
+                'Save Information'
+              )}
+            </button>
+          </form>
+        );
+
+      case 'privacy':
+      case 'refund':
+      case 'terms':
+      case 'about':
+        return (
+          <div style={sectionStyle}>
+            <h2 style={{ color: '#FF0000', marginBottom: '1rem' }}>{activeSection === 'privacy' ? 'Privacy Policy' : 
+              activeSection === 'refund' ? 'Refund Policy' : 
+              activeSection === 'terms' ? 'Terms & Conditions' : 
+              'About Us'}
+            </h2>
+            {/* Add content for these sections */}
+          </div>
+        );
+
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div style={containerStyle}>
+      {loading && <RestaurantLoader />}
+      {restaurant ? (
+        <>
+          {/* Profile Header */}
+          <div style={{
+            textAlign: 'center',
+            marginBottom: '2rem',
+            backgroundColor: 'white',
+            padding: '1.5rem',
+            borderRadius: '0.5rem',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          }}>
+            <div onClick={triggerFileInput} style={logoContainerStyle}>
+              {restaurant.logo ? (
+                <img src={restaurant.logo} alt="Restaurant logo" style={logoStyle} />
+              ) : (
+                <PlusCircle size={48} color="#FF0000" />
+              )}
+            </div>
+            <input 
+              type="file" 
+              ref={fileInputRef}
+              onChange={handleLogoChange} 
+              style={{ display: 'none' }}
+              accept="image/*"
+            />
+            <h2 style={{ color: '#333', marginTop: '1rem' }}>{restaurant.name}</h2>
+            <p style={{ color: '#666' }}>{restaurant.email}</p>
+          </div>
+
+          {/* Show section content if active, otherwise show menu */}
+          {activeSection ? (
+            <div>
+              <button 
+                onClick={() => setActiveSection(null)} 
+                style={{ ...buttonStyle, marginBottom: '1rem' }}
+              >
+                Back to Profile
+              </button>
+              {renderSection()}
+            </div>
+          ) : (
+            /* Profile Menu Cards */
+            <div>
+              <ProfileCard 
+                title="Basic Information" 
+                icon={Utensils} 
+                onClick={() => setActiveSection('basic')} 
+              />
+              <ProfileCard 
+                title="Location Settings" 
+                icon={MapPin} 
+                onClick={() => setActiveSection('location')} 
+              />
+              <ProfileCard 
+                title="Privacy Policy" 
+                icon={Shield} 
+                onClick={() => setActiveSection('privacy')} 
+              />
+              <ProfileCard 
+                title="Refund Policy" 
+                icon={RefreshCcw} 
+                onClick={() => setActiveSection('refund')} 
+              />
+              <ProfileCard 
+                title="Terms & Conditions" 
+                icon={Settings} 
+                onClick={() => setActiveSection('terms')} 
+              />
+              <ProfileCard 
+                title="About Us" 
+                icon={Info} 
+                onClick={() => setActiveSection('about')} 
+              />
+            </div>
+          )}
         </>
       ) : (
         <div style={{ textAlign: 'center', color: '#FF0000' }}>
