@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Utensils, MapPin, Phone, Mail, Clock, Users, ChefHat, DollarSign, Camera, Loader2, PlusCircle, MapIcon, Crosshair, Search, Settings, Shield, RefreshCcw, Info, ChevronRight, Package } from 'lucide-react';
+import { Utensils, MapPin, Phone, Mail, Clock, Users, ChefHat, DollarSign, Camera, Loader2, PlusCircle, MapIcon, Crosshair, Search, Settings, Shield, RefreshCcw, Info, ChevronRight, Package, Save } from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -437,6 +437,182 @@ const RestaurantManagement = () => {
   const renderSection = () => {
     switch (activeSection) {
       case 'basic':
+        case 'basic':
+          return (
+            <form onSubmit={onSubmit}>
+              <div style={{
+                background: 'white',
+                borderRadius: '1.5rem',
+                padding: '1.5rem',
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+              }}>
+                <h2 style={{ 
+                  color: '#FF0000',
+                  fontSize: '1.5rem',
+                  fontWeight: '600',
+                  marginBottom: '1.5rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem'
+                }}>
+                  <Utensils size={24} />
+                  Basic Information
+                </h2>
+  
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '1.5rem'
+                }}>
+                  {/* Restaurant Name Field */}
+                  <div style={{
+                    background: '#F8F9FA',
+                    padding: '1rem',
+                    borderRadius: '1rem',
+                  }}>
+                    <label style={{
+                      display: 'block',
+                      color: '#666',
+                      fontSize: '0.9rem',
+                      marginBottom: '0.5rem'
+                    }}>
+                      Restaurant Name
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={restaurant?.name || ''}
+                      onChange={handleInputChange}
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        fontSize: '1rem',
+                        backgroundColor: 'white',
+                      }}
+                      placeholder="Enter restaurant name"
+                    />
+                  </div>
+  
+                  {/* Contact Information */}
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                    gap: '1rem',
+                  }}>
+                    {/* Phone Field */}
+                    <div style={{
+                      background: '#F8F9FA',
+                      padding: '1rem',
+                      borderRadius: '1rem',
+                    }}>
+                      <label style={{
+                        display: 'block',
+                        color: '#666',
+                        fontSize: '0.9rem',
+                        marginBottom: '0.5rem'
+                      }}>
+                        Phone Number
+                      </label>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'white',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        padding: '0.75rem',
+                      }}>
+                        <Phone size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={restaurant?.phone || ''}
+                          onChange={handleInputChange}
+                          style={{
+                            border: 'none',
+                            outline: 'none',
+                            width: '100%',
+                            fontSize: '1rem'
+                          }}
+                          placeholder="Enter phone number"
+                        />
+                      </div>
+                    </div>
+  
+                    {/* Email Field */}
+                    <div style={{
+                      background: '#F8F9FA',
+                      padding: '1rem',
+                      borderRadius: '1rem',
+                    }}>
+                      <label style={{
+                        display: 'block',
+                        color: '#666',
+                        fontSize: '0.9rem',
+                        marginBottom: '0.5rem'
+                      }}>
+                        Email Address
+                      </label>
+                      <div style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        background: 'white',
+                        border: '2px solid #FFE5E5',
+                        borderRadius: '0.75rem',
+                        padding: '0.75rem',
+                      }}>
+                        <Mail size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                        <input
+                          type="email"
+                          name="email"
+                          value={restaurant?.email || ''}
+                          onChange={handleInputChange}
+                          style={{
+                            border: 'none',
+                            outline: 'none',
+                            width: '100%',
+                            fontSize: '1rem'
+                          }}
+                          placeholder="Enter email address"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+  
+              {/* Save Button */}
+              <button
+                type="submit"
+                style={{
+                  background: 'linear-gradient(135deg, #FF0000, #FF4444)',
+                  color: 'white',
+                  border: 'none',
+                  padding: '1rem',
+                  borderRadius: '0.75rem',
+                  width: '100%',
+                  marginTop: '1.5rem',
+                  fontSize: '1rem',
+                  fontWeight: '500',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  cursor: 'pointer',
+                }}
+              >
+                {loading ? (
+                  <Loader2 size={24} className="animate-spin" />
+                ) : (
+                  <>
+                    <Save size={18} />
+                    Save Changes
+                  </>
+                )}
+              </button>
+            </form>
+          );
       case 'location':
         return (
           <form onSubmit={onSubmit}>
