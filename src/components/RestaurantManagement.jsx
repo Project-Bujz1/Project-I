@@ -334,6 +334,30 @@ const RestaurantManagement = () => {
     </div>
   );
 
+  const handleLogoSave = async () => {
+    setLoading(true);
+    try {
+      const { id } = restaurant;
+      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants/${id}.json`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ logo: restaurant.logo }),
+      });
+
+      if (response.ok) {
+        console.log("Logo updated successfully");
+      } else {
+        console.error("Failed to update logo");
+      }
+    } catch (error) {
+      console.error("Error updating logo:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const renderSection = () => {
     switch (activeSection) {
       case 'basic':
@@ -536,6 +560,16 @@ const RestaurantManagement = () => {
               />
               <h2 style={{ color: '#333', marginTop: '1rem' }}>{restaurant.name}</h2>
               <p style={{ color: '#666' }}>{restaurant.email}</p>
+              <button 
+                onClick={handleLogoSave} 
+                style={{ ...buttonStyle, maxWidth: '200px', margin: '1rem auto 0' }}
+              >
+                {loading ? (
+                  <Loader2 size={24} className="animate-spin" />
+                ) : (
+                  'Save Logo'
+                )}
+              </button>
             </div>
           )}
 
