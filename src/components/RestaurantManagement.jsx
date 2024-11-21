@@ -238,9 +238,11 @@ const RestaurantManagement = () => {
     backgroundColor: '#f5f5f5',
     minHeight: '100vh',
     marginTop: '85px',
+    paddingBottom: '100px',
     '@media (min-width: 768px)': {
       maxWidth: '800px',
       padding: '2rem',
+      paddingBottom: '100px',
     },
   };
 
