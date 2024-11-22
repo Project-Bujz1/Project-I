@@ -278,29 +278,28 @@ const RestaurantManagement = () => {
   // Add a style for the back button container
   const backButtonContainerStyle = {
     position: 'sticky',
-    top: '60px', // Adjust based on your header height
+    top: '60px',
     backgroundColor: 'white',
     borderBottom: '1px solid #FFE5E5',
     zIndex: 100,
-    padding: '1rem',
+    padding: '0.75rem',
     display: 'flex',
     alignItems: 'center',
-    gap: '1rem',
   };
 
   const backButtonStyle = {
     display: 'flex',
     alignItems: 'center',
-    // gap: '0.5rem',
-    color: '#FF0000',
+    color: '#666',
     backgroundColor: 'transparent',
     border: 'none',
     cursor: 'pointer',
-    // padding: '0.5rem',
-    borderRadius: '0.5rem',
+    padding: '0rem',
+    marginRight: '0.5rem',
+    borderRadius: '0.25rem',
     fontSize: '1rem',
     fontWeight: '500',
-    transition: 'all 0.2s ease',
+    transition: 'background-color 0.2s ease',
   };
 
   const sectionTitleStyle = {
@@ -308,6 +307,9 @@ const RestaurantManagement = () => {
     color: '#333',
     fontSize: '1.1rem',
     fontWeight: '600',
+    flex: 1,
+    textAlign: 'center',
+    marginRight: '2.5rem',
   };
 
   // Add this function to get the section title
