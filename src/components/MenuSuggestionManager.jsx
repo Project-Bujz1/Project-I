@@ -8,16 +8,32 @@ const { Search } = Input;
 
 const styles = {
   container: {
-    padding: '8px',
     marginTop: '60px',
+  },
+  stickyHeader: {
+    position: 'sticky',
+    top: '64px',
+    zIndex: 100,
+    backgroundColor: '#fff',
+    // padding: '0px 0',
+    marginBottom: '16px',
+    borderBottom: '1px solid #f0f0f0',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+    width: '100%',
+  },
+  contentContainer: {
+    padding: '0 0px',
   },
   header: {
     color: '#ff4d4f',
     marginBottom: '16px',
     fontSize: '1.5rem',
+    paddingLeft: '8px',
   },
   searchInput: {
     marginBottom: '16px',
+    paddingLeft: '8px',
+    paddingRight: '8px',
   },
   menuCard: {
     marginBottom: '12px',
@@ -242,62 +258,65 @@ const MenuSuggestionManager = () => {
 
   return (
     <div style={styles.container}>
-      <Title level={2} style={styles.header}>Menu Item Suggestions</Title>
+      <div style={styles.stickyHeader}>
+        <Title level={2} style={styles.header}>Menu Item Suggestions</Title>
+        <Search
+          placeholder="Search menu items..."
+          onSearch={handleSearch}
+          onChange={(e) => handleSearch(e.target.value)}
+          style={styles.searchInput}
+        />
+      </div>
 
-      <Search
-        placeholder="Search menu items..."
-        onSearch={handleSearch}
-        onChange={(e) => handleSearch(e.target.value)}
-        style={styles.searchInput}
-      />
-
-      <Row gutter={[16, 16]}>
-        {filteredMenuItems.map(item => (
-          <Col xs={24} md={12} key={item.id}>
-            <Card style={styles.menuCard}>
-              {suggestions[item.id]?.length > 0 && (
-                <>
-                  <div style={styles.suggestionLabel}>Current Suggestions:</div>
-                  <div style={styles.tagsContainer}>
-                    {suggestions[item.id].map(suggestion => (
-                      <div key={suggestion.id} style={styles.suggestionTag}>
-                        <Avatar 
-                          src={getImageUrl(suggestion.image)} 
-                          alt={suggestion.name}
-                          style={styles.tagImage}
-                        />
-                        <span style={styles.suggestionName}>{suggestion.name}</span>
-                      </div>
-                    ))}
+      <div style={styles.contentContainer}>
+        <Row gutter={[16, 16]}>
+          {filteredMenuItems.map(item => (
+            <Col xs={24} md={12} key={item.id}>
+              <Card style={styles.menuCard}>
+                {suggestions[item.id]?.length > 0 && (
+                  <>
+                    <div style={styles.suggestionLabel}>Current Suggestions:</div>
+                    <div style={styles.tagsContainer}>
+                      {suggestions[item.id].map(suggestion => (
+                        <div key={suggestion.id} style={styles.suggestionTag}>
+                          <Avatar 
+                            src={getImageUrl(suggestion.image)} 
+                            alt={suggestion.name}
+                            style={styles.tagImage}
+                          />
+                          <span style={styles.suggestionName}>{suggestion.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
+                <div style={styles.itemContent}>
+                  <div style={styles.imageContainer}>
+                    <img
+                      src={getImageUrl(item.image)}
+                      alt={item.name}
+                      style={styles.image}
+                    />
                   </div>
-                </>
-              )}
-              <div style={styles.itemContent}>
-                <div style={styles.imageContainer}>
-                  <img
-                    src={getImageUrl(item.image)}
-                    alt={item.name}
-                    style={styles.image}
-                  />
+                  <div style={{ flex: 1 }}>
+                    <Title level={4}>{item.name}</Title>
+                    <Text type="secondary">{item.description}</Text>
+                    <div style={styles.price}>₹{item.price}</div>
+                  </div>
                 </div>
-                <div style={{ flex: 1 }}>
-                  <Title level={4}>{item.name}</Title>
-                  <Text type="secondary">{item.description}</Text>
-                  <div style={styles.price}>₹{item.price}</div>
-                </div>
-              </div>
-              <Button 
-                type="primary"
-                icon={<PlusOutlined />}
-                style={styles.addSuggestionsButton}
-                onClick={() => handleOpenModal(item)}
-              >
-                {suggestions[item.id]?.length > 0 ? 'Update Suggestions' : 'Set Suggestions'}
-              </Button>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+                <Button 
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  style={styles.addSuggestionsButton}
+                  onClick={() => handleOpenModal(item)}
+                >
+                  {suggestions[item.id]?.length > 0 ? 'Update Suggestions' : 'Set Suggestions'}
+                </Button>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      </div>
 
       <Modal
         title={`Select Suggestions for ${selectedItem?.name}`}
