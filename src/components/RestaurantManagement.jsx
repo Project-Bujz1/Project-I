@@ -1,5 +1,28 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Utensils, MapPin, Phone, Mail, Clock, Users, ChefHat, DollarSign, Camera, Loader2, PlusCircle, MapIcon, Crosshair, Search, Settings, Shield, RefreshCcw, Info, ChevronRight, Package, Save } from 'lucide-react';
+import { 
+  Store, 
+  Settings2, 
+  MapPin, 
+  Phone, 
+  Mail, 
+  Clock, 
+  Users, 
+  ChefHat, 
+  DollarSign, 
+  Camera, 
+  Loader2, 
+  PlusCircle, 
+  MapIcon, 
+  Crosshair, 
+  Search, 
+  Settings, 
+  Shield, 
+  RefreshCcw, 
+  Info, 
+  ChevronRight, 
+  Package, 
+  Save 
+} from 'lucide-react';
 import { MapContainer, TileLayer, Marker, useMap, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -455,7 +478,7 @@ const RestaurantManagement = () => {
                   alignItems: 'center',
                   gap: '0.5rem'
                 }}>
-                  <Utensils size={24} />
+                  <Settings2 size={24} />
                   Basic Information
                 </h2>
   
@@ -478,21 +501,29 @@ const RestaurantManagement = () => {
                     }}>
                       Restaurant Name
                     </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={restaurant?.name || ''}
-                      onChange={handleInputChange}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem',
-                        border: '2px solid #FFE5E5',
-                        borderRadius: '0.75rem',
-                        fontSize: '1rem',
-                        backgroundColor: 'white',
-                      }}
-                      placeholder="Enter restaurant name"
-                    />
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'white',
+                      border: '2px solid #FFE5E5',
+                      borderRadius: '0.75rem',
+                      padding: '0.75rem',
+                    }}>
+                      <Store size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                      <input
+                        type="text"
+                        name="name"
+                        value={restaurant?.name || ''}
+                        onChange={handleInputChange}
+                        style={{
+                          border: 'none',
+                          outline: 'none',
+                          width: '100%',
+                          fontSize: '1rem'
+                        }}
+                        placeholder="Enter restaurant name"
+                      />
+                    </div>
                   </div>
   
                   {/* Contact Information */}
@@ -766,8 +797,8 @@ const RestaurantManagement = () => {
                         </>
                       ) : (
                         <>
-                          <RefreshCcw size={20} />
-                          Save Changes
+                    <Save size={18} />
+                    Save Changes
                         </>
                       )}
                     </button>
@@ -1023,7 +1054,7 @@ const RestaurantManagement = () => {
 
               <h3 style={{ color: '#FF0000', marginBottom: '1rem', fontSize: '1.2rem' }}>Information We Collect</h3>
               <ul style={{ marginBottom: '1.5rem', paddingLeft: '1.5rem' }}>
-                <li style={{ marginBottom: '0.5rem' }}>Basic contact information (name, email, phone number)</li>
+                <li style={{ marginBottom: '0.5rem' }}>Basic contact information (name, email, phone number and location)</li>
                 <li style={{ marginBottom: '0.5rem' }}>Restaurant details and preferences</li>
                 <li style={{ marginBottom: '0.5rem' }}>Order history and transaction data</li>
                 <li style={{ marginBottom: '0.5rem' }}>Device information and usage statistics</li>
@@ -1382,7 +1413,7 @@ const RestaurantManagement = () => {
             <div>
               <ProfileCard 
                 title="Basic Information" 
-                icon={Utensils} 
+                icon={Settings2} 
                 onClick={() => handleSectionClick('basic')} 
               />
               <ProfileCard 

@@ -9,7 +9,8 @@ import {
   ShoppingCart, 
   FileText, 
   ChevronDown, 
-  LogOut 
+  LogOut, 
+  MapPinned
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import './Header.css';
@@ -218,17 +219,24 @@ function Header({ onSearch }) {
               {restaurantDetails.email}
             </p>
             <p style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '10px' }}>
-              <AiFillEnvironment style={{ marginRight: '10px', marginTop: '4px', color: '#ff4d4f' }} />
+              <AiFillEnvironment 
+                size={64}  // Increased size significantly
+                style={{ 
+                  marginRight: '10px', 
+                  marginTop: '4px', 
+                  color: '#ff4d4f' 
+                }} 
+              />
               <span>{restaurantDetails.address}</span>
             </p>
-            <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+            {/* <p style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               <FaUtensils style={{ marginRight: '10px', color: '#ff4d4f' }} />
               Cuisine: {restaurantDetails.peopleCount}
-            </p>
-            <p style={{ display: 'flex', alignItems: 'center' }}>
+            </p> */}
+            {/* <p style={{ display: 'flex', alignItems: 'center' }}>
               <AiOutlineShoppingCart style={{ marginRight: '10px', color: '#ff4d4f' }} />
               Seating Capacity: {restaurantDetails.seatingCapacity}
-            </p>
+            </p> */}
           </div>
         )}
       </Modal>
