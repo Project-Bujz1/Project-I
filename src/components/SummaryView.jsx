@@ -109,7 +109,31 @@ function BillSummary() {
   }, [cart]);
 
   if (loading) {
-    return <FoodLoader />;
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        zIndex: 1000,
+      }}>
+        <FoodLoader />
+        <div style={{
+          marginTop: '1rem',
+          color: '#FF0000',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
+        }}>
+          Loading bill summary...
+        </div>
+      </div>
+    );
   }
 
   // If cart is empty and no active order exists, show empty state

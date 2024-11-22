@@ -273,13 +273,27 @@ const AdminOrderComponent = () => {
   if (loading) {
     return (
       <div style={{
-        height: '100vh',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
         display: 'flex',
+        flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        background: '#fff5f5'
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        zIndex: 1000,
       }}>
-        <FoodLoader/>
+        <FoodLoader />
+        <div style={{
+          marginTop: '1rem',
+          color: '#FF0000',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
+        }}>
+          Loading orders...
+        </div>
       </div>
     );
   }
