@@ -251,38 +251,32 @@ useEffect(() => {
                 ← Back to Categories
               </button>
               <h2 className="section-title">{selectedCategory.name}</h2>
-              {loading.subcategories && (
-                <div style={{
-                  position: 'fixed',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: 'rgba(255, 255, 255, 0.8)',
-                  zIndex: 1000,
-                }}>
-                  <FoodLoader />
-                  <div style={{
-                    marginTop: '1rem',
-                    color: '#FF0000',
-                    fontWeight: 'bold',
-                    fontSize: '1.2rem',
-                  }}>
-                    Loading subcategories...
-                  </div>
+              {loading.subcategories ? (
+                <>
+                <div className="loading-animation"
+                style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: '200px',
+        }}
+      >
+        <img src="/assets/LoadingMenuItems.gif" alt="Loading menu items..." />
+        <h1>Loading Sub Categories</h1>
+      </div>
+                </>
+              ) : (
+                <div className="card-grid">
+                  {filteredSubcategories?.map((subcategory) => (
+                    <SubcategoryCard
+                      key={subcategory.id}
+                      subcategory={subcategory}
+                      onClick={() => handleSubcategoryClick(subcategory)}
+                    />
+                  ))}
                 </div>
               )}
-              {filteredSubcategories?.map((subcategory) => (
-                <SubcategoryCard
-                  key={subcategory.id}
-                  subcategory={subcategory}
-                  onClick={() => handleSubcategoryClick(subcategory)}
-                />
-              ))}
             </>
           )}
 
@@ -313,34 +307,24 @@ useEffect(() => {
     </div> */}
     
     <h2 className="section-title" style={{marginTop : '70px'}}>{selectedSubcategory.name}</h2>
-    {loading.menuItems && (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        zIndex: 1000,
-      }}>
-        <FoodLoader />
-        <div style={{
-          marginTop: '1rem',
-          color: '#FF0000',
-          fontWeight: 'bold',
-          fontSize: '1.2rem',
-        }}>
-          Loading menu items...
-        </div>
+    {loading.menuItems ? (
+                <div className="loading-animation"
+                style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexDirection: 'column',
+          alignItems: 'center',
+          height: '200px',
+        }}
+      >
+        <img src="/assets/LoadingMenuItems.gif" alt="Loading menu items..." />
+        <h1>Loading Menu Items</h1>
+      </div>
+    ) : (
+      <div className="menu-items-grid" style={{marginTop : "10px"}}>
+        {filteredMenuItems.map(renderMenuItem)}
       </div>
     )}
-    <div className="menu-items-grid" style={{marginTop : "10px"}}>
-      {filteredMenuItems.map(renderMenuItem)}
-    </div>
   </>
 )}
         </>
