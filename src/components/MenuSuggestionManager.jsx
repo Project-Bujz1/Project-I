@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Typography, Input, message, Modal, Spin, Button, Avatar } from 'antd';
-import { PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { CloseOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
 import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
@@ -8,29 +8,29 @@ const { Search } = Input;
 
 const styles = {
   container: {
-    padding: '24px',
-    marginTop: "40px",
-    maxWidth: '1200px',
-    // margin: '0 auto',
+    padding: '8px',
+    marginTop: '60px',
   },
   header: {
     color: '#ff4d4f',
-    marginBottom: '24px',
+    marginBottom: '16px',
+    fontSize: '1.5rem',
   },
   searchInput: {
-    marginBottom: '24px',
-    width: '100%',
+    marginBottom: '16px',
   },
   menuCard: {
-    marginBottom: '16px',
+    marginBottom: '12px',
     position: 'relative',
-    paddingBottom: '60px',
+    paddingBottom: '50px',
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   },
   imageContainer: {
-    width: '120px',
-    height: '120px',
+    width: '100px',
+    height: '100px',
     overflow: 'hidden',
     flexShrink: 0,
+    borderRadius: '8px',
   },
   image: {
     width: '100%',
@@ -77,25 +77,32 @@ const styles = {
     borderRadius: '4px',
   },
   tagsContainer: {
-    marginTop: '12px',
+    marginTop: '8px',
     display: 'flex',
     gap: '8px',
     flexWrap: 'wrap',
     width: '100%',
-    minHeight: '40px',
-    marginBottom: '8px',
+    minHeight: '32px',
+    padding: '8px',
+    backgroundColor: '#f5f5f5',
+    borderRadius: '6px',
   },
-  tagImage: {
-    borderRadius: '50%',
-    width: '32px',
-    height: '32px',
+  suggestionTag: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '4px',
+    backgroundColor: '#fff',
+    padding: '4px 8px',
+    borderRadius: '16px',
+    border: '1px solid #e8e8e8',
+  },
+  suggestionName: {
+    fontSize: '12px',
+    color: '#666',
+    marginLeft: '4px',
   },
   loadingContainer: {
-    marginTop: "250px",
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '200px',
+    marginTop: '100px',
   },
 };
 
@@ -248,6 +255,23 @@ const MenuSuggestionManager = () => {
         {filteredMenuItems.map(item => (
           <Col xs={24} md={12} key={item.id}>
             <Card style={styles.menuCard}>
+              {suggestions[item.id]?.length > 0 && (
+                <>
+                  <div style={styles.suggestionLabel}>Current Suggestions:</div>
+                  <div style={styles.tagsContainer}>
+                    {suggestions[item.id].map(suggestion => (
+                      <div key={suggestion.id} style={styles.suggestionTag}>
+                        <Avatar 
+                          src={getImageUrl(suggestion.image)} 
+                          alt={suggestion.name}
+                          style={styles.tagImage}
+                        />
+                        <span style={styles.suggestionName}>{suggestion.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
               <div style={styles.itemContent}>
                 <div style={styles.imageContainer}>
                   <img
@@ -260,16 +284,6 @@ const MenuSuggestionManager = () => {
                   <Title level={4}>{item.name}</Title>
                   <Text type="secondary">{item.description}</Text>
                   <div style={styles.price}>₹{item.price}</div>
-                  <div style={styles.tagsContainer}>
-                    {(suggestions[item.id] || []).map(suggestion => (
-                      <Avatar 
-                        key={suggestion.id}
-                        src={getImageUrl(suggestion.image)} 
-                        alt={suggestion.name}
-                        style={styles.tagImage}
-                      />
-                    ))}
-                  </div>
                 </div>
               </div>
               <Button 
@@ -290,7 +304,7 @@ const MenuSuggestionManager = () => {
         open={modalVisible}
         onCancel={() => setModalVisible(false)}
         footer={[
-          <Button key="cancel" onClick={() => setModalVisible(false)}>
+          <Button key="cancel" icon={<CloseOutlined />} onClick={() => setModalVisible(false)}>
             Cancel
           </Button>,
           <Button
@@ -298,6 +312,7 @@ const MenuSuggestionManager = () => {
             type="primary"
             icon={<SaveOutlined />}
             loading={saving}
+            style={{ backgroundColor: '#ff4d4f', borderColor: '#ff4d4f' }}
             onClick={saveSuggestions}
           >
             Save Suggestions
