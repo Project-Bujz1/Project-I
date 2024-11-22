@@ -290,10 +290,10 @@ const RestaurantManagement = () => {
   const containerStyle = {
     maxWidth: '100%',
     margin: '0 auto',
-    padding: '1rem',
-    backgroundColor: '#f5f5f5',
+    // padding: '1rem',
+    // backgroundColor: '#f5f5f5',
     minHeight: '100vh',
-    marginTop: '85px',
+    marginTop: '60px',
     paddingBottom: '100px',
     '@media (min-width: 768px)': {
       maxWidth: '800px',
