@@ -20,6 +20,7 @@ import {
   RefreshCcw, 
   Info, 
   ChevronRight, 
+  ChevronLeft, 
   Package, 
   Save 
 } from 'lucide-react';
@@ -47,7 +48,7 @@ const RestaurantManagement = () => {
   const fileInputRef = useRef(null);
   const mapRef = useRef(null);
   const [activeSection, setActiveSection] = useState(null);
-
+ 
   const customIcon = new L.Icon({
     iconUrl: markerIcon,
     iconRetinaUrl: markerIcon2x,
@@ -273,8 +274,63 @@ const RestaurantManagement = () => {
       backgroundColor: '#FFE5E5',
     },
   };
+ 
+  // Add a style for the back button container
+  const backButtonContainerStyle = {
+    position: 'sticky',
+    top: '60px', // Adjust based on your header height
+    backgroundColor: 'white',
+    borderBottom: '1px solid #FFE5E5',
+    zIndex: 100,
+    padding: '1rem',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+  };
 
-  
+  const backButtonStyle = {
+    display: 'flex',
+    alignItems: 'center',
+    // gap: '0.5rem',
+    color: '#FF0000',
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    // padding: '0.5rem',
+    borderRadius: '0.5rem',
+    fontSize: '1rem',
+    fontWeight: '500',
+    transition: 'all 0.2s ease',
+  };
+
+  const sectionTitleStyle = {
+    margin: 0,
+    color: '#333',
+    fontSize: '1.1rem',
+    fontWeight: '600',
+  };
+
+  // Add this function to get the section title
+  const getSectionTitle = (section) => {
+    switch (section) {
+      case 'basic':
+        return 'Basic Information';
+      case 'location':
+        return 'Location Settings';
+      case 'privacy':
+        return 'Privacy Policy';
+      case 'refund':
+        return 'Refund Policy';
+      case 'terms':
+        return 'Terms & Conditions';
+      case 'about':
+        return 'About Us';
+      default:
+        return '';
+    }
+  };
+
+  // Modify your section rendering to include the back button
   const RestaurantLoader = () => (
     <div style={{
       position: 'fixed',
@@ -320,7 +376,7 @@ const RestaurantManagement = () => {
     paddingBottom: '100px',
     '@media (min-width: 768px)': {
       maxWidth: '800px',
-      padding: '2rem',
+      // padding: '2rem',
       paddingBottom: '100px',
     },
   };
@@ -460,34 +516,78 @@ const RestaurantManagement = () => {
   const renderSection = () => {
     switch (activeSection) {
       case 'basic':
-        case 'basic':
-          return (
-            <form onSubmit={onSubmit}>
-              <div style={{
-                background: 'white',
-                borderRadius: '1.5rem',
-                padding: '1.5rem',
-                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+        return (
+          <form onSubmit={onSubmit}>
+            <div style={{
+              background: 'white',
+              borderRadius: '1.5rem',
+              padding: '1.5rem',
+              boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
+            }}>
+              <h2 style={{ 
+                color: '#FF0000',
+                fontSize: '1.5rem',
+                fontWeight: '600',
+                marginBottom: '1.5rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem'
               }}>
-                <h2 style={{ 
-                  color: '#FF0000',
-                  fontSize: '1.5rem',
-                  fontWeight: '600',
-                  marginBottom: '1.5rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem'
-                }}>
-                  <Settings2 size={24} />
-                  Basic Information
-                </h2>
+                <Settings2 size={24} />
+                Basic Information
+              </h2>
   
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1.5rem'
+              }}>
+                {/* Restaurant Name Field */}
                 <div style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1.5rem'
+                  background: '#F8F9FA',
+                  padding: '1rem',
+                  borderRadius: '1rem',
                 }}>
-                  {/* Restaurant Name Field */}
+                  <label style={{
+                    display: 'block',
+                    color: '#666',
+                    fontSize: '0.9rem',
+                    marginBottom: '0.5rem'
+                  }}>
+                    Restaurant Name
+                  </label>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    background: 'white',
+                    border: '2px solid #FFE5E5',
+                    borderRadius: '0.75rem',
+                    padding: '0.75rem',
+                  }}>
+                    <Store size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                    <input
+                      type="text"
+                      name="name"
+                      value={restaurant?.name || ''}
+                      onChange={handleInputChange}
+                      style={{
+                        border: 'none',
+                        outline: 'none',
+                        width: '100%',
+                        fontSize: '1rem'
+                      }}
+                      placeholder="Enter restaurant name"
+                    />
+                  </div>
+                </div>
+  
+                {/* Contact Information */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+                  gap: '1rem',
+                }}>
+                  {/* Phone Field */}
                   <div style={{
                     background: '#F8F9FA',
                     padding: '1rem',
@@ -499,7 +599,7 @@ const RestaurantManagement = () => {
                       fontSize: '0.9rem',
                       marginBottom: '0.5rem'
                     }}>
-                      Restaurant Name
+                      Phone Number
                     </label>
                     <div style={{
                       display: 'flex',
@@ -509,11 +609,11 @@ const RestaurantManagement = () => {
                       borderRadius: '0.75rem',
                       padding: '0.75rem',
                     }}>
-                      <Store size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                      <Phone size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
                       <input
-                        type="text"
-                        name="name"
-                        value={restaurant?.name || ''}
+                        type="tel"
+                        name="phone"
+                        value={restaurant?.phone || ''}
                         onChange={handleInputChange}
                         style={{
                           border: 'none',
@@ -521,129 +621,84 @@ const RestaurantManagement = () => {
                           width: '100%',
                           fontSize: '1rem'
                         }}
-                        placeholder="Enter restaurant name"
+                        placeholder="Enter phone number"
                       />
                     </div>
                   </div>
   
-                  {/* Contact Information */}
+                  {/* Email Field */}
                   <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-                    gap: '1rem',
+                    background: '#F8F9FA',
+                    padding: '1rem',
+                    borderRadius: '1rem',
                   }}>
-                    {/* Phone Field */}
-                    <div style={{
-                      background: '#F8F9FA',
-                      padding: '1rem',
-                      borderRadius: '1rem',
+                    <label style={{
+                      display: 'block',
+                      color: '#666',
+                      fontSize: '0.9rem',
+                      marginBottom: '0.5rem'
                     }}>
-                      <label style={{
-                        display: 'block',
-                        color: '#666',
-                        fontSize: '0.9rem',
-                        marginBottom: '0.5rem'
-                      }}>
-                        Phone Number
-                      </label>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: 'white',
-                        border: '2px solid #FFE5E5',
-                        borderRadius: '0.75rem',
-                        padding: '0.75rem',
-                      }}>
-                        <Phone size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={restaurant?.phone || ''}
-                          onChange={handleInputChange}
-                          style={{
-                            border: 'none',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '1rem'
-                          }}
-                          placeholder="Enter phone number"
-                        />
-                      </div>
-                    </div>
-  
-                    {/* Email Field */}
+                      Email Address
+                    </label>
                     <div style={{
-                      background: '#F8F9FA',
-                      padding: '1rem',
-                      borderRadius: '1rem',
+                      display: 'flex',
+                      alignItems: 'center',
+                      background: 'white',
+                      border: '2px solid #FFE5E5',
+                      borderRadius: '0.75rem',
+                      padding: '0.75rem',
                     }}>
-                      <label style={{
-                        display: 'block',
-                        color: '#666',
-                        fontSize: '0.9rem',
-                        marginBottom: '0.5rem'
-                      }}>
-                        Email Address
-                      </label>
-                      <div style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        background: 'white',
-                        border: '2px solid #FFE5E5',
-                        borderRadius: '0.75rem',
-                        padding: '0.75rem',
-                      }}>
-                        <Mail size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
-                        <input
-                          type="email"
-                          name="email"
-                          value={restaurant?.email || ''}
-                          onChange={handleInputChange}
-                          style={{
-                            border: 'none',
-                            outline: 'none',
-                            width: '100%',
-                            fontSize: '1rem'
-                          }}
-                          placeholder="Enter email address"
-                        />
-                      </div>
+                      <Mail size={18} color="#FF0000" style={{ marginRight: '0.5rem' }} />
+                      <input
+                        type="email"
+                        name="email"
+                        value={restaurant?.email || ''}
+                        onChange={handleInputChange}
+                        style={{
+                          border: 'none',
+                          outline: 'none',
+                          width: '100%',
+                          fontSize: '1rem'
+                        }}
+                        placeholder="Enter email address"
+                      />
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
   
-              {/* Save Button */}
-              <button
-                type="submit"
-                style={{
-                  background: 'linear-gradient(135deg, #FF0000, #FF4444)',
-                  color: 'white',
-                  border: 'none',
-                  padding: '1rem',
-                  borderRadius: '0.75rem',
-                  width: '100%',
-                  marginTop: '1.5rem',
-                  fontSize: '1rem',
-                  fontWeight: '500',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.5rem',
-                  cursor: 'pointer',
-                }}
-              >
-                {loading ? (
-                  <Loader2 size={24} className="animate-spin" />
-                ) : (
-                  <>
-                    <Save size={18} />
-                    Save Changes
-                  </>
-                )}
-              </button>
-            </form>
-          );
+            {/* Save Button */}
+            <button
+              type="submit"
+              style={{
+                background: 'linear-gradient(135deg, #FF0000, #FF4444)',
+                color: 'white',
+                border: 'none',
+                padding: '1rem',
+                borderRadius: '0.75rem',
+                width: '100%',
+                marginTop: '1.5rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                cursor: 'pointer',
+              }}
+            >
+              {loading ? (
+                <Loader2 size={24} className="animate-spin" />
+              ) : (
+                <>
+                  <Save size={18} />
+                  Save Changes
+                </>
+              )}
+            </button>
+          </form>
+        );
       case 'location':
         return (
           <form onSubmit={onSubmit}>
@@ -1263,7 +1318,6 @@ const RestaurantManagement = () => {
       {loading && <RestaurantLoader />}
       {restaurant ? (
         <>
-          {/* Only show Profile Header when no section is active */}
           {!activeSection && (
             <div style={{ backgroundColor: '#fff' }}>
               <div style={profileHeaderStyle}>
@@ -1397,19 +1451,26 @@ const RestaurantManagement = () => {
             </div>
           )}
 
-          {/* Show section content if active, otherwise show menu */}
           {activeSection ? (
             <div>
-              {/* <button 
-                onClick={() => handleSectionClick(null)} 
-                style={{ ...buttonStyle, marginBottom: '1rem' }}
-              >
-                Back to Profile
-              </button> */}
-              {renderSection()}
+              <div style={backButtonContainerStyle}>
+                <button
+                  onClick={() => handleSectionClick(null)}
+                  style={backButtonStyle}
+                >
+                  <ChevronLeft size={24} />
+                  <span>Back</span>
+                </button>
+                <h2 style={sectionTitleStyle}>
+                  {getSectionTitle(activeSection)}
+                </h2>
+              </div>
+              <div style={{ padding: '0rem' }}>
+                {renderSection()}
+              </div>
             </div>
           ) : (
-            /* Profile Menu Cards */
+            /* Profile menu cards */
             <div>
               <ProfileCard 
                 title="Basic Information" 
@@ -1444,7 +1505,6 @@ const RestaurantManagement = () => {
             </div>
           )}
           
-          {/* Only show version info when no section is active */}
           {!activeSection && (
             <div style={{
               textAlign: 'center',
