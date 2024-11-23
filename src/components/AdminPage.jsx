@@ -283,13 +283,13 @@ const AdminOrderComponent = () => {
         linear-gradient(135deg, rgba(255, 77, 79, 0.05) 0%, rgba(255, 255, 255, 0.1) 100%),
         repeating-linear-gradient(45deg, rgba(255, 77, 79, 0.02) 0px, rgba(255, 77, 79, 0.02) 2px, transparent 2px, transparent 8px)
       `,
-      padding: '15px',
+      padding: '8px',
       paddingTop: '90px'
     }}>
       <div style={{
-        maxWidth: '1400px',
+        maxWidth: '100%',
         margin: '0 auto',
-        padding: '10px',
+        padding: '5px',
       }}>
         <div style={{
           textAlign: 'center',
@@ -377,9 +377,9 @@ const AdminOrderComponent = () => {
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 320px), 1fr))',
-            gap: '20px',
-            padding: '10px'
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
+            gap: '10px',
+            padding: '5px'
           }}>
             {filteredOrders.map(order => (
               <Badge.Ribbon
