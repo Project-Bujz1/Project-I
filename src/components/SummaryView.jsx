@@ -302,7 +302,8 @@ function BillSummary() {
       styles: {
         fontSize: 10,
         cellPadding: 5,
-        textColor: [0, 0, 0]
+        textColor: [0, 0, 0],
+        font: 'helvetica'
       },
       columnStyles: {
         0: { cellWidth: 80 },
@@ -312,26 +313,28 @@ function BillSummary() {
       }
     });
     
-    // Add charges breakdown to PDF
-    yPos += 10;
+    // Get the final Y position after the table
+    yPos = doc.lastAutoTable.finalY + 10;
+
+    // Add charges breakdown with proper spacing
     doc.setFont('helvetica', 'bold');
     doc.text('Subtotal:', pageWidth - margin - 60, yPos);
     doc.text(`₹${subtotal.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
 
-    // Add each charge
+    // Add each charge with increased spacing
     Object.entries(breakdown).forEach(([name, detail]) => {
-      yPos += 7;
+      yPos += 8; // Increased spacing between charges
       doc.setFont('helvetica', 'normal');
       const chargeText = `${name} ${detail.type === 'percentage' ? `(${detail.value}%)` : ''}:`;
       doc.text(chargeText, pageWidth - margin - 60, yPos);
       doc.text(`₹${detail.amount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
     });
 
-    // Add final total
-    yPos += 10;
+    // Add final total with extra spacing
+    yPos += 12; // Extra spacing before total
     doc.setFont('helvetica', 'bold');
     doc.text('Total:', pageWidth - margin - 60, yPos);
-    doc.text(`₹${total.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
+    doc.text(`₹${orderTotal.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
     
     // Footer
     yPos = doc.internal.pageSize.height - 30;
