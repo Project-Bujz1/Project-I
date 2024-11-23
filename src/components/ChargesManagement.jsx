@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Form, Input, Button, Select, Table, Popconfirm, message, Switch, Typography } from 'antd';
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { Card, Form, Input, Button, Select, message, Switch, Typography, Popconfirm } from 'antd';
+import { DeleteOutlined, EditOutlined, PlusOutlined, PercentageOutlined, DollarOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 const { Text } = Typography;  // Add this line
@@ -99,150 +99,216 @@ const ChargesManagement = () => {
     }
   };
 
-  const columns = [
-    {
-      title: 'Name',
-      dataIndex: 'name',
-      key: 'name',
-    },
-    {
-      title: 'Type',
-      dataIndex: 'type',
-      key: 'type',
-      render: (text) => text === 'percentage' ? 'Percentage' : 'Fixed Amount'
-    },
-    {
-      title: 'Value',
-      dataIndex: 'value',
-      key: 'value',
-      render: (text, record) => record.type === 'percentage' ? `${text}%` : `₹${text}`
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      key: 'description',
-    },
-    {
-      title: 'Enabled',
-      dataIndex: 'isEnabled',
-      key: 'isEnabled',
-      render: (_, record) => (
-        <Switch
-          checked={record.isEnabled}
-          onChange={(checked) => handleToggleCharge(record, checked)}
-          checkedChildren="ON"
-          unCheckedChildren="OFF"
-          style={{ 
-            backgroundColor: record.isEnabled ? '#52c41a' : '#f5f5f5',
-          }}
-        />
-      ),
-    },
-    {
-      title: 'Actions',
-      key: 'actions',
-      render: (_, record) => (
-        <span>
-          <Button 
-            type="link" 
-            icon={<EditOutlined />} 
-            onClick={() => handleEdit(record)}
-          />
-          <Popconfirm
-            title="Are you sure you want to delete this charge?"
-            onConfirm={() => handleDelete(record.id)}
-          >
-            <Button type="link" danger icon={<DeleteOutlined />} />
-          </Popconfirm>
-        </span>
-      ),
-    },
-  ];
-
   return (
-    <div style={{ padding: '20px', marginTop: '80px' }}>
+    <div style={{ 
+      padding: '12px', 
+      marginTop: '60px',
+      maxWidth: '100%',
+      margin: '60px auto 0',
+      background: '#f5f7fa'
+    }}>
       <Card 
-        title="Manage Charges" 
-        extra={
-          <Text type="secondary">
-            Toggle charges to apply them to bills
-          </Text>
+        title={
+          <div style={{ 
+            fontSize: '20px', 
+            fontWeight: 'bold',
+            color: '#1f1f1f',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px'
+          }}>
+            <DollarOutlined style={{ color: '#1890ff' }} />
+            Charges
+          </div>
         }
+        extra={null}
+        style={{
+          borderRadius: '12px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+          margin: '0 auto',
+          border: 'none'
+        }}
+        bodyStyle={{
+          padding: '12px'
+        }}
       >
+        {/* Add New Charge Button */}
         <Form
           form={form}
           onFinish={onFinish}
           layout="vertical"
+          style={{
+            background: 'white',
+            padding: '16px',
+            borderRadius: '12px',
+            marginBottom: '16px',
+            boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+          }}
         >
           <Form.Item
             name="name"
-            label="Charge Name"
             rules={[{ required: true, message: 'Please enter charge name' }]}
           >
-            <Input placeholder="e.g., GST, Service Charge" />
-          </Form.Item>
-
-          <Form.Item
-            name="type"
-            label="Charge Type"
-            rules={[{ required: true, message: 'Please select charge type' }]}
-          >
-            <Select placeholder="Select charge type">
-              <Option value="percentage">Percentage</Option>
-              <Option value="fixed">Fixed Amount</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            name="value"
-            label="Value"
-            rules={[{ required: true, message: 'Please enter value' }]}
-          >
-            <Input type="number" step="0.01" placeholder="Enter value" />
-          </Form.Item>
-
-          <Form.Item
-            name="description"
-            label="Description"
-          >
-            <Input.TextArea placeholder="Optional description" />
-          </Form.Item>
-
-          <Form.Item
-            name="isEnabled"
-            valuePropName="checked"
-            initialValue={true}
-          >
-            <Switch 
-              checkedChildren="Enabled" 
-              unCheckedChildren="Disabled"
-              defaultChecked 
+            <Input 
+              placeholder="Charge Name (e.g., GST)"
+              style={{ 
+                borderRadius: '8px',
+                height: '40px'
+              }}
+              prefix={<PercentageOutlined style={{ color: '#1890ff' }} />}
             />
           </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              {editingId ? 'Update Charge' : 'Add Charge'}
-            </Button>
-            {editingId && (
-              <Button 
-                style={{ marginLeft: 8 }} 
-                onClick={() => {
-                  form.resetFields();
-                  setEditingId(null);
-                }}
+          <div style={{ display: 'flex', gap: '8px' }}>
+            <Form.Item
+              name="type"
+              style={{ flex: 1 }}
+              rules={[{ required: true }]}
+            >
+              <Select 
+                placeholder="Type"
+                style={{ width: '100%' }}
               >
-                Cancel
-              </Button>
-            )}
+                <Option value="percentage">Percentage</Option>
+                <Option value="fixed">Fixed</Option>
+              </Select>
+            </Form.Item>
+
+            <Form.Item
+              name="value"
+              style={{ flex: 1 }}
+              rules={[{ required: true }]}
+            >
+              <Input 
+                type="number" 
+                step="0.01" 
+                placeholder="Value"
+                style={{ borderRadius: '8px' }}
+              />
+            </Form.Item>
+          </div>
+
+          <Form.Item
+            name="description"
+            style={{ marginBottom: '12px' }}
+          >
+            <Input.TextArea 
+              placeholder="Description (optional)"
+              style={{ borderRadius: '8px' }}
+              rows={2}
+            />
           </Form.Item>
+
+          <Button 
+            type="primary" 
+            htmlType="submit"
+            icon={<PlusOutlined />}
+            style={{
+              width: '100%',
+              height: '40px',
+              borderRadius: '8px',
+              background: '#1890ff',
+              fontWeight: '500'
+            }}
+          >
+            {editingId ? 'Update Charge' : 'Add Charge'}
+          </Button>
         </Form>
 
-        <Table 
-          columns={columns} 
-          dataSource={charges}
-          rowKey="id"
-        />
+        {/* Charges List */}
+        <div style={{ marginTop: '16px' }}>
+          {charges.map(charge => (
+            <Card
+              key={charge.id}
+              style={{ 
+                marginBottom: '12px',
+                borderRadius: '12px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
+                border: 'none'
+              }}
+              bodyStyle={{ padding: '12px' }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ flex: 1 }}>
+                  <div style={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '8px',
+                    marginBottom: '4px'
+                  }}>
+                    {charge.type === 'percentage' ? 
+                      <PercentageOutlined style={{ color: '#1890ff' }} /> : 
+                      <DollarOutlined style={{ color: '#52c41a' }} />
+                    }
+                    <Text strong>{charge.name}</Text>
+                  </div>
+                  {charge.description && (
+                    <Text type="secondary" style={{ fontSize: '12px' }}>
+                      {charge.description}
+                    </Text>
+                  )}
+                </div>
+
+                <div style={{ 
+                  background: charge.type === 'percentage' ? '#e6f7ff' : '#f6ffed',
+                  padding: '4px 8px',
+                  borderRadius: '12px',
+                  marginRight: '12px'
+                }}>
+                  <Text style={{ 
+                    color: charge.type === 'percentage' ? '#1890ff' : '#52c41a',
+                    fontWeight: 'bold'
+                  }}>
+                    {charge.type === 'percentage' ? `${charge.value}%` : `₹${charge.value}`}
+                  </Text>
+                </div>
+
+                <Switch
+                  checked={charge.isEnabled}
+                  onChange={(checked) => handleToggleCharge(charge, checked)}
+                  size="small"
+                  style={{ 
+                    backgroundColor: charge.isEnabled ? '#52c41a' : '#f5f5f5'
+                  }}
+                />
+              </div>
+
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'flex-end',
+                gap: '8px',
+                marginTop: '12px',
+                borderTop: '1px solid #f0f0f0',
+                paddingTop: '12px'
+              }}>
+                <Button 
+                  type="text"
+                  icon={<EditOutlined />}
+                  onClick={() => handleEdit(charge)}
+                  size="small"
+                  style={{
+                    color: '#1890ff'
+                  }}
+                >
+                  Edit
+                </Button>
+                <Popconfirm
+                  title="Delete this charge?"
+                  onConfirm={() => handleDelete(charge.id)}
+                >
+                  <Button 
+                    type="text"
+                    danger
+                    icon={<DeleteOutlined />}
+                    size="small"
+                  >
+                    Delete
+                  </Button>
+                </Popconfirm>
+              </div>
+            </Card>
+          ))}
+        </div>
       </Card>
     </div>
   );
