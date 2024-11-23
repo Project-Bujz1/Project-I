@@ -31,8 +31,8 @@ function BillSummary() {
   const [charges, setCharges] = useState([]);
   const orgId = localStorage.getItem('orgId');
   
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
+  const displaySubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const { total: displayTotal } = calculateCharges(displaySubtotal, charges.filter(charge => charge.isEnabled));
 
   useEffect(() => {
     const fetchRestaurantInfo = async () => {
@@ -195,8 +195,15 @@ function BillSummary() {
     setErrorModalVisible(true);
   };
   const handleDownloadBill = () => {
-    // Use orderData if cart is empty, otherwise use cart
     const items = cart.length > 0 ? cart : (orderData ? orderData.items : []);
+    
+    // Calculate the total here
+    const subtotal = cart.length > 0 
+      ? cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      : (orderData ? orderData.items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0);
+    
+    const enabledCharges = charges.filter(charge => charge.isEnabled);
+    const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
     const orderTotal = cart.length > 0 ? total : (orderData ? parseFloat(orderData.total) : 0);
 
     if (items.length === 0) {
@@ -210,46 +217,45 @@ function BillSummary() {
     }
 
     const doc = new jsPDF();
-
-    // Styling constants
     const pageWidth = doc.internal.pageSize.width;
     const margin = 15;
-    const col1 = margin;
-    const col2 = pageWidth - margin;
     let yPos = margin;
-    
-    // Add restaurant logo
+
+    // Header with restaurant logo
     if (restaurantInfo.logo) {
-      doc.addImage(restaurantInfo.logo, 'PNG', margin, yPos, 50, 20);
-      yPos += 25;
+      const logoWidth = 40;
+      const logoHeight = 20;
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(restaurantInfo.logo, 'PNG', logoX, yPos, logoWidth, logoHeight);
+      yPos += logoHeight + 5;
     }
-    
-    // Header
-    doc.setFontSize(24);
+
+    // Restaurant name and details
+    doc.setFontSize(16);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(0, 0, 0); // Ensure black text
     doc.text(restaurantInfo.name || 'Restaurant Name', pageWidth / 2, yPos, { align: 'center' });
     
-    // Restaurant details
-    yPos += 15;
-    doc.setFontSize(10);
+    yPos += 7;
+    doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
     const address = restaurantInfo.address || 'N/A';
     const addressLines = doc.splitTextToSize(address, pageWidth - (2 * margin));
     doc.text(addressLines, pageWidth / 2, yPos, { align: 'center' });
     
-    yPos += (addressLines.length * 5) + 10;
+    yPos += (addressLines.length * 4) + 3;
     doc.text(`Tel: ${restaurantInfo.phone || 'N/A'}`, pageWidth / 2, yPos, { align: 'center' });
+    
+    yPos += 4;
+    doc.text(`GSTIN: ${restaurantInfo.gstin || 'N/A'}`, pageWidth / 2, yPos, { align: 'center' });
+    
+    // Divider line
     yPos += 5;
-    doc.text(`Email: ${restaurantInfo.email || 'N/A'}`, pageWidth / 2, yPos, { align: 'center' });
-    
-    // Bill details
-    yPos += 15;
-    doc.setDrawColor(0); // Black lines
+    doc.setLineWidth(0.5);
     doc.line(margin, yPos, pageWidth - margin, yPos);
-    
-    yPos += 10;
-    doc.setFont('helvetica', 'bold');
+
+    // Bill details
+    yPos += 8;
+    doc.setFontSize(9);
     const invoiceNumber = `INV-${Math.floor(Math.random() * 1000000).toString().padStart(6, '0')}`;
     const currentDate = new Date();
     const formattedDate = currentDate.toLocaleDateString();
@@ -257,18 +263,18 @@ function BillSummary() {
     const tableNumber = localStorage.getItem('tableNumber') || 'N/A'; // Fetch tableNumber from localStorage, default to 'N/A' if not found
     
     // Align Invoice No, Date, and Payment Status on the same row
-    doc.text(`Invoice No: ${invoiceNumber}`, col1, yPos);
+    doc.text(`Invoice No: ${invoiceNumber}`, margin, yPos);
     doc.text(`Date: ${formattedDate}`, pageWidth / 2, yPos, { align: 'center' });
-    doc.text('Payment Status: Unpaid', col2, yPos, { align: 'right' });
+    doc.text('Payment Status: Unpaid', pageWidth - margin, yPos, { align: 'right' });
     
     yPos += 7;
-    doc.text(`Table No: ${tableNumber}`, col1, yPos);
-    doc.text(`Time: ${formattedTime}`, col2, yPos, { align: 'right' });
+    doc.text(`Table No: ${tableNumber}`, margin, yPos);
+    doc.text(`Time: ${formattedTime}`, pageWidth - margin, yPos, { align: 'right' });
     
     // Add order status if using orderData
     if (orderData) {
       yPos += 7;
-      doc.text(`Order Status: ${orderData.status}`, col1, yPos);
+      doc.text(`Order Status: ${orderData.status}`, margin, yPos);
     }
     
     // Items table
@@ -306,34 +312,26 @@ function BillSummary() {
       }
     });
     
-    // Calculate totals with charges
-    const subtotal = cart.length > 0 
-      ? cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-      : (orderData ? orderData.items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0);
-
-    const enabledCharges = charges.filter(charge => charge.isEnabled);
-    const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
-
     // Add charges breakdown to PDF
     yPos += 10;
     doc.setFont('helvetica', 'bold');
-    doc.text('Subtotal:', col2 - 60, yPos);
-    doc.text(`₹${subtotal.toFixed(2)}`, col2, yPos, { align: 'right' });
+    doc.text('Subtotal:', pageWidth - margin - 60, yPos);
+    doc.text(`₹${subtotal.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
 
     // Add each charge
     Object.entries(breakdown).forEach(([name, detail]) => {
       yPos += 7;
       doc.setFont('helvetica', 'normal');
       const chargeText = `${name} ${detail.type === 'percentage' ? `(${detail.value}%)` : ''}:`;
-      doc.text(chargeText, col2 - 60, yPos);
-      doc.text(`₹${detail.amount.toFixed(2)}`, col2, yPos, { align: 'right' });
+      doc.text(chargeText, pageWidth - margin - 60, yPos);
+      doc.text(`₹${detail.amount.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
     });
 
     // Add final total
     yPos += 10;
     doc.setFont('helvetica', 'bold');
-    doc.text('Total:', col2 - 60, yPos);
-    doc.text(`₹${total.toFixed(2)}`, col2, yPos, { align: 'right' });
+    doc.text('Total:', pageWidth - margin - 60, yPos);
+    doc.text(`₹${total.toFixed(2)}`, pageWidth - margin, yPos, { align: 'right' });
     
     // Footer
     yPos = doc.internal.pageSize.height - 30;
@@ -413,7 +411,7 @@ function BillSummary() {
 </Title>
 
             <Title level={4} style={{ margin: 0 }}>
-              ₹{(cart.length > 0 ? total : parseFloat(orderData.total)).toFixed(2)}
+              ₹{(cart.length > 0 ? displayTotal : parseFloat(orderData?.total || 0)).toFixed(2)}
             </Title>
           </div>
         </div>

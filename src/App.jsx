@@ -21,7 +21,7 @@ import MyOrders from './components/MyOrders';
 import MenuItem from './components/MenuItem';
 import QREntry from './components/QREntry ';
 import MenuSuggestionManager from './components/MenuSuggestionManager';
-import { MenuProvider } from './context/MenuContext';
+import { MenuProvider } from './contexts/MenuProvider';
 import ChargesManagement from './components/ChargesManagement';
 import { OrderProvider } from './context/OrderContext';
 
