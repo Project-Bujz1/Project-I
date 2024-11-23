@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Form, Input, Button, Select, message, Switch, Typography, Popconfirm } from 'antd';
-import { DeleteOutlined, EditOutlined, PlusOutlined, PercentageOutlined, DollarOutlined } from '@ant-design/icons';
+import { DeleteOutlined, EditOutlined, PlusOutlined, PercentageOutlined, TagOutlined } from '@ant-design/icons';
+import { RiMoneyDollarCircleLine } from 'react-icons/ri';
 
 const { Option } = Select;
-const { Text } = Typography;  // Add this line
+const { Text } = Typography;
 
 const ChargesManagement = () => {
   const [form] = Form.useForm();
@@ -81,7 +82,12 @@ const ChargesManagement = () => {
   };
 
   const handleEdit = (record) => {
-    form.setFieldsValue(record);
+    form.setFieldsValue({
+      name: record.name,
+      type: record.type,
+      value: record.value.toString(), // Convert to string for form input
+      description: record.description
+    });
     setEditingId(record.id);
   };
 
@@ -105,19 +111,19 @@ const ChargesManagement = () => {
       marginTop: '60px',
       maxWidth: '100%',
       margin: '60px auto 0',
-      background: '#f5f7fa'
+      background: '#fff'
     }}>
       <Card 
         title={
           <div style={{ 
             fontSize: '20px', 
             fontWeight: 'bold',
-            color: '#1f1f1f',
+            color: '#fff',
             display: 'flex',
             alignItems: 'center',
             gap: '8px'
           }}>
-            <DollarOutlined style={{ color: '#1890ff' }} />
+            <TagOutlined style={{ color: '#fff' }} />
             Charges
           </div>
         }
@@ -126,19 +132,25 @@ const ChargesManagement = () => {
           borderRadius: '12px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
           margin: '0 auto',
-          border: 'none'
+          border: 'none',
+          background: '#ff4d4f'
+        }}
+        headStyle={{
+          background: '#ff4d4f',
+          borderBottom: 'none'
         }}
         bodyStyle={{
-          padding: '12px'
+          padding: '12px',
+          background: '#fff'
         }}
       >
-        {/* Add New Charge Button */}
+        {/* Add New Charge Form */}
         <Form
           form={form}
           onFinish={onFinish}
           layout="vertical"
           style={{
-            background: 'white',
+            background: '#fff',
             padding: '16px',
             borderRadius: '12px',
             marginBottom: '16px',
@@ -155,7 +167,7 @@ const ChargesManagement = () => {
                 borderRadius: '8px',
                 height: '40px'
               }}
-              prefix={<PercentageOutlined style={{ color: '#1890ff' }} />}
+              prefix={<TagOutlined style={{ color: '#ff4d4f' }} />}
             />
           </Form.Item>
 
@@ -207,8 +219,9 @@ const ChargesManagement = () => {
               width: '100%',
               height: '40px',
               borderRadius: '8px',
-              background: '#1890ff',
-              fontWeight: '500'
+              background: '#ff4d4f',
+              fontWeight: '500',
+              border: 'none'
             }}
           >
             {editingId ? 'Update Charge' : 'Add Charge'}
@@ -224,7 +237,7 @@ const ChargesManagement = () => {
                 marginBottom: '12px',
                 borderRadius: '12px',
                 boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-                border: 'none'
+                border: '1px solid #f0f0f0'
               }}
               bodyStyle={{ padding: '12px' }}
             >
@@ -237,8 +250,8 @@ const ChargesManagement = () => {
                     marginBottom: '4px'
                   }}>
                     {charge.type === 'percentage' ? 
-                      <PercentageOutlined style={{ color: '#1890ff' }} /> : 
-                      <DollarOutlined style={{ color: '#52c41a' }} />
+                      <PercentageOutlined style={{ color: '#ff4d4f' }} /> : 
+                      <RiMoneyDollarCircleLine style={{ color: '#ff4d4f', fontSize: '16px' }} />
                     }
                     <Text strong>{charge.name}</Text>
                   </div>
@@ -250,13 +263,13 @@ const ChargesManagement = () => {
                 </div>
 
                 <div style={{ 
-                  background: charge.type === 'percentage' ? '#e6f7ff' : '#f6ffed',
+                  background: charge.type === 'percentage' ? '#fff1f0' : '#fff1f0',
                   padding: '4px 8px',
                   borderRadius: '12px',
                   marginRight: '12px'
                 }}>
                   <Text style={{ 
-                    color: charge.type === 'percentage' ? '#1890ff' : '#52c41a',
+                    color: '#ff4d4f',
                     fontWeight: 'bold'
                   }}>
                     {charge.type === 'percentage' ? `${charge.value}%` : `₹${charge.value}`}
@@ -268,7 +281,7 @@ const ChargesManagement = () => {
                   onChange={(checked) => handleToggleCharge(charge, checked)}
                   size="small"
                   style={{ 
-                    backgroundColor: charge.isEnabled ? '#52c41a' : '#f5f5f5'
+                    backgroundColor: charge.isEnabled ? '#ff4d4f' : '#f5f5f5'
                   }}
                 />
               </div>
@@ -287,7 +300,7 @@ const ChargesManagement = () => {
                   onClick={() => handleEdit(charge)}
                   size="small"
                   style={{
-                    color: '#1890ff'
+                    color: '#ff4d4f'
                   }}
                 >
                   Edit
@@ -310,6 +323,15 @@ const ChargesManagement = () => {
           ))}
         </div>
       </Card>
+
+      <style jsx>{`
+        .ant-btn-primary:hover {
+          background: #ff7875 !important;
+        }
+        .ant-switch-checked {
+          background-color: #ff4d4f !important
+        }
+      `}</style>
     </div>
   );
 };
