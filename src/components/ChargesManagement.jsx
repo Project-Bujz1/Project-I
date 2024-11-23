@@ -107,7 +107,7 @@ const ChargesManagement = () => {
 
   return (
     <div style={{ 
-      padding: '12px', 
+      padding: '0px', 
       marginTop: '60px',
       maxWidth: '100%',
       margin: '60px auto 0',
@@ -141,7 +141,7 @@ const ChargesManagement = () => {
           borderBottom: 'none'
         }}
         bodyStyle={{
-          padding: '12px',
+          padding: '8px',
           background: '#fff'
         }}
       >
@@ -152,7 +152,7 @@ const ChargesManagement = () => {
           layout="vertical"
           style={{
             background: '#fff',
-            padding: '16px',
+            padding: '12px',
             borderRadius: '12px',
             marginBottom: '16px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
@@ -243,7 +243,9 @@ const ChargesManagement = () => {
                 boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                 border: '1px solid #f0f0f0'
               }}
-              bodyStyle={{ padding: '12px' }}
+              bodyStyle={{ 
+                padding: '10px'
+              }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div style={{ flex: 1 }}>
