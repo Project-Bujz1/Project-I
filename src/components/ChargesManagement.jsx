@@ -111,7 +111,8 @@ const ChargesManagement = () => {
       marginTop: '60px',
       maxWidth: '100%',
       margin: '60px auto 0',
-      background: '#fff'
+      background: '#fff',
+      paddingBottom: '80px'
     }}>
       <Card 
         title={
@@ -229,7 +230,10 @@ const ChargesManagement = () => {
         </Form>
 
         {/* Charges List */}
-        <div style={{ marginTop: '16px' }}>
+        <div style={{ 
+          marginTop: '16px',
+          marginBottom: '70px'
+        }}>
           {charges.map(charge => (
             <Card
               key={charge.id}
