@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Typography, Input, message, Modal, Spin, Button, Avatar } from 'antd';
+import { Card, Row, Col, Typography, Input, message, Modal, Button, Avatar } from 'antd';
 import { CloseOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
+import { useMenu } from '../context/MenuContext';
 import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
@@ -132,9 +133,7 @@ const styles = {
 };
 
 const MenuSuggestionManager = () => {
-  const [menuItems, setMenuItems] = useState([]);
-  const [suggestions, setSuggestions] = useState({});
-  const [loading, setLoading] = useState(true);
+  const { menuItems, suggestions, loading, fetchMenuData, updateSuggestions } = useMenu();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSuggestions, setSelectedSuggestions] = useState([]);
@@ -142,36 +141,7 @@ const MenuSuggestionManager = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    const fetchAllData = async () => {
-      setLoading(true);
-      try {
-        const [menuResponse, suggestionsResponse] = await Promise.all([
-          fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_items.json'),
-          fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_suggestions.json')
-        ]);
-        const menuData = await menuResponse.json();
-        const suggestionsData = await suggestionsResponse.json();
-
-        if (menuData) {
-          const orgId = parseInt(localStorage.getItem('orgId'));
-          const matchedMenuItems = Object.entries(menuData)
-            .map(([id, item]) => ({ id, ...item }))
-            .filter(item => item.orgId === orgId);
-          setMenuItems(matchedMenuItems);
-        }
-
-        if (suggestionsData) {
-          setSuggestions(suggestionsData);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        message.error('Failed to fetch data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchAllData();
+    fetchMenuData();
   }, []);
 
   const handleOpenModal = (item) => {
@@ -218,21 +188,10 @@ const MenuSuggestionManager = () => {
         [selectedItem.id]: selectedSuggestions,
       };
 
-      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/menu_suggestions.json', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedSuggestions),
-      });
-
-      if (!response.ok) throw new Error('Failed to save suggestions');
-
-      setSuggestions(updatedSuggestions);
+      await updateSuggestions(updatedSuggestions);
       message.success('Suggestions saved successfully');
       setModalVisible(false);
     } catch (error) {
-      console.error('Error saving suggestions:', error);
       message.error('Failed to save suggestions');
     } finally {
       setSaving(false);

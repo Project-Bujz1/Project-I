@@ -14,20 +14,20 @@ import {
 } from '@ant-design/icons';
 import notificationSound from './notification.mp3';
 import FoodLoader from './FoodLoader';
+import { useOrders } from '../context/OrderContext';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 
 const AdminOrderComponent = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { orders, loading, setOrders, updateOrder } = useOrders();
   const [newOrders, setNewOrders] = useState([]);
   const [soundEnabled, setSoundEnabled] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredOrders, setFilteredOrders] = useState([]);
   const ws = useRef(null);
   const audioRef = useRef(new Audio(notificationSound));
   const orgId = localStorage.getItem('orgId');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredOrders, setFilteredOrders] = useState([]);
 
   // Filter out cancelled and completed orders
   const activeOrders = orders.filter(order => 
@@ -140,50 +140,30 @@ const AdminOrderComponent = () => {
 
   const handleUpdateStatus = async (orderId, newStatus) => {
     try {
-      const updatedOrder = orders.find(order => order.id === orderId);
       const statusMessage = getStatusMessage(newStatus);
-  
-      // PATCH the order status in Firebase
-      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: newStatus, statusMessage }),
+      const success = await updateOrder(orderId, { 
+        status: newStatus, 
+        statusMessage 
       });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update order status');
-      }
-  
-      // Update the order status locally
-      setOrders(prevOrders =>
-        prevOrders?.map(order =>
-          order.id === orderId ? { ...order, status: newStatus, statusMessage } : order
-        )
-      );
-  
+
+      if (!success) throw new Error('Failed to update order status');
+
       // Send status update through WebSocket
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
+      if (ws.current?.readyState === WebSocket.OPEN) {
         const message = JSON.stringify({ 
           type: 'statusUpdate', 
-          orderId: orderId, 
+          orderId, 
           status: newStatus,
-          statusMessage: statusMessage,
-          orgId: orgId
+          statusMessage,
+          orgId 
         });
-        console.log('Sending WebSocket message:', message);
         ws.current.send(message);
-      } else {
-        console.error('WebSocket is not open. Status update not sent.');
       }
-  
+
       message.success(`Order #${orderId} status updated to ${newStatus}`);
-  
-      // Remove from newOrders if present
       setNewOrders(prev => prev.filter(id => id !== orderId));
     } catch (error) {
-      console.error('Failed to update order status', error);
+      console.error('Failed to update order status:', error);
       message.error('Failed to update order status');
     }
   };
@@ -224,8 +204,6 @@ const AdminOrderComponent = () => {
     } catch (error) {
       console.error('Failed to fetch orders', error);
       message.error('Failed to fetch orders');
-    } finally {
-      setLoading(false);
     }
   };
 

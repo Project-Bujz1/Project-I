@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { List, Card, Button, Popconfirm, message, Tag, Empty, Spin, Badge, Input, Timeline, Row, Col } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { List, Card, Button, Popconfirm, message, Tag, Empty, Badge, Input, Row, Col } from 'antd';
 import { 
   DeleteOutlined, 
   ClockCircleOutlined, 
@@ -9,14 +9,15 @@ import {
   CheckCircleOutlined,
   InfoCircleOutlined
 } from '@ant-design/icons';
+import { useOrders } from '../context/OrderContext';
 import FoodLoader from './FoodLoader';
 
 function OrderHistory() {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { orders, loading, setOrders } = useOrders();
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredOrders, setFilteredOrders] = useState([]);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const orgId = localStorage.getItem('orgId');
 
   const theme = {
     primary: '#ff4d4f',
@@ -50,10 +51,25 @@ function OrderHistory() {
     marginTop : '25px'
   };
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
+  const handleDelete = async (orderId) => {
+    try {
+      const deleteResponse = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
+        method: 'DELETE',
+      });
 
+      if (!deleteResponse.ok) {
+        throw new Error(`Failed to delete order. Status: ${deleteResponse.status}`);
+      }
+
+      message.success('Order deleted successfully');
+      setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
+    } catch (error) {
+      console.error('Failed to delete order:', error);
+      message.error('Failed to delete order. Please try again.');
+    }
+  };
+
+  // Filter orders when search query changes
   useEffect(() => {
     if (orders.length) {
       const sorted = [...orders].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
@@ -67,6 +83,7 @@ function OrderHistory() {
     }
   }, [orders, searchQuery]);
 
+  // Handle mobile view
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -75,80 +92,6 @@ function OrderHistory() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-
-  const fetchOrders = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch all order history from Firebase
-      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json');
-      if (!response.ok) {
-        throw new Error('Failed to fetch order history');
-      }
-      
-      const data = await response.json();
-      
-      // Get the orgId from localStorage
-      const orgId = localStorage.getItem('orgId');
-      
-      // If no orders, set an empty array
-      if (!data) {
-        setOrders([]);
-        return;
-      }
-      
-      // Convert the fetched object to an array and filter by orgId
-      const fetchedOrders = Object.keys(data)
-        ?.map((key) => ({ id: key, ...data[key] }))
-        .filter((order) => order.orgId === orgId);
-      
-      setOrders(fetchedOrders);
-    } catch (error) {
-      console.error('Failed to fetch order history', error);
-      message.error('Failed to fetch order history');
-    } finally {
-      setLoading(false);
-    }
-  };
-  
-
-  const handleDelete = async (orderId) => {
-    try {
-      // Fetch the current order history
-      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json');
-      if (!response.ok) {
-        throw new Error('Failed to fetch order history for deletion');
-      }
-      
-      const data = await response.json();
-      
-      // Loop through each Firebase-generated key and find the matching orderId
-      const firebaseKeyToDelete = Object.keys(data).find((firebaseKey) => data[firebaseKey].id === orderId);
-  
-      // If no matching order is found, throw an error
-      if (!firebaseKeyToDelete) {
-        throw new Error('Order not found in Firebase');
-      }
-  
-      // Delete the order at the found Firebase key
-      const deleteResponse = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${firebaseKeyToDelete}.json`, {
-        method: 'DELETE',
-      });
-  
-      if (!deleteResponse.ok) {
-        throw new Error(`Failed to delete order. Status: ${deleteResponse.status}`);
-      }
-  
-      // Notify success and remove order from local state
-      message.success('Order deleted successfully');
-      setOrders((prevOrders) => prevOrders.filter((order) => order.id !== orderId));
-  
-    } catch (error) {
-      console.error('Failed to delete order:', error);
-      message.error('Failed to delete order. Please try again.');
-    }
-  };
-  
 
   const getStatusInfo = (status) => {
     const statusConfig = {
