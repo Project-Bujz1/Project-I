@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, FileText, Home, History, Settings, ChefHat, LayoutDashboard, User, Lightbulb, DollarOutlined } from 'lucide-react';
+import { ShoppingBag, FileText, Home, History, Settings, ChefHat, LayoutDashboard, User, Lightbulb, DollarOutlined, IndianRupee } from 'lucide-react';
 
 const FooterNavigation = () => {
   const location = useLocation();
@@ -17,12 +17,12 @@ const FooterNavigation = () => {
 
   const adminLinks = [
     { path: '/admin', icon: ChefHat, label: 'Orders' },
-    { path: '/menu-management', icon: Settings, label: 'Menu' },
-    { path: '/order-history', icon: History, label: 'History' },
+    { path: '/menu-management', icon: FileText, label: 'Menu' },
     { path: '/menu-suggestion', icon: Lightbulb, label: 'Suggestion'},
+    { path: '/charges-management', icon: IndianRupee, label: 'Charges' },
     { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
+    { path: '/order-history', icon: History, label: 'History' },
     { path: '/management', icon: User, label: 'Profile' },
-    { path: '/charges-management', icon: User, label: 'Charges' },
   ];
 
   const links = role === 'customer' ? customerLinks : adminLinks;
@@ -64,8 +64,9 @@ const FooterNavigation = () => {
           display: flex;
           justify-content: space-around;
           align-items: center;
-          padding: 4px 16px; /* Reduced padding */
+          padding: 4px 16px;
           padding-bottom: calc(4px + env(safe-area-inset-bottom));
+          gap: ${role === 'admin' ? '8px' : '16px'};
         }
 
         .nav-item {
@@ -74,7 +75,7 @@ const FooterNavigation = () => {
           align-items: center;
           text-decoration: none;
           position: relative;
-          padding: 4px 8px; /* Reduced padding */
+          padding: 4px ${role === 'admin' ? '4px' : '8px'};
           transition: transform 0.2s ease;
         }
 
@@ -87,14 +88,14 @@ const FooterNavigation = () => {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 40px; /* Reduced width */
-          height: 40px; /* Reduced height */
+          width: ${role === 'admin' ? '32px' : '40px'};
+          height: ${role === 'admin' ? '32px' : '40px'};
           margin-bottom: 2px;
         }
 
         .nav-icon {
-          width: 20px; /* Reduced size */
-          height: 20px; /* Reduced size */
+          width: ${role === 'admin' ? '16px' : '20px'};
+          height: ${role === 'admin' ? '16px' : '20px'};
           position: relative;
           z-index: 2;
           stroke-width: 2px;
@@ -115,7 +116,7 @@ const FooterNavigation = () => {
         }
 
         .nav-label {
-          font-size: 11px; /* Reduced font size */
+          font-size: 11px;
           font-weight: 500;
           color: #666;
           transition: all 0.3s ease;
@@ -127,27 +128,27 @@ const FooterNavigation = () => {
         }
 
         .nav-item.active .nav-icon {
-          color: #e53e3e; /* Changed to red */
+          color: #e53e3e;
           transform: scale(1.1);
         }
 
         .nav-item.active .icon-background {
-          background: rgba(229, 62, 62, 0.15); /* Changed to red */
+          background: rgba(229, 62, 62, 0.15);
           transform: translate(-50%, -50%) scale(1);
         }
 
         .nav-item.active .nav-label {
-          color: #e53e3e; /* Changed to red */
+          color: #e53e3e;
           font-weight: 600;
         }
 
         @media (hover: hover) {
           .nav-item:hover .nav-icon {
-            color: #e53e3e; /* Changed to red */
+            color: #e53e3e;
           }
 
           .nav-item:hover .nav-label {
-            color: #e53e3e; /* Changed to red */
+            color: #e53e3e;
           }
         }
 
