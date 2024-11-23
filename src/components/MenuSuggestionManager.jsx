@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, Typography, Input, message, Modal, Button, Avatar } from 'antd';
 import { CloseOutlined, PlusOutlined, SaveOutlined } from '@ant-design/icons';
-import { useMenu } from '../context/MenuContext';
+import { useMenu } from '../contexts/MenuProvider';
 import FoodLoader from './FoodLoader';
 
 const { Title, Text } = Typography;
@@ -133,7 +133,13 @@ const styles = {
 };
 
 const MenuSuggestionManager = () => {
-  const { menuItems, suggestions, loading, fetchMenuData, updateSuggestions } = useMenu();
+  const { 
+    menuItems, 
+    suggestions, 
+    loading, 
+    refreshData: fetchMenuData, 
+    updateSuggestions 
+  } = useMenu();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [selectedSuggestions, setSelectedSuggestions] = useState([]);
