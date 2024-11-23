@@ -9,6 +9,49 @@ function Cart() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const navigate = useNavigate();
   const [charges, setCharges] = useState([]);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+
+  useEffect(() => {
+    const styles = `
+      @keyframes bounceUpDown {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .cart-items-container::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      .cart-items-container::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+      }
+
+      .cart-items-container::-webkit-scrollbar-thumb {
+        background: #FF4742;
+        border-radius: 4px;
+      }
+
+      .cart-items-container::-webkit-scrollbar-thumb:hover {
+        background: #FF8142;
+      }
+
+      .cart-items-container {
+        scrollbar-width: thin;
+        scrollbar-color: #FF4742 #f1f1f1;
+      }
+    `;
+
+    const styleSheet = document.createElement("style");
+    styleSheet.innerText = styles;
+    document.head.appendChild(styleSheet);
+    
+    return () => styleSheet.remove();
+  }, []);
 
   useEffect(() => {
     const fetchCharges = async () => {
@@ -87,6 +130,22 @@ function Cart() {
     return '';
   };
 
+  const foodEmojis = ['🍕', '🍔', '🍟', '🌮', '🍜', '🍱', '🍗', '🥗'];
+  const randomEmoji = foodEmojis[Math.floor(Math.random() * foodEmojis.length)];
+
+  const handleScroll = (e) => {
+    const element = e.target;
+    const isNotAtBottom = element.scrollHeight - element.scrollTop > element.clientHeight + 50;
+    setShowScrollIndicator(isNotAtBottom);
+  };
+
+  useEffect(() => {
+    const cartItems = document.querySelector('.cart-items-container');
+    if (cartItems) {
+      setShowScrollIndicator(cartItems.scrollHeight > cartItems.clientHeight);
+    }
+  }, [cart]);
+
   return (
     <div className="cart-container" style={{ 
       marginTop: '80px', 
@@ -163,12 +222,18 @@ function Cart() {
         </div>
       ) : (
         <>
-          <div style={{
-            maxHeight: '400px',
-            overflowY: 'auto',
-            padding: '10px',
-            marginBottom: '20px',
-          }}>
+          <div 
+            className="cart-items-container"
+            onScroll={handleScroll}
+            style={{
+              maxHeight: '400px',
+              overflowY: 'auto',
+              padding: '10px',
+              marginBottom: '20px',
+              scrollBehavior: 'smooth',
+              position: 'relative'
+            }}
+          >
             {cart.map((item) => (
               <div key={item.id} style={{
                 background: '#fff',
@@ -256,6 +321,48 @@ function Cart() {
                 </div>
               </div>
             ))}
+
+            {showScrollIndicator && (
+              <div style={{
+                position: 'sticky',
+                bottom: 0,
+                left: 0,
+                right: 0,
+                textAlign: 'center',
+                padding: '15px',
+                background: 'linear-gradient(transparent, rgba(255,255,255,0.95) 40%)',
+                pointerEvents: 'none',
+                animation: 'bounceUpDown 2s infinite',
+                zIndex: 2
+              }}>
+                <div style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: '5px'
+                }}>
+                  <div style={{
+                    fontSize: '1.5rem',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '2px',
+                    lineHeight: '1'
+                  }}>
+                    <span role="img" aria-label="scroll indicator">🍕</span>
+                    <span role="img" aria-label="scroll indicator">🍔</span>
+                    <span role="img" aria-label="scroll down">⬇️</span>
+                  </div>
+                  <span style={{
+                    fontSize: '0.9rem',
+                    color: '#FF4742',
+                    fontWeight: 'bold',
+                    textShadow: '0 0 10px white'
+                  }}>
+                    Scroll for more yummy items!
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
           <div style={{
