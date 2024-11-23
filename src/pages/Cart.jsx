@@ -1,17 +1,75 @@
-import React, { useState } from 'react'; 
+import React, { useState, useEffect } from 'react'; 
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
+import { calculateCharges } from '../utils/calculateCharges';
+import { message } from 'antd';
 
 function Cart() {
   const { cart, updateQuantity, removeFromCart, clearCart } = useCart();
   const [orderPlaced, setOrderPlaced] = useState(false);
   const navigate = useNavigate();
+  const [charges, setCharges] = useState([]);
+
+  useEffect(() => {
+    const fetchCharges = async () => {
+      const orgId = localStorage.getItem('orgId');
+      try {
+        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants/${orgId}/charges.json`);
+        const data = await response.json();
+        if (data) {
+          const chargesArray = Object.entries(data).map(([id, charge]) => ({
+            id,
+            ...charge
+          }));
+          setCharges(chargesArray);
+        }
+      } catch (error) {
+        console.error('Error fetching charges:', error);
+      }
+    };
+
+    fetchCharges();
+  }, []);
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const enabledCharges = charges.filter(charge => charge.isEnabled);
+  const { total: calculatedTotal, breakdown } = calculateCharges(total, enabledCharges);
 
-  const handlePlaceOrder = () => {
-    setOrderPlaced(true);
-    navigate('/order-summary');
+  const handlePlaceOrder = async () => {
+    try {
+      const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+      const enabledCharges = charges.filter(charge => charge.isEnabled);
+      const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
+
+      const orderData = {
+        items: cart,
+        status: 'pending',
+        timestamp: new Date().toISOString(),
+        tableNumber: localStorage.getItem('tableNumber'),
+        orgId: localStorage.getItem('orgId'),
+        subtotal: subtotal,
+        charges: enabledCharges,
+        chargesBreakdown: breakdown,
+        total: total
+      };
+
+      // Save order to Firebase
+      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json', {
+        method: 'POST',
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to place order');
+      }
+
+      const { name: orderId } = await response.json();
+      clearCart();
+      navigate(`/order-confirmation/${orderId}`);
+    } catch (error) {
+      console.error('Error placing order:', error);
+      message.error('Failed to place order');
+    }
   };
 
   const handleBrowseMenu = () => {
@@ -126,8 +184,55 @@ function Cart() {
               </div>
             ))}
           </div>
+          <div className="cart-summary" style={{ 
+            background: '#f9f9f9', 
+            padding: '15px',
+            borderRadius: '8px',
+            marginTop: '20px'
+          }}>
+            <div className="subtotal" style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginBottom: '10px',
+              borderBottom: '1px dashed #ddd',
+              paddingBottom: '10px'
+            }}>
+              <span>Subtotal:</span>
+              <span>₹{total.toFixed(2)}</span>
+            </div>
+            
+            {Object.entries(breakdown).map(([name, detail]) => (
+              <div key={name} className="charge-item" style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                margin: '5px 0',
+                color: '#666'
+              }}>
+                <span>
+                  {name} 
+                  {detail.type === 'percentage' ? 
+                    <small style={{ color: '#999' }}> ({detail.value}%)</small> : 
+                    null
+                  }
+                </span>
+                <span>₹{detail.amount.toFixed(2)}</span>
+              </div>
+            ))}
+
+            <div className="total" style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginTop: '10px',
+              borderTop: '2px solid #ddd',
+              paddingTop: '10px',
+              fontWeight: 'bold',
+              fontSize: '1.1em'
+            }}>
+              <span>Total:</span>
+              <span>₹{calculatedTotal.toFixed(2)}</span>
+            </div>
+          </div>
           <div className="cart-actions" style={{ textAlign: 'right' }}>
-            <p className="total-text">Total: ₹{total.toFixed(2)}</p>
             <div className="button-group" style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={handlePlaceOrder}

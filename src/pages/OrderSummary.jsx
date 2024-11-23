@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Modal, Button, Checkbox, Input } from 'antd';
+import { Modal, Button, Checkbox, Input, Typography } from 'antd';
 import { CoffeeOutlined, SmileOutlined,ExclamationCircleOutlined, PlusCircleOutlined, CheckOutlined, } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { useNavigate } from 'react-router-dom';
 import { MapPin } from 'lucide-react';
 import './OrderSummary.css'; // Assuming you're using CSS modules or a custom CSS file
 import FoodLoader from '../components/FoodLoader';
+import { calculateCharges } from '../utils/calculateCharges';
+const { Text, Title } = Typography;
 
 const MAX_DISTANCE_KM = 0.5; // Maximum allowed distance in kilometers
 
@@ -39,8 +41,7 @@ function OrderSummary() {
   const [isCustomizing, setIsCustomizing] = useState(false);
   const [description, setDescription] = useState('');
   const ws = useRef(null);
-
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const [charges, setCharges] = useState([]);
 
   useEffect(() => {
     const fetchSeatingCapacity = async () => {
@@ -96,6 +97,32 @@ function OrderSummary() {
 
     return () => clearInterval(interval);
   }, []);
+  useEffect(() => {
+    const fetchCharges = async () => {
+      try {
+        const orgId = localStorage.getItem('orgId');
+        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants/${orgId}/charges.json`);
+        const data = await response.json();
+        if (data) {
+          const chargesArray = Object.entries(data).map(([id, charge]) => ({
+            id,
+            ...charge
+          }));
+          setCharges(chargesArray);
+        }
+      } catch (error) {
+        console.error('Error fetching charges:', error);
+      }
+    };
+
+    fetchCharges();
+  }, []);
+
+  // Calculate totals with charges
+  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const enabledCharges = charges.filter(charge => charge.isEnabled);
+  const { total: calculatedTotal, breakdown } = calculateCharges(subtotal, enabledCharges);
+
   const handleTableNumberChange = (e) => {
     const value = e.target.value;
     if (/^\d*$/.test(value)) {
@@ -183,7 +210,10 @@ function OrderSummary() {
             selectedTags: item.selectedTags,
           },
         })),
-        total: total.toFixed(2),
+        subtotal: subtotal,
+        charges: enabledCharges,
+        chargesBreakdown: breakdown,
+        total: calculatedTotal,
         tableNumber,
         timestamp: new Date().toISOString(),
         status: 'pending',
@@ -310,12 +340,55 @@ function OrderSummary() {
           <span className="item-price">₹{(item.price * item.quantity).toFixed(2)}</span>
         </div>
       ))}
-            <div className="order-summary-total">
-        <div className="total-line">
-          <span>Total</span>
-          <span>₹{total.toFixed(2)}</span>
+            <div className="cart-summary" style={{ 
+        background: '#f9f9f9', 
+        padding: '15px',
+        borderRadius: '8px',
+        marginTop: '20px'
+      }}>
+        <div className="subtotal" style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginBottom: '10px',
+          borderBottom: '1px dashed #ddd',
+          paddingBottom: '10px'
+        }}>
+          <span>Subtotal:</span>
+          <span>₹{subtotal.toFixed(2)}</span>
+        </div>
+        
+        {Object.entries(breakdown).map(([name, detail]) => (
+          <div key={name} className="charge-item" style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            margin: '5px 0',
+            color: '#666'
+          }}>
+            <span>
+              {name} 
+              {detail.type === 'percentage' ? 
+                <small style={{ color: '#999' }}> ({detail.value}%)</small> : 
+                null
+              }
+            </span>
+            <span>₹{detail.amount.toFixed(2)}</span>
+          </div>
+        ))}
+
+        <div className="total" style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          marginTop: '10px',
+          borderTop: '2px solid #ddd',
+          paddingTop: '10px',
+          fontWeight: 'bold',
+          fontSize: '1.1em'
+        }}>
+          <span>Total:</span>
+          <span>₹{calculatedTotal.toFixed(2)}</span>
         </div>
       </div>
+
       {/* <Input
         placeholder={`Enter Table Number (1-${seatingCapacity})`}
         value={tableNumber}

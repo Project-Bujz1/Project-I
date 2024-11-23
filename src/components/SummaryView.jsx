@@ -17,6 +17,7 @@ import {
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import FoodLoader from './FoodLoader';
+import { calculateCharges } from '../utils/calculateCharges';
 
 const { Title, Text } = Typography;
 
@@ -27,6 +28,7 @@ function BillSummary() {
   const [restaurantInfo, setRestaurantInfo] = useState(null);
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [charges, setCharges] = useState([]);
   const orgId = localStorage.getItem('orgId');
   
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -107,6 +109,26 @@ function BillSummary() {
       setLoading(false);
     }
   }, [cart]);
+
+  useEffect(() => {
+    const fetchCharges = async () => {
+      try {
+        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/restaurants/${orgId}/charges.json`);
+        const data = await response.json();
+        if (data) {
+          const chargesArray = Object.entries(data).map(([id, charge]) => ({
+            id,
+            ...charge
+          }));
+          setCharges(chargesArray);
+        }
+      } catch (error) {
+        console.error('Error fetching charges:', error);
+      }
+    };
+
+    fetchCharges();
+  }, [orgId]);
 
   if (loading) {
     return (
@@ -284,11 +306,34 @@ function BillSummary() {
       }
     });
     
-    // Total
-    yPos = doc.lastAutoTable.finalY + 10;
+    // Calculate totals with charges
+    const subtotal = cart.length > 0 
+      ? cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      : (orderData ? orderData.items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0);
+
+    const enabledCharges = charges.filter(charge => charge.isEnabled);
+    const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
+
+    // Add charges breakdown to PDF
+    yPos += 10;
+    doc.setFont('helvetica', 'bold');
+    doc.text('Subtotal:', col2 - 60, yPos);
+    doc.text(`₹${subtotal.toFixed(2)}`, col2, yPos, { align: 'right' });
+
+    // Add each charge
+    Object.entries(breakdown).forEach(([name, detail]) => {
+      yPos += 7;
+      doc.setFont('helvetica', 'normal');
+      const chargeText = `${name} ${detail.type === 'percentage' ? `(${detail.value}%)` : ''}:`;
+      doc.text(chargeText, col2 - 60, yPos);
+      doc.text(`₹${detail.amount.toFixed(2)}`, col2, yPos, { align: 'right' });
+    });
+
+    // Add final total
+    yPos += 10;
     doc.setFont('helvetica', 'bold');
     doc.text('Total:', col2 - 60, yPos);
-    doc.text(`₹${orderTotal.toFixed(2)}`, col2, yPos, { align: 'right' });
+    doc.text(`₹${total.toFixed(2)}`, col2, yPos, { align: 'right' });
     
     // Footer
     yPos = doc.internal.pageSize.height - 30;
@@ -362,7 +407,11 @@ function BillSummary() {
 
         <div style={{ padding: '24px', background: '#f5f5f5', borderTop: '1px solid #e8e8e8' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <Title level={4} style={{ margin: 0 }}>Total</Title>
+            {/* <Title level={4} style={{ margin: 0 }}>Total</Title> */}
+            <Title level={4} style={{ margin: 0 }}>
+  Total <span style={{ fontSize: '12px', verticalAlign: 'sub' }}>(incl. charges)</span>
+</Title>
+
             <Title level={4} style={{ margin: 0 }}>
               ₹{(cart.length > 0 ? total : parseFloat(orderData.total)).toFixed(2)}
             </Title>
