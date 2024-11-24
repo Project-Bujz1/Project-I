@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import './Header.css';
+import { Modal as AntModal } from 'antd';
 
 function Header({ onSearch }) {
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function Header({ onSearch }) {
   const [isLogoModalVisible, setIsLogoModalVisible] = useState(false);
   const [role, setRole] = useState(localStorage.getItem('role'));
   const [restaurantDetails, setRestaurantDetails] = useState(null);
+  const [isSignOutModalVisible, setIsSignOutModalVisible] = useState(false);
 
   const searchPlaceholders = [
     "Search for your favorite dishes...",
@@ -93,8 +95,13 @@ function Header({ onSearch }) {
   };
 
   const handleSignOut = () => {
+    setIsSignOutModalVisible(true);
+  };
+
+  const confirmSignOut = () => {
     localStorage.removeItem('adminToken');
     localStorage.removeItem('role');
+    setIsSignOutModalVisible(false);
     navigate('/');
   };
 
@@ -114,53 +121,48 @@ function Header({ onSearch }) {
               </Link>
             </div>
 
-            {role === 'customer' && (
-              <div className="header__location">
-                <MapPin size={20} />
-                <div>
-                  <div className="header__location-text">
-                    {restaurantDetails?.name || 'Restaurant Name'}
-                  </div>
-                  <div className="header__location-subtext">
-                    {restaurantDetails?.address || 'Loading address...'}
-                  </div>
-                </div>
-                {/* <ChevronDown size={16} /> */}
-              </div>
-            )}
-                      <div className="header__right">
-          {restaurantLogo && (
-              <div className="header__restaurant-logo-container">
-                <img 
-                  src={restaurantLogo}
-                  alt="Restaurant Logo"
-                  className="header__restaurant-logo"
-                  onClick={handleLogoClick}
-                />
-              </div>
-            )}
-            </div>
-
-            <div className="header__actions">
-              {/* {role === 'customer' && (
+            <div className="header__right">
+              {role === 'customer' ? (
                 <>
-                  <FileText 
-                    className="header__icon" 
-                    onClick={() => navigate('/summary-view')} 
-                  />
-                  <Link to="/cart" className="header__cart-badge">
-                    <ShoppingCart className="header__icon" />
-                    {cart.length > 0 && (
-                      <span className="cart-count">{cart.length}</span>
-                    )}
-                  </Link>
+                  <div className="header__location">
+                    <MapPin size={20} />
+                    <div>
+                      <div className="header__location-text">
+                        {restaurantDetails?.name || 'Restaurant Name'}
+                      </div>
+                      <div className="header__location-subtext">
+                        {restaurantDetails?.address || 'Loading address...'}
+                      </div>
+                    </div>
+                  </div>
+                  {restaurantLogo && (
+                    <div className="header__restaurant-logo-container">
+                      <img 
+                        src={restaurantLogo}
+                        alt="Restaurant Logo"
+                        className="header__restaurant-logo"
+                        onClick={handleLogoClick}
+                      />
+                    </div>
+                  )}
                 </>
-              )} */}
-              {role !== 'customer' && (
-                <LogOut 
-                  className="header__icon" 
-                  onClick={handleSignOut} 
-                />
+              ) : (
+                <div className="header__admin-actions">
+                  {restaurantLogo && (
+                    <div className="header__restaurant-logo-container">
+                      <img 
+                        src={restaurantLogo}
+                        alt="Restaurant Logo"
+                        className="header__restaurant-logo"
+                        onClick={handleLogoClick}
+                      />
+                    </div>
+                  )}
+                  <LogOut 
+                    className="header__icon" 
+                    onClick={handleSignOut}
+                  />
+                </div>
               )}
             </div>
           </div>
@@ -181,6 +183,29 @@ function Header({ onSearch }) {
           )}
         </div>
       </div>
+      <AntModal
+        title="Confirm Sign Out"
+        open={isSignOutModalVisible}
+        onOk={confirmSignOut}
+        onCancel={() => setIsSignOutModalVisible(false)}
+        okText="Yes, Sign Out"
+        cancelText="Cancel"
+        className="signout-confirmation-modal"
+        okButtonProps={{ 
+          style: { 
+            background: '#ff4b2b',
+            borderColor: '#ff4b2b'
+          } 
+        }}
+        cancelButtonProps={{ 
+          style: { 
+            borderColor: '#ff4b2b',
+            color: '#ff4b2b'
+          } 
+        }}
+      >
+        <p>Are you sure you want to sign out?</p>
+      </AntModal>
       <Modal
         visible={isLogoModalVisible}
         onCancel={() => setIsLogoModalVisible(false)}

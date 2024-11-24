@@ -241,3 +241,93 @@
 .animate-fade-up {
   animation: fadeInUp 0.3s ease-out;
 }
+
+.header__admin-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.header__admin-actions .header__restaurant-logo-container {
+  margin-right: 1rem;
+}
+
+.header__admin-actions .header__icon {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.header__admin-actions .header__icon:hover {
+  color: #ff4d4f;
+}
+
+/* Update existing styles */
+.header__right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+/* Add these styles for the sign-out modal */
+:where(.css-dev-only-do-not-override).ant-modal .ant-modal-title {
+  color: #1c1c1c;
+  font-weight: 600;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-modal-content {
+  border-radius: 12px;
+  padding: 24px;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-btn-primary {
+  background: #ff4b2b;
+  border-color: #ff4b2b;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-btn-primary:hover {
+  background: #ff6b4a;
+  border-color: #ff6b4a;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-btn-default {
+  border-color: #ff4b2b;
+  color: #ff4b2b;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-btn-default:hover {
+  color: #ff6b4a;
+  border-color: #ff6b4a;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-modal-close {
+  color: #666;
+}
+
+:where(.css-dev-only-do-not-override).ant-modal .ant-modal-close:hover {
+  color: #ff4b2b;
+}
+
+/* Update the modal button styles with more specific selectors */
+:where(.css-dev-only-do-not-override-).ant-modal .ant-modal-content .ant-modal-footer .ant-btn-default {
+  border-color: #ff4b2b;
+  color: #ff4b2b;
+  box-shadow: none;
+}
+
+:where(.css-dev-only-do-not-override-).ant-modal .ant-modal-content .ant-modal-footer .ant-btn-default:hover {
+  color: #ff6b4a;
+  border-color: #ff6b4a;
+  background: rgba(255, 75, 43, 0.1);
+}
+
+:where(.css-dev-only-do-not-override-).ant-modal .ant-modal-content .ant-modal-footer .ant-btn-primary {
+  background: #ff4b2b;
+  border-color: #ff4b2b;
+  box-shadow: none;
+}
+
+:where(.css-dev-only-do-not-override-).ant-modal .ant-modal-content .ant-modal-footer .ant-btn-primary:hover {
+  background: #ff6b4a;
+  border-color: #ff6b4a;
+}
