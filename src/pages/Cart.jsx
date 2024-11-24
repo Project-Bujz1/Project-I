@@ -96,7 +96,6 @@ function Cart() {
         total: total
       };
 
-      // Save order to Firebase
       const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json', {
         method: 'POST',
         body: JSON.stringify(orderData)
@@ -108,7 +107,7 @@ function Cart() {
 
       const { name: orderId } = await response.json();
       clearCart();
-      navigate(`/order-confirmation/${orderId}`);
+      navigate(`/order-summary`);
     } catch (error) {
       console.error('Error placing order:', error);
       message.error('Failed to place order');
@@ -149,10 +148,10 @@ function Cart() {
   return (
     <div className="cart-container" style={{ 
       marginTop: '80px', 
-      marginBottom: '100px',
+      marginBottom: '150px',
       padding: '15px',
       maxWidth: '600px',
-      margin: '80px auto 100px',
+      margin: '80px auto 150px',
       backgroundColor: '#fff',
       borderRadius: '20px',
       boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
@@ -413,7 +412,7 @@ function Cart() {
 
           <div style={{
             position: 'fixed',
-            bottom: 0,
+            bottom: '70px',
             left: 0,
             right: 0,
             padding: '15px',
@@ -421,20 +420,23 @@ function Cart() {
             boxShadow: '0 -4px 20px rgba(0,0,0,0.1)',
             display: 'flex',
             gap: '10px',
-            zIndex: 1000
+            zIndex: 1000,
+            maxWidth: '600px',
+            margin: '0 auto',
           }}>
             <button
               onClick={() => navigate('/home')}
               style={{
                 flex: 1,
                 padding: '15px',
-                border: '2px solid #FF4742',
+                border: '2px solid red',
                 borderRadius: '12px',
                 background: 'white',
-                color: '#FF4742',
+                color: 'red',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                cursor: 'pointer'
+                cursor: 'pointer',
+                zIndex: 1001,
               }}
             >
               Add More
@@ -446,12 +448,13 @@ function Cart() {
                 padding: '15px',
                 border: 'none',
                 borderRadius: '12px',
-                background: 'linear-gradient(45deg, #FF4742, #FF8142)',
+                background: 'red', // Changed from gradient to solid red
                 color: 'white',
                 fontSize: '1rem',
                 fontWeight: 'bold',
                 cursor: 'pointer',
-                boxShadow: '0 4px 15px rgba(255, 71, 66, 0.2)'
+                boxShadow: '0 4px 15px rgba(255, 71, 66, 0.2)',
+                zIndex: 1001,
               }}
             >
               Place Order • ₹{calculatedTotal.toFixed(2)}
