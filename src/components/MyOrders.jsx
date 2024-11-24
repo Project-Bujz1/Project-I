@@ -42,7 +42,7 @@ const MyOrders = () => {
       borderBottom: '2px solid #ffeded',
     },
     headerTitle: {
-      color: '#dc3545',
+      color: 'red',
       fontSize: '28px',
       fontWeight: 'bold',
       margin: 0,
@@ -50,7 +50,7 @@ const MyOrders = () => {
     },
     headerIcon: {
       fontSize: '24px',
-      color: '#dc3545',
+      color: 'red',
       marginRight: '8px',
     },
     card: {
@@ -61,7 +61,7 @@ const MyOrders = () => {
       background: '#ffffff',
     },
     orderNumber: {
-      color: '#dc3545',
+      color: 'red',
       margin: '0',
       fontSize: '20px',
       fontWeight: '600',
@@ -82,15 +82,15 @@ const MyOrders = () => {
       background: '#fff5f5',
       padding: '8px 12px',
       borderRadius: '8px',
-      color: '#dc3545',
+      color: 'red',
       fontSize: '14px',
       fontWeight: '500',
     },
     viewButton: {
       width: '100%',
       height: '40px',
-      backgroundColor: '#dc3545',
-      borderColor: '#dc3545',
+      backgroundColor: 'red',
+      borderColor: 'red',
       borderRadius: '8px',
       fontWeight: '500',
       marginTop: '12px',
@@ -174,7 +174,7 @@ const MyOrders = () => {
         locale={{ 
           emptyText: (
             <div style={styles.emptyState}>
-              <ShopOutlined style={{ fontSize: '48px', color: '#dc3545', marginBottom: '16px' }} />
+              <ShopOutlined style={{ fontSize: '48px', color: 'red', marginBottom: '16px' }} />
               <p>No active orders found for your table</p>
             </div>
           ) 
