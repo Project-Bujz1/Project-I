@@ -39,6 +39,11 @@ const versionInfo = {
   environment: "production"
 };
 
+// Add this near the top of the file, outside the component
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+let cachedData = null;
+let cacheTimestamp = null;
+
 const RestaurantManagement = () => {
   const [loading, setLoading] = useState(false);
   const [restaurant, setRestaurant] = useState(null);
@@ -60,7 +65,13 @@ const RestaurantManagement = () => {
   });
 
   useEffect(() => {
-    fetchRestaurantData();
+    const isCacheValid = cachedData && cacheTimestamp && (Date.now() - cacheTimestamp < CACHE_DURATION);
+    
+    if (isCacheValid) {
+      setRestaurant(cachedData);
+    } else {
+      fetchRestaurantData();
+    }
   }, []);
   
   const fetchRestaurantData = async () => {
@@ -75,7 +86,11 @@ const RestaurantManagement = () => {
         const [id, restaurantData] = restaurantsArray.find(([_, r]) => r.orgId === orgId) || [];
   
         if (restaurantData) {
-          setRestaurant({ ...restaurantData, id });
+          const restaurantWithId = { ...restaurantData, id };
+          setRestaurant(restaurantWithId);
+          // Cache the data
+          cachedData = restaurantWithId;
+          cacheTimestamp = Date.now();
         } else {
           console.error("No restaurant found for this orgId");
         }
@@ -105,7 +120,9 @@ const RestaurantManagement = () => {
   
       if (response.ok) {
         console.log("Restaurant information updated successfully");
-        fetchRestaurantData(); // Refetch the data to ensure we have the latest version
+        // Update cache with new data
+        cachedData = restaurant;
+        cacheTimestamp = Date.now();
       } else {
         console.error("Failed to update restaurant information");
       }
