@@ -596,22 +596,21 @@ const TableAnalytics = ({ orders }) => {
 
 const styles = {
   container: {
-    padding: '16px',
+    padding: '8px 4px',
     maxWidth: '1200px',
     margin: '0 auto',
     marginTop: '56px',
-    marginBottom: '24px',
-    background: '#f5f5f5'
+    marginBottom: '24px'
   },
   tabContent: {
-    padding: '16px 0'
+    padding: '8px 4px'
   },
   filterCard: {
     marginBottom: '16px',
     borderRadius: '12px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
     background: 'white',
-    padding: '12px'
+    padding: '8px'
   },
   statCard: {
     borderRadius: '12px',
@@ -748,8 +747,7 @@ const styles = {
     height: '400px'
   },
   analysisContainer: {
-    padding: '16px',
-    background: '#f5f5f5',
+    padding: '8px 4px',
     marginBottom: '24px'
   },
   chartCard: {
@@ -778,8 +776,7 @@ const styles = {
     gap: '8px'
   },
   analyticsContainer: {
-    padding: '16px',
-    background: '#f5f5f5'
+    padding: '8px 4px'
   },
   card: {
     borderRadius: '12px',
