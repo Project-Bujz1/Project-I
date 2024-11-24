@@ -132,11 +132,9 @@ function Cart() {
 
   return (
     <div className="cart-container" style={{ 
-      marginTop: '80px', 
-      marginBottom: '150px',
       padding: '15px',
       maxWidth: '600px',
-      margin: '80px auto 150px',
+      margin: '120px auto 150px',
       backgroundColor: '#fff',
       borderRadius: '20px',
       boxShadow: '0 8px 20px rgba(0,0,0,0.1)'
@@ -146,7 +144,8 @@ function Cart() {
         textAlign: 'center',
         color: '#FF4742',
         marginBottom: '25px',
-        fontWeight: 'bold'
+        fontWeight: 'bold',
+        paddingTop: '10px'
       }}>Your Food Cart 🍽️</h2>
 
       {cart.length === 0 ? (
