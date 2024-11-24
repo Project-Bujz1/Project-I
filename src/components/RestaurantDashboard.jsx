@@ -5,9 +5,9 @@ import {
   Button, notification, Grid
 } from 'antd';
 import {
-  DashboardOutlined, ShopOutlined, TableOutlined, MenuOutlined, 
+  DashboardOutlined, ShopOutlined, AppstoreOutlined, OrderedListOutlined, 
   UserOutlined, FireOutlined, ClockCircleOutlined,
-  DollarOutlined, AppstoreOutlined, TagsOutlined,
+  DollarOutlined, BarsOutlined, TagsOutlined,
   BarChartOutlined, PieChartOutlined, CalendarOutlined
 } from '@ant-design/icons';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -48,40 +48,61 @@ const calculateGrowthRate = (current, previous) => {
 };
 
 const SalesAnalysis = ({ orders }) => {
-  const [timeRange, setTimeRange] = useState('daily');
   const [loading, setLoading] = useState(true);
+  const [timeRange, setTimeRange] = useState('daily');
 
   useEffect(() => {
-    // Simulate data processing delay
     const timer = setTimeout(() => setLoading(false), 1000);
     return () => clearTimeout(timer);
   }, [orders]);
 
+  const filterOrdersByDate = (orders) => {
+    const now = new Date();
+    const startDate = new Date();
+    
+    switch (timeRange) {
+      case 'daily':
+        startDate.setDate(now.getDate() - 7); // Last 7 days
+        break;
+      case 'weekly':
+        startDate.setDate(now.getDate() - 28); // Last 4 weeks
+        break;
+      case 'monthly':
+        startDate.setMonth(now.getMonth() - 3); // Last 3 months
+        break;
+      default:
+        startDate.setDate(now.getDate() - 7);
+    }
+    
+    return orders.filter(order => {
+      const orderDate = new Date(order.timestamp);
+      return orderDate >= startDate && orderDate <= now;
+    });
+  };
+
   const getSalesData = () => {
     const salesMap = {};
-    const now = new Date();
-    const past7Days = new Date(now.setDate(now.getDate() - 7));
+    const filteredOrders = filterOrdersByDate(orders);
 
-    orders.forEach(order => {
+    filteredOrders.forEach(order => {
       if (order.status === 'completed') {
         const orderDate = new Date(order.timestamp);
-        if (orderDate >= past7Days) {
-          const key = orderDate.toLocaleDateString('en-IN', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric'
-          });
-          if (!salesMap[key]) {
-            salesMap[key] = {
-              date: key,
-              revenue: 0,
-              orders: 0,
-              avgOrderValue: 0
-            };
-          }
-          salesMap[key].revenue += parseFloat(order.total) || 0;
-          salesMap[key].orders += 1;
+        const key = orderDate.toLocaleDateString('en-IN', {
+          weekday: 'short',
+          month: 'short',
+          day: 'numeric'
+        });
+        
+        if (!salesMap[key]) {
+          salesMap[key] = {
+            date: key,
+            revenue: 0,
+            orders: 0,
+            avgOrderValue: 0
+          };
         }
+        salesMap[key].revenue += parseFloat(order.total) || 0;
+        salesMap[key].orders += 1;
       }
     });
 
@@ -115,20 +136,16 @@ const SalesAnalysis = ({ orders }) => {
 
   return (
     <div style={styles.analysisContainer}>
-      {/* Time Range Selector */}
       <Card style={styles.filterCard}>
-        <Space>
-          <Select
-            defaultValue="daily"
-            style={{ width: 120 }}
-            onChange={setTimeRange}
-          >
-            <Select.Option value="daily">Daily</Select.Option>
-            <Select.Option value="weekly">Weekly</Select.Option>
-            <Select.Option value="monthly">Monthly</Select.Option>
-          </Select>
-          <RangePicker format="DD-MM-YYYY" />
-        </Space>
+        <Select
+          value={timeRange}
+          style={{ width: 120 }}
+          onChange={setTimeRange}
+        >
+          <Select.Option value="daily">Last 7 Days</Select.Option>
+          <Select.Option value="weekly">Last 4 Weeks</Select.Option>
+          <Select.Option value="monthly">Last 3 Months</Select.Option>
+        </Select>
       </Card>
 
       {/* Key Metrics */}
@@ -582,7 +599,8 @@ const styles = {
     padding: '16px',
     maxWidth: '1200px',
     margin: '0 auto',
-    marginTop: '72px',
+    marginTop: '56px',
+    marginBottom: '24px',
     background: '#f5f5f5'
   },
   tabContent: {
@@ -592,7 +610,8 @@ const styles = {
     marginBottom: '16px',
     borderRadius: '12px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-    background: 'white'
+    background: 'white',
+    padding: '12px'
   },
   statCard: {
     borderRadius: '12px',
@@ -730,7 +749,8 @@ const styles = {
   },
   analysisContainer: {
     padding: '16px',
-    background: '#f5f5f5'
+    background: '#f5f5f5',
+    marginBottom: '24px'
   },
   chartCard: {
     marginTop: '16px',
@@ -846,7 +866,8 @@ const styles = {
     textAlign: 'center'
   },
   contentWrapper: {
-    marginTop: '116px'
+    marginTop: '72px',
+    marginBottom: '24px'
   }
 };
 
@@ -1007,22 +1028,16 @@ export const RestaurantDashboard = () => {
       <div style={styles.tabContent}>
         {/* Time Frame Selector */}
         <Card style={styles.filterCard}>
-          <Space wrap>
-            <Select
-              value={timeFrame}
-              onChange={setTimeFrame}
-              style={{ width: 120 }}
-            >
-              <Select.Option value="today">Today</Select.Option>
-              <Select.Option value="week">This Week</Select.Option>
-              <Select.Option value="month">This Month</Select.Option>
-              <Select.Option value="all">All Time</Select.Option>
-            </Select>
-            <RangePicker 
-              onChange={(dates) => setDateRange(dates)}
-              format="DD-MM-YYYY"
-            />
-          </Space>
+          <Select
+            value={timeFrame}
+            onChange={setTimeFrame}
+            style={{ width: 120 }}
+          >
+            <Select.Option value="today">Today</Select.Option>
+            <Select.Option value="week">This Week</Select.Option>
+            <Select.Option value="month">This Month</Select.Option>
+            <Select.Option value="all">All Time</Select.Option>
+          </Select>
         </Card>
 
         {/* Key Metrics */}
@@ -1190,17 +1205,17 @@ export const RestaurantDashboard = () => {
     },
     {
       key: '3',
-      icon: <MenuOutlined />,
+      icon: <AppstoreOutlined />,
       label: 'Menu'
     },
     {
       key: '4',
-      icon: <ShopOutlined />,
+      icon: <OrderedListOutlined />,
       label: 'Orders'
     },
     {
       key: '5',
-      icon: <TableOutlined />,
+      icon: <BarsOutlined />,
       label: 'Tables'
     }
   ];
