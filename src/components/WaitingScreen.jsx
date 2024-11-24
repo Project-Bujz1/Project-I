@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch, Progress, Tooltip } from 'antd';
+import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch, Progress, Tooltip, List, Collapse } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, CloseOutlined, CoffeeOutlined, SoundOutlined, CheckCircleOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { IoVolumeMuteOutline } from "react-icons/io5";
@@ -9,6 +9,7 @@ import FoodLoader from './FoodLoader';
 import { useOrders } from '../context/OrderContext';
 
 const { Title, Text } = Typography;
+const { Panel } = Collapse;
 
 const GIF_INTERVAL = 5000; // 5 seconds per GIF
 
@@ -278,7 +279,18 @@ const WaitingScreen = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', minHeight: '100vh', backgroundColor: '#f8f9fa', marginTop: "70PX" }}>
+    <div style={{ 
+      display: 'flex', 
+      flexDirection: 'column', 
+      justifyContent: 'flex-start', 
+      alignItems: 'center', 
+      padding: '20px', 
+      minHeight: 'calc(100vh - 140px)', // Subtract header (70px) and footer (70px) height
+      backgroundColor: '#f8f9fa', 
+      paddingTop: "170px",    // Increased padding top to ensure content is visible
+      marginBottom: "70px",  // Match footer height
+      paddingBottom: '20px'
+    }}>
       <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
         <Switch
           checkedChildren={<SoundOutlined />}
@@ -305,6 +317,109 @@ const WaitingScreen = () => {
   }}
 >
   <Title level={3} style={{ color: '#343a40' }}>Order #{order.displayOrderId}</Title>
+
+  {/* Order Details Section with scroll */}
+  <Collapse 
+    style={{ 
+      marginBottom: '20px',
+      backgroundColor: '#f8f9fa',
+      borderRadius: '8px',
+      border: 'none'
+    }}
+  >
+    <Panel 
+      header={
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center',
+          color: '#343a40',
+          fontWeight: 'bold'
+        }}>
+          <span>Order Details</span>
+          <span style={{ color: '#ff4d4f', fontSize: '14px' }}>
+            ₹ {order.total?.toFixed(2) || '0.00'}
+          </span>
+        </div>
+      } 
+      key="1"
+      style={{ backgroundColor: '#f8f9fa', border: 'none' }}
+    >
+      <div style={{ 
+        maxHeight: '200px',
+        overflowY: 'auto',
+        scrollbarWidth: 'thin',
+        scrollbarColor: '#ff4d4f #f8f9fa',
+      }}>
+        <List
+          size="small"
+          dataSource={order.items || []}
+          renderItem={item => (
+            <List.Item style={{ padding: '8px 0' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+                <Text>{item.quantity}x {item.name}</Text>
+                <Text strong>
+                  ₹ {(item.price * item.quantity).toFixed(2)}
+                </Text>
+              </div>
+            </List.Item>
+          )}
+          footer={
+            <div style={{ 
+              borderTop: '1px solid #e8e8e8',
+              marginTop: '12px',
+              paddingTop: '12px',
+              marginBottom: '8px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              position: 'sticky',
+              bottom: 0,
+              backgroundColor: '#f8f9fa',
+              padding: '12px 0'
+            }}>
+              <Text strong>Total (incl. charges):</Text>
+              <Text strong style={{ color: '#ff4d4f' }}>
+                ₹ {order.total?.toFixed(2) || '0.00'}
+              </Text>
+            </div>
+          }
+        />
+      </div>
+    </Panel>
+  </Collapse>
+
+  {/* Add custom scrollbar styles */}
+  <style>
+    {`
+      .ant-collapse {
+        background: #f8f9fa !important;
+      }
+      .ant-collapse-header {
+        background: #f8f9fa !important;
+        border-radius: 8px !important;
+      }
+      .ant-collapse-content {
+        background: #f8f9fa !important;
+      }
+      .ant-collapse-item {
+        border: none !important;
+      }
+      div::-webkit-scrollbar {
+        width: 6px;
+      }
+      div::-webkit-scrollbar-track {
+        background: #f8f9fa;
+        border-radius: 3px;
+      }
+      div::-webkit-scrollbar-thumb {
+        background: #ff4d4f;
+        border-radius: 3px;
+      }
+      div::-webkit-scrollbar-thumb:hover {
+        background: #ff7875;
+      }
+    `}
+  </style>
 
   {/* GIF Display Section */}
   <div style={{ 
