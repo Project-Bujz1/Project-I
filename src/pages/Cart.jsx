@@ -10,6 +10,7 @@ function Cart() {
   const navigate = useNavigate();
   const [charges, setCharges] = useState([]);
   const [showScrollIndicator, setShowScrollIndicator] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     const styles = `
@@ -78,40 +79,24 @@ function Cart() {
   const enabledCharges = charges.filter(charge => charge.isEnabled);
   const { total: calculatedTotal, breakdown } = calculateCharges(total, enabledCharges);
 
-  const handlePlaceOrder = async () => {
-    try {
-      const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      const enabledCharges = charges.filter(charge => charge.isEnabled);
-      const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
+  const handlePlaceOrder = () => {
+    const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const enabledCharges = charges.filter(charge => charge.isEnabled);
+    const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
 
-      const orderData = {
-        items: cart,
-        status: 'pending',
-        timestamp: new Date().toISOString(),
-        tableNumber: localStorage.getItem('tableNumber'),
-        orgId: localStorage.getItem('orgId'),
-        subtotal: subtotal,
-        charges: enabledCharges,
-        chargesBreakdown: breakdown,
-        total: total
-      };
+    const orderData = {
+      items: cart,
+      status: 'pending',
+      timestamp: new Date().toISOString(),
+      tableNumber: localStorage.getItem('tableNumber'),
+      orgId: localStorage.getItem('orgId'),
+      subtotal: subtotal,
+      charges: enabledCharges,
+      chargesBreakdown: breakdown,
+      total: total
+    };
 
-      const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json', {
-        method: 'POST',
-        body: JSON.stringify(orderData)
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to place order');
-      }
-
-      const { name: orderId } = await response.json();
-      clearCart();
-      navigate(`/order-summary`);
-    } catch (error) {
-      console.error('Error placing order:', error);
-      message.error('Failed to place order');
-    }
+    navigate('/order-summary', { state: { orderData } });
   };
 
   const handleBrowseMenu = () => {
@@ -443,21 +428,23 @@ function Cart() {
             </button>
             <button
               onClick={handlePlaceOrder}
+              disabled={isLoading}
               style={{
                 flex: 2,
                 padding: '15px',
                 border: 'none',
                 borderRadius: '12px',
-                background: 'red', // Changed from gradient to solid red
+                background: '#FF4742',
                 color: 'white',
                 fontSize: '1rem',
                 fontWeight: 'bold',
-                cursor: 'pointer',
+                cursor: isLoading ? 'not-allowed' : 'pointer',
                 boxShadow: '0 4px 15px rgba(255, 71, 66, 0.2)',
                 zIndex: 1001,
+                opacity: isLoading ? 0.7 : 1,
               }}
             >
-              Place Order • ₹{calculatedTotal.toFixed(2)}
+              {isLoading ? 'Placing Order...' : `Place Order • ₹${calculatedTotal.toFixed(2)}`}
             </button>
           </div>
         </>
