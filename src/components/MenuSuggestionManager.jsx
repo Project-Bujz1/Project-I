@@ -135,9 +135,10 @@ const styles = {
 const MenuSuggestionManager = () => {
   const { 
     menuItems, 
-    suggestions, 
-    loading, 
-    refreshData: fetchMenuData, 
+    recommendations: suggestions, 
+    loading,
+    dataInitialized,
+    refreshData,
     updateSuggestions 
   } = useMenu();
   const [modalVisible, setModalVisible] = useState(false);
@@ -147,12 +148,14 @@ const MenuSuggestionManager = () => {
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    fetchMenuData();
-  }, []);
+    if (!dataInitialized) {
+      refreshData();
+    }
+  }, [dataInitialized, refreshData]);
 
   const handleOpenModal = (item) => {
     setSelectedItem(item);
-    setSelectedSuggestions(suggestions[item.id] || []); // Set specific suggestions for this item
+    setSelectedSuggestions(suggestions[item.id] || []);
     setModalVisible(true);
     setSearchText('');
   };
@@ -191,7 +194,11 @@ const MenuSuggestionManager = () => {
     try {
       const updatedSuggestions = {
         ...suggestions,
-        [selectedItem.id]: selectedSuggestions,
+        [selectedItem.id]: selectedSuggestions.map(item => ({
+          id: item.id,
+          name: item.name,
+          orgId: parseInt(localStorage.getItem('orgId'))
+        }))
       };
 
       await updateSuggestions(updatedSuggestions);
@@ -222,7 +229,7 @@ const MenuSuggestionManager = () => {
     (item.description && item.description.toLowerCase().includes(searchText))
   );
 
-  if (loading) {
+  if (loading.overall || !dataInitialized) {
     return (
       <div style={{
         position: 'fixed',
