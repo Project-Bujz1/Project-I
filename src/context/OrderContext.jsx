@@ -1,27 +1,38 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 
 const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [lastFetchTime, setLastFetchTime] = useState(null);
   const orgId = localStorage.getItem('orgId');
+  const tableNumber = localStorage.getItem('tableNumber');
 
-  const fetchOrders = async () => {
+  const fetchOrders = async (force = false) => {
+    if (!force && lastFetchTime && Date.now() - lastFetchTime < 30000) {
+      return;
+    }
+
     try {
+      setLoading(true);
       const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json`);
       if (!response.ok) throw new Error('Failed to fetch orders');
       
       const data = await response.json();
-      const ordersArray = Object.entries(data)
+      const ordersArray = Object.entries(data || {})
         .map(([key, order]) => ({
           ...order,
           id: order.id || key
         }))
-        .filter(order => order.orgId === orgId);
+        .filter(order => 
+          order.orgId === orgId && 
+          order.tableNumber === tableNumber
+        );
 
-      const sortedOrders = ordersArray?.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      const sortedOrders = ordersArray.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
       setOrders(sortedOrders);
+      setLastFetchTime(Date.now());
     } catch (error) {
       console.error('Failed to fetch orders:', error);
     } finally {
@@ -49,17 +60,38 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  // Memoize helper functions to prevent unnecessary re-renders
+  const getActiveOrders = useCallback(() => 
+    orders.filter(order => !['completed', 'cancelled'].includes(order.status))
+  , [orders]);
+
+  const getOrderById = useCallback((orderId) => 
+    orders.find(order => order.id === orderId)
+  , [orders]);
+
+  const getLastActiveOrder = useCallback(() => 
+    orders.find(order => 
+      order.status !== 'cancelled' && 
+      order.status !== 'completed'
+    )
+  , [orders]);
+
   useEffect(() => {
-    fetchOrders();
-  }, [orgId]);
+    if (orgId && tableNumber) {
+      fetchOrders();
+    }
+  }, [orgId, tableNumber]);
 
   return (
     <OrderContext.Provider value={{ 
-      orders, 
-      loading, 
+      orders,
+      loading,
       setOrders,
       updateOrder,
-      fetchOrders 
+      fetchOrders,
+      getActiveOrders,
+      getOrderById,
+      getLastActiveOrder
     }}>
       {children}
     </OrderContext.Provider>

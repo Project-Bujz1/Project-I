@@ -18,19 +18,23 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import FoodLoader from './FoodLoader';
 import { calculateCharges } from '../utils/calculateCharges';
+import { useOrders } from '../context/OrderContext';
 
 const { Title, Text } = Typography;
 
 function BillSummary() {
+  const { getLastActiveOrder, loading } = useOrders();
   const { cart } = useCart();
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [restaurantInfo, setRestaurantInfo] = useState(null);
   const [orderData, setOrderData] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [charges, setCharges] = useState([]);
   const orgId = localStorage.getItem('orgId');
   
+  const lastOrder = getLastActiveOrder();
+  const orderToDisplay = cart.length > 0 ? null : lastOrder;
+
   const displaySubtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const { total: displayTotal } = calculateCharges(displaySubtotal, charges.filter(charge => charge.isEnabled));
 
@@ -65,50 +69,6 @@ function BillSummary() {
       fetchRestaurantInfo();
     }
   }, [orgId]);
-
-  useEffect(() => {
-    const fetchLastOrder = async () => {
-      try {
-        const tableNumber = localStorage.getItem('tableNumber');
-        const orgId = localStorage.getItem('orgId');
-        
-        const response = await fetch('https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json');
-        const data = await response.json();
-        
-        if (data) {
-          // Filter orders by orgId, tableNumber, and status not being 'completed'
-          const orders = Object.values(data)
-            .filter(order => 
-              order.orgId === orgId && 
-              order.tableNumber === tableNumber &&
-  (order.status !== 'cancelled' && order.status !== 'completed')
-  // Only get non-completed orders
-            )
-            .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-
-          // Get the most recent non-completed order
-          const lastOrder = orders[0];
-          if (lastOrder) {
-            setOrderData(lastOrder);
-          } else {
-            setOrderData(null); // Clear orderData if no active orders found
-          }
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching last order:', error);
-        setLoading(false);
-      }
-    };
-
-    // If cart is empty, fetch the last active order
-    if (cart.length === 0) {
-      fetchLastOrder();
-    } else {
-      setOrderData(null);
-      setLoading(false);
-    }
-  }, [cart]);
 
   useEffect(() => {
     const fetchCharges = async () => {
@@ -159,7 +119,7 @@ function BillSummary() {
   }
 
   // If cart is empty and no active order exists, show empty state
-  if (cart.length === 0 && !orderData) {
+  if (cart.length === 0 && !orderToDisplay) {
     return (
       <Card 
         className="bill-summary-container"
@@ -195,16 +155,16 @@ function BillSummary() {
     setErrorModalVisible(true);
   };
   const handleDownloadBill = () => {
-    const items = cart.length > 0 ? cart : (orderData ? orderData.items : []);
+    const items = cart.length > 0 ? cart : (orderToDisplay ? orderToDisplay.items : []);
     
     // Calculate the total here
     const subtotal = cart.length > 0 
       ? cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
-      : (orderData ? orderData.items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0);
+      : (orderToDisplay ? orderToDisplay.items.reduce((sum, item) => sum + item.price * item.quantity, 0) : 0);
     
     const enabledCharges = charges.filter(charge => charge.isEnabled);
     const { total, breakdown } = calculateCharges(subtotal, enabledCharges);
-    const orderTotal = cart.length > 0 ? total : (orderData ? parseFloat(orderData.total) : 0);
+    const orderTotal = cart.length > 0 ? total : (orderToDisplay ? parseFloat(orderToDisplay.total) : 0);
 
     if (items.length === 0) {
       showErrorModal('No items available to generate a bill.');
@@ -272,9 +232,9 @@ function BillSummary() {
     doc.text(`Time: ${formattedTime}`, pageWidth - margin, yPos, { align: 'right' });
     
     // Add order status if using orderData
-    if (orderData) {
+    if (orderToDisplay) {
       yPos += 7;
-      doc.text(`Order Status: ${orderData.status}`, margin, yPos);
+      doc.text(`Order Status: ${orderToDisplay.status}`, margin, yPos);
     }
     
     // Items table
@@ -369,7 +329,7 @@ function BillSummary() {
         </div>
 
         <List
-  dataSource={cart.length > 0 ? cart : orderData.items}
+  dataSource={cart.length > 0 ? cart : orderToDisplay.items}
   renderItem={item => {
     const price = Number(item.price) || 0; // Ensure price is a number, default to 0 if invalid
     return (
@@ -414,7 +374,7 @@ function BillSummary() {
 </Title>
 
             <Title level={4} style={{ margin: 0 }}>
-              ₹{(cart.length > 0 ? displayTotal : parseFloat(orderData?.total || 0)).toFixed(2)}
+              ₹{(cart.length > 0 ? displayTotal : parseFloat(orderToDisplay?.total || 0)).toFixed(2)}
             </Title>
           </div>
         </div>

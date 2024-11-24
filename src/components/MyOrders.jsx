@@ -9,13 +9,21 @@ import {
   ShopOutlined 
 } from '@ant-design/icons';
 import FoodLoader from './FoodLoader';
+import { useOrders } from '../context/OrderContext';
 
 const { Title, Text } = Typography;
 
 const MyOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { getActiveOrders, loading } = useOrders();
   const navigate = useNavigate();
+
+  const activeOrders = getActiveOrders();
+
+  const handleViewDetails = (order) => {
+    navigate(`/waiting/${order.id}`, { 
+      state: { orderDetails: order }
+    });
+  };
 
   // Main styles object
   const styles = {
@@ -102,42 +110,6 @@ const MyOrders = () => {
     },
   };
 
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        const orgId = localStorage.getItem('orgId');
-        const tableNumber = localStorage.getItem('tableNumber');
-    
-        if (!orgId || !tableNumber) {
-          throw new Error('Organization ID or Table Number not found in localStorage');
-        }
-    
-        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
-        
-        if (!response.ok) {
-          throw new Error('Failed to fetch orders');
-        }
-    
-        const data = await response.json();
-        const ordersArray = Object.values(data || {});
-        const filteredOrders = ordersArray.filter(order => 
-          order.orgId === orgId && 
-          order.tableNumber === tableNumber && 
-           !['completed','cancelled'].includes(order.status)
-        );
-    
-        setOrders(filteredOrders);
-      } catch (error) {
-        console.error('Failed to fetch orders', error);
-        message.error('Failed to load orders. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, []);
-
   const getStatusIcon = (status) => {
     switch(status) {
       case 'pending': return <ClockCircleOutlined style={{ color: '#faad14' }} />;
@@ -198,7 +170,7 @@ const MyOrders = () => {
       </div>
 
       <List
-        dataSource={orders}
+        dataSource={activeOrders}
         locale={{ 
           emptyText: (
             <div style={styles.emptyState}>
@@ -236,7 +208,7 @@ const MyOrders = () => {
                 </div>
 
                 <Button 
-                  onClick={() => navigate(`/waiting/${order.id}`)}
+                  onClick={() => handleViewDetails(order)}
                   type="primary"
                   style={styles.viewButton}
                 >

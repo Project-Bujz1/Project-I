@@ -1,67 +1,127 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, Typography, Spin, message, notification, Button, Modal, Input, Rate, Switch, Progress, Tooltip } from 'antd';
 import { CheckOutlined, ClockCircleOutlined, SyncOutlined, ExclamationCircleOutlined, BellOutlined, CloseOutlined, CoffeeOutlined, SoundOutlined, CheckCircleOutlined, QuestionOutlined } from '@ant-design/icons';
 import { useCart } from '../contexts/CartContext';
 import { IoVolumeMuteOutline } from "react-icons/io5";
 import notificationSound from './notification.mp3';
 import FoodLoader from './FoodLoader';
+import { useOrders } from '../context/OrderContext';
 
 const { Title, Text } = Typography;
+
+const GIF_INTERVAL = 5000; // 5 seconds per GIF
+
+const statusGifs = {
+  pending: [
+    '/assets/waiting-gif-1.gif',
+    '/assets/pending1-1.gif',
+    '/assets/pending1-3.gif'
+  ],
+  preparing: [
+    '/assets/preparing1.gif',
+    '/assets/preparing2.gif',
+    '/assets/preparing3.gif'
+  ],
+  ready: [
+    '/assets/Taken.gif',
+    '/assets/preparing-5.gif',
+    '/assets/preparing-4.gif'
+  ],
+  completed: [
+    '/assets/completed-1.gif',
+    '/assets/preparing1.gif',
+    '/assets/preparing2.gif',
+    '/assets/preparing3.gif',
+    '/assets/completed-1.gif',
+  ],
+  delayed: [
+    '/assets/waiting-2.gif',
+    '/assets/preparing2.gif',
+    '/assets/taken-2.gif'
+  ],
+  cancelled: [
+    '/assets/waiting-gif-1.gif',
+    '/assets/pending1-1.gif',
+    '/assets/pending1-3.gif'
+  ]
+};
 
 const WaitingScreen = () => {
   const { orderId } = useParams();
   const navigate = useNavigate();
   const { clearCart } = useCart();
-  const [order, setOrder] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { getOrderById, updateOrder } = useOrders();
+  
+  // Initialize order from context
+  const [order, setOrder] = useState(getOrderById(orderId));
   const [feedback, setFeedback] = useState('');
   const [rating, setRating] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [cancelModalVisible, setCancelModalVisible] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(false);
-  const [confirmCancelVisible, setConfirmCancelVisible] = useState(false); // State for confirmation modal
+  const [confirmCancelVisible, setConfirmCancelVisible] = useState(false);
   const ws = useRef(null);
-  const audioRef = useRef(new Audio(notificationSound));  const [currentGifIndex, setCurrentGifIndex] = useState(0);
-  const GIF_INTERVAL = 5000; // 5 seconds per GIF
+  const audioRef = useRef(new Audio(notificationSound));
+  const [currentGifIndex, setCurrentGifIndex] = useState(0);
 
-  // GIF arrays for each status
-  const statusGifs = {
-    pending: [
-      '/assets/waiting-gif-1.gif',
-      '/assets/pending1-1.gif',
-      '/assets/pending1-3.gif'
-    ],
-    preparing: [
-      '/assets/preparing1.gif',
-      '/assets/preparing2.gif',
-      '/assets/preparing3.gif'
-    ],
-    ready: [
-      '/assets/Taken.gif',
-      '/assets/preparing-5.gif',
-      '/assets/preparing-4.gif'
-    ],
-    completed: [
-      '/assets/completed-1.gif',
-      '/assets/preparing1.gif',
-      '/assets/preparing2.gif',
-      '/assets/preparing3.gif',
-      '/assets/completed-1.gif',
-    ],
-    delayed: [
-      '/assets/waiting-2.gif',
-      '/assets/preparing2.gif',
-      '/assets/taken-2.gif'
-    ],
-    cancelled: [
-      '/assets/waiting-gif-1.gif',
-      '/assets/pending1-1.gif',
-      '/assets/pending1-3.gif'
-    ]
-  };
+  useEffect(() => {
+    // Only fetch if order is not in context
+    if (!order) {
+      const fetchOrder = async () => {
+        try {
+          const orgId = localStorage.getItem('orgId');
+          const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
+    
+          if (!response.ok) throw new Error('Failed to fetch order');
+    
+          const data = await response.json();
+          const ordersArray = Object.values(data || {});
+          const fetchedOrder = ordersArray.find(order => order.id === orderId);
+    
+          if (!fetchedOrder) throw new Error('Order not found');
+    
+          setOrder({ ...fetchedOrder, displayOrderId: fetchedOrder.id || orderId });
+        } catch (error) {
+          console.error('Failed to fetch order', error);
+          message.error('Failed to fetch order');
+        }
+      };
+      fetchOrder();
+    }
+    
+    // WebSocket setup
+    ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
 
-  // GIF rotation effect
+    ws.current.onopen = () => {
+      const orgId = localStorage.getItem('orgId');
+      ws.current.send(JSON.stringify({ type: 'subscribe', orgId }));
+    };
+
+    ws.current.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.type === 'statusUpdate' && data.orderId === orderId) {
+        setOrder(prevOrder => ({ ...prevOrder, status: data.status.toLowerCase().trim(), statusMessage: data.statusMessage }));
+        
+        if (soundEnabled) {
+          audioRef.current.play().catch(error => console.error('Error playing audio:', error));
+        }
+
+        notification.open({
+          message: 'Order Status Updated',
+          description: `Your order status has been updated to: ${data.status}`,
+          icon: <BellOutlined style={{ color: '#1890ff' }} />,
+          duration: 4.5,
+        });
+      }
+    };
+
+    return () => {
+      if (ws.current) ws.current.close();
+    };
+  }, [orderId, soundEnabled, order]);
+
+  // Replace the existing useEffect for GIF rotation with:
   useEffect(() => {
     if (order?.status) {
       const interval = setInterval(() => {
@@ -75,77 +135,77 @@ const WaitingScreen = () => {
     }
   }, [order?.status]);
 
-  useEffect(() => {
-    const fetchOrder = async () => {
-      try {
-        const orgId = localStorage.getItem('orgId');
-        const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history.json?orgId=${orgId}`);
-  
-        if (!response.ok) {
-          throw new Error('Failed to fetch order');
-        }
-  
-        const data = await response.json();
-        const ordersArray = Object.values(data || {});
-        const fetchedOrder = ordersArray.find(order => order.id === orderId);
-  
-        if (!fetchedOrder) {
-          throw new Error('Order not found');
-        }
-  
-        setOrder({ ...fetchedOrder, displayOrderId: fetchedOrder.id || orderId });
-      } catch (error) {
-        console.error('Failed to fetch order', error);
-        message.error('Failed to fetch order');
-      } finally {
-        setLoading(false);
+  // Show loading only if no order data is available
+  if (!order) {
+    return (
+      <div style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        zIndex: 1000,
+      }}>
+        <FoodLoader />
+        <div style={{
+          marginTop: '1rem',
+          color: '#FF0000',
+          fontWeight: 'bold',
+          fontSize: '1.2rem',
+        }}>
+          Loading order details...
+        </div>
+      </div>
+    );
+  }
+
+  const handleCancelOrder = async () => {
+    setConfirmCancelVisible(true);
+  };
+
+  const handleConfirmCancelOrder = async () => {
+    setConfirmCancelVisible(false);
+    try {
+      const success = await updateOrder(orderId, {
+        status: 'cancelled',
+        statusMessage: 'Your order has been cancelled'
+      });
+
+      if (success) {
+        clearCart();
+        setCancelModalVisible(true);
+      } else {
+        throw new Error('Failed to cancel the order');
       }
-    };
-  
-    fetchOrder();
-    
-    // Set up WebSocket connection
-    ws.current = new WebSocket('wss://legend-sulfuric-ruby.glitch.me');
+    } catch (error) {
+      console.error('Failed to cancel the order', error);
+      message.error('Failed to cancel the order. Please try again.');
+    }
+  };
 
-    ws.current.onopen = () => {
-      console.log('WebSocket connected');
-      const orgId = localStorage.getItem('orgId');
-      ws.current.send(JSON.stringify({ type: 'subscribe', orgId: orgId }));
-    };
+  const handleCompleteOrder = async () => {
+    try {
+      const success = await updateOrder(orderId, {
+        status: 'completed',
+        statusMessage: 'Your order has been completed'
+      });
 
-    ws.current.onmessage = (event) => {
-      console.log('Received message:', event.data);
-      const data = JSON.parse(event.data);
-      if (data.type === 'statusUpdate' && data.orderId === orderId && data.orgId === localStorage.getItem('orgId')) {
-        const newStatus = data.status.toLowerCase().trim();
-        const newStatusMessage = data.statusMessage;
-        setOrder(prevOrder => ({ ...prevOrder, status: newStatus, statusMessage: newStatusMessage }));
-        
-        if (soundEnabled) {
-          audioRef.current.play().catch(error => console.error('Error playing audio:', error));
-        }
-
-        notification.open({
-          message: 'Order Status Updated',
-          description: `Your order status has been updated to: ${newStatus}`,
-          icon: <BellOutlined style={{ color: '#1890ff' }} />,
-          duration: 4.5,
-        });
+      if (success) {
+        clearCart();
+        setIsModalVisible(true);
+      } else {
+        throw new Error('Failed to complete the order');
       }
-    };
-
-    ws.current.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
-
-    return () => {
-      if (ws.current) {
-        ws.current.close();
-      }
-    };
-  }, [orderId, soundEnabled]);
-
-  
+    } catch (error) {
+      console.error('Failed to complete the order', error);
+      message.error('Failed to complete the order. Please try again.');
+    }
+  };
 
   const getStatusIcon = (status) => {
     switch (status) {
@@ -176,89 +236,6 @@ const WaitingScreen = () => {
       case 'delayed': return 75;
       case 'cancelled': return 0;
       default: return 0;
-    }
-  };
-
-  const handleCancelOrder = async () => {
-    setConfirmCancelVisible(true); // Show confirmation modal
-  };
-
-  const handleConfirmCancelOrder = async () => {
-    setConfirmCancelVisible(false); // Hide confirmation modal
-    // Proceed with cancellation logic
-    try {
-      const orgId = localStorage.getItem('orgId');
-      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: 'cancelled',
-          statusMessage: 'Your order has been cancelled',
-          orgId: orgId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to cancel the order');
-      }
-
-      setOrder(prevOrder => ({ ...prevOrder, status: 'cancelled', statusMessage: 'Your order has been cancelled' }));
-
-      // Send WebSocket message to notify admin
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        const message = JSON.stringify({
-          type: 'statusUpdate',
-          orderId: orderId,
-          orgId: orgId,
-          status: 'cancelled',
-          statusMessage: 'Order has been cancelled by the customer'
-        });
-        ws.current.send(message);
-      }
-
-      clearCart(); // Clear the cart when order is cancelled
-      setCancelModalVisible(true); // Show cancel modal
-    } catch (error) {
-      console.error('Failed to cancel the order', error);
-      message.error('Failed to cancel the order. Please try again.');
-    }
-  };
-  const handleCompleteOrder = async () => {
-    try {
-      const orgId = localStorage.getItem('orgId');
-      const response = await fetch(`https://smart-server-menu-database-default-rtdb.firebaseio.com/history/${orderId}.json`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          status: 'completed',
-          statusMessage: 'Your order has been completed',
-          orgId: orgId,
-        }),
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update the order status');
-      }
-  
-      setOrder(prevOrder => ({ ...prevOrder, status: 'completed', statusMessage: 'Your order has been completed' }));
-  
-      // Send WebSocket message to notify admin
-      if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        const message = JSON.stringify({
-          type: 'statusUpdate',
-          orderId: orderId,
-          orgId: orgId,
-          status: 'completed',
-          statusMessage: 'Order has been completed'
-        });
-        ws.current.send(message);
-      }
-  
-      clearCart(); // Clear the cart when order is completed
-      setIsModalVisible(true); // Show the feedback modal
-    } catch (error) {
-      console.error('Failed to update the order status', error);
-      message.error('Failed to complete the order. Please try again.');
     }
   };
 
@@ -300,38 +277,6 @@ const WaitingScreen = () => {
     navigate(`/home/`);
   };
 
-  if (loading) {
-    return (
-      <div style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)',
-        zIndex: 1000,
-      }}>
-        <FoodLoader />
-        <div style={{
-          marginTop: '1rem',
-          color: '#FF0000',
-          fontWeight: 'bold',
-          fontSize: '1.2rem',
-        }}>
-          Loading order details...
-        </div>
-      </div>
-    );
-  }
-
-  if (!order) {
-    return <Title level={3} style={{ textAlign: 'center', marginTop: '20px' }}>Order not found</Title>;
-  }
-
   return (
     <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', padding: '20px', minHeight: '100vh', backgroundColor: '#f8f9fa', marginTop: "70PX" }}>
       <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
@@ -361,7 +306,7 @@ const WaitingScreen = () => {
 >
   <Title level={3} style={{ color: '#343a40' }}>Order #{order.displayOrderId}</Title>
 
-  {/* New GIF Display Section */}
+  {/* GIF Display Section */}
   <div style={{ 
     display: 'flex',
     justifyContent: 'center',
