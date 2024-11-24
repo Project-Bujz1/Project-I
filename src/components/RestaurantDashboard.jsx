@@ -806,6 +806,47 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     height: '400px'
+  },
+  mobileTabBar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    padding: '8px 4px',
+    background: '#fff',
+    borderBottom: '1px solid #f0f0f0',
+    position: 'fixed',
+    top: '64px',
+    left: 0,
+    right: 0,
+    zIndex: 100
+  },
+  tabButton: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: '4px',
+    flex: '1',
+    minWidth: '60px',
+    border: 'none',
+    background: 'transparent',
+    color: '#595959',
+    fontSize: '12px',
+    cursor: 'pointer',
+    transition: 'all 0.3s'
+  },
+  activeTabButton: {
+    color: '#ff4d4f'
+  },
+  tabIcon: {
+    fontSize: '20px',
+    marginBottom: '2px'
+  },
+  tabLabel: {
+    fontSize: '11px',
+    lineHeight: '1.2',
+    textAlign: 'center'
+  },
+  contentWrapper: {
+    marginTop: '116px'
   }
 };
 
@@ -1136,64 +1177,65 @@ export const RestaurantDashboard = () => {
     );
   };
 
+  const tabItems = [
+    {
+      key: '1',
+      icon: <DashboardOutlined />,
+      label: 'Overview'
+    },
+    {
+      key: '2',
+      icon: <BarChartOutlined />,
+      label: 'Sales'
+    },
+    {
+      key: '3',
+      icon: <MenuOutlined />,
+      label: 'Menu'
+    },
+    {
+      key: '4',
+      icon: <ShopOutlined />,
+      label: 'Orders'
+    },
+    {
+      key: '5',
+      icon: <TableOutlined />,
+      label: 'Tables'
+    }
+  ];
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case '1': return renderOverviewTab();
+      case '2': return <SalesAnalysis orders={orders} />;
+      case '3': return <MenuInsights menuItems={menuItems} orders={orders} categories={categories} />;
+      case '4': return <OrderAnalytics orders={orders} />;
+      case '5': return <TableAnalytics orders={orders} />;
+      default: return null;
+    }
+  };
+
   return (
     <div style={styles.container}>
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        items={[
-          {
-            key: '1',
-            label: (
-              <span>
-                <DashboardOutlined />
-                Overview
-              </span>
-            ),
-            children: renderOverviewTab()
-          },
-          {
-            key: '2',
-            label: (
-              <span>
-                <BarChartOutlined />
-                Sales Analysis
-              </span>
-            ),
-            children: <SalesAnalysis orders={orders} />
-          },
-          {
-            key: '3',
-            label: (
-              <span>
-                <PieChartOutlined />
-                Menu Insights
-              </span>
-            ),
-            children: <MenuInsights menuItems={menuItems} orders={orders} categories={categories} />
-          },
-          {
-            key: '4',
-            label: (
-              <span>
-                <TableOutlined />
-                Order Analytics
-              </span>
-            ),
-            children: <OrderAnalytics orders={orders} />
-          },
-          {
-            key: '5',
-            label: (
-              <span>
-                <TableOutlined />
-                Table Analytics
-              </span>
-            ),
-            children: <TableAnalytics orders={orders} />
-          }
-        ]}
-      />
+      <div style={styles.mobileTabBar}>
+        {tabItems.map(item => (
+          <button
+            key={item.key}
+            onClick={() => setActiveTab(item.key)}
+            style={{
+              ...styles.tabButton,
+              ...(activeTab === item.key ? styles.activeTabButton : {})
+            }}
+          >
+            <span style={styles.tabIcon}>{item.icon}</span>
+            <span style={styles.tabLabel}>{item.label}</span>
+          </button>
+        ))}
+      </div>
+      <div style={styles.contentWrapper}>
+        {renderTabContent()}
+      </div>
     </div>
   );
 };
