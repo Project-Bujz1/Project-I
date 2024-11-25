@@ -488,7 +488,16 @@ const ModernMenuManagement = () => {
                 marginTop: '8px'
               }}
             >
-              <ScrollMenu>
+              <div style={{
+                display: 'flex',
+                overflowX: 'auto',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none',
+                msOverflowStyle: 'none',
+                '&::-webkit-scrollbar': {
+                  display: 'none'
+                }
+              }}>
                 {selectedCategories.map(catId => (
                   <Tag
                     key={catId}
@@ -520,7 +529,7 @@ const ModernMenuManagement = () => {
                      availabilityFilter.slice(1)}
                   </Tag>
                 )}
-              </ScrollMenu>
+              </div>
             </motion.div>
           )}
         </motion.div>
