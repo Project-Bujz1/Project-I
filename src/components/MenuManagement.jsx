@@ -178,7 +178,7 @@ const ModernMenuManagement = () => {
     <div 
       style={{
         position: 'fixed',
-        top: 0,
+        top: -15,
         left: 0,
         right: 0,
         zIndex: 1000,
@@ -1532,7 +1532,7 @@ const ModernMenuItem = memo(({ item }) => (
       </Drawer>
 
       <Layout style={{ 
-        marginTop: '72px', 
+        marginTop: '120px', 
         background: theme.background,
         padding: '8px',
         paddingBottom: '80px'
