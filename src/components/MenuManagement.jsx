@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, memo, useRef } from 'react';
 import {
   Layout,
   Menu,
@@ -41,6 +41,8 @@ import {
   RestOutlined,
   ShopOutlined,
 } from '@ant-design/icons';
+import { debounce } from 'lodash';
+import VirtualList from 'rc-virtual-list';
 
 const { Content, Sider } = Layout;
 const { Option } = Select;
@@ -85,45 +87,19 @@ const ModernMenuManagement = () => {
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState('asc');
 
+  // Add constant for footer height
+  const FOOTER_HEIGHT = 64; // Adjust this value to match your footer height
 
-  const MobileHeader = () => (
-    <div 
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 1000,
-        backgroundColor: theme.primary,
-        padding: '12px 16px',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
-        marginTop: "72px"
-      }}
-    >
-      <Button
-        type="text"
-        icon={<MenuOutlined />}
-        onClick={() => setDrawerVisible(true)}
-        style={{ color: 'white' }}
-      />
-      <Text strong style={{ color: 'white', fontSize: '18px', margin: 0 }}>
-        Restaurant Menu
-      </Text>
-      {activeTab === 'menu_items' && (
-        <Button
-          type="text"
-          icon={<FilterOutlined />}
-          onClick={() => setShowFilters(!showFilters)}
-          style={{ color: 'white' }}
-        />
-      )}
-    </div>
+  // Add debounced search
+  const debouncedSearch = useCallback(
+    debounce((value) => {
+      setSearchTerm(value);
+    }, 300),
+    []
   );
-   // Filter and sort functions
-   const filterAndSortItems = (items) => {
+
+  // Filter and sort functions
+  const filterAndSortItems = (items) => {
     let filteredItems = [...items];
 
     // Search filter
@@ -184,17 +160,95 @@ const ModernMenuManagement = () => {
     return filteredItems;
   };
 
+  // Memoize filtered and sorted items
+  const filteredAndSortedItems = useMemo(() => {
+    return filterAndSortItems(menuItems);
+  }, [
+    menuItems,
+    searchTerm,
+    selectedCategories,
+    selectedSubcategories,
+    availabilityFilter,
+    priceRange,
+    sortBy,
+    sortOrder,
+  ]);
 
-  // Search and Filter component
-  const SearchAndFilters = () => (
+  const MobileHeader = memo(() => (
+    <div 
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        backgroundColor: theme.primary,
+        padding: '16px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+        borderBottomLeftRadius: '20px',
+        borderBottomRightRadius: '20px',
+        marginTop: "72px",
+        transform: 'translateZ(0)'
+      }}
+    >
+      <Space align="center">
+        <Button
+          type="text"
+          className="menu-button"
+          icon={<MenuOutlined style={{ fontSize: '24px', color: 'white' }} />}
+          onClick={() => setDrawerVisible(true)}
+          style={{ 
+            border: 'none', 
+            padding: '8px',
+            background: 'transparent'
+          }}
+        />
+        <Text strong style={{ color: 'white', fontSize: '20px', margin: 0 }}>
+          {activeTab === 'menu_items' ? 'Menu Items' : 
+           activeTab === 'categories' ? 'Categories' : 'Subcategories'}
+        </Text>
+      </Space>
+      {activeTab === 'menu_items' && (
+        <Space size="middle">
+          <Button
+            type="text"
+            className="header-button"
+            icon={<SearchOutlined style={{ fontSize: '24px', color: 'white' }} />}
+            onClick={() => setShowFilters(!showFilters)}
+            style={{ 
+              border: 'none', 
+              padding: '8px',
+              background: 'transparent'
+            }}
+          />
+          <Button
+            type="text"
+            className="header-button"
+            icon={<FilterOutlined style={{ fontSize: '24px', color: 'white' }} />}
+            onClick={() => setShowFilters(!showFilters)}
+            style={{ 
+              border: 'none', 
+              padding: '8px',
+              background: 'transparent'
+            }}
+          />
+        </Space>
+      )}
+    </div>
+  ));
+   // Search and Filter component
+  const SearchAndFilters = memo(() => (
     <Card style={{ marginBottom: 16, borderRadius: '12px' }}>
       <Row gutter={[16, 16]} align="middle">
         <Col xs={24} sm={24} md={8}>
           <Input
             placeholder="Search items..."
             prefix={<SearchOutlined />}
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => debouncedSearch(e.target.value)}
+            defaultValue={searchTerm}
             allowClear
           />
         </Col>
@@ -207,6 +261,7 @@ const ModernMenuManagement = () => {
             onChange={setSelectedCategories}
             style={{ width: '100%' }}
             maxTagCount="responsive"
+            dropdownMatchSelectWidth={false}
           >
             {categories.map(category => (
               <Select.Option key={category.id} value={category.id}>
@@ -304,7 +359,7 @@ const ModernMenuManagement = () => {
         </Col>
       </Row>
     </Card>
-  );
+  ));
    // Get orgId from localStorage
   const orgId = localStorage.getItem('orgId');
 
@@ -1205,189 +1260,140 @@ const columns = {
 
 
 
-const ModernMenuItem = ({ item }) => {
-  const getFoodTypeIcon = (type) => {
-    switch (type) {
-      case 'veg':
-        return (
-          <img
-            src="https://img.icons8.com/?size=100&id=61083&format=png&color=000000"
-            alt="Veg"
-            style={{ width: '18px', height: '18px' }}
-          />
-        );
-      case 'nonveg':
-        return (
-          <img
-            src="https://img.icons8.com/?size=100&id=61082&format=png&color=000000"
-            alt="Non-Veg"
-            style={{ width: '18px', height: '18px' }}
-          />
-        );
-      default:
-        return null;
-    }
-  };
-  
-
-  return (
-    <Card
-      hoverable
-      className="menu-item-card"
-      style={{
-        marginBottom: '16px',
-        borderRadius: '16px',
+const ModernMenuItem = memo(({ item }) => (
+  <Card
+    hoverable
+    className="menu-item-card"
+    style={{
+      margin: '8px',
+      borderRadius: '16px',
+      overflow: 'hidden',
+      boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+      backgroundColor: theme.cardBg,
+      border: 'none'
+    }}
+  >
+    <div style={{ display: 'flex', gap: '12px' }}>
+      <img
+        src={getImageUrl(item.image)}
+        alt={item.name}
+        style={{
+          width: '80px',
+          height: '80px',
+          objectFit: 'cover',
+          borderRadius: '12px',
+          flexShrink: 0, // Prevent image from shrinking
+        }}
+        onError={(e) => {
+          e.target.src = '/api/placeholder/80/80';
+        }}
+      />
+      <div style={{ 
+        flex: 1, 
         overflow: 'hidden',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-        backgroundColor: theme.cardBg,
-      }}
-    >
-      <div style={{ display: 'flex', gap: '16px', overflow: 'hidden' }}>
-        <img
-          src={getImageUrl(item.image)}
-          alt={item.name}
-          style={{
-            width: '100px',
-            height: '100px',
-            objectFit: 'cover',
-            borderRadius: '12px',
-          }}
-          onError={(e) => {
-            e.target.src = '/api/placeholder/100/100';
-          }}
-        />
-        <div style={{ flex: 1, overflow: 'hidden' }}>
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              overflow: 'hidden',
-            }}
-          >
-            <Popover content={item.name} placement="topLeft">
-              <Text
-                strong
-                style={{
-                  fontSize: '18px',
-                  maxWidth: '70%',
-                  whiteSpace: 'nowrap',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  cursor: 'pointer',
-                }}
-              >
-                {item.name}
-              </Text>
-            </Popover>
-            <Text
-              style={{
-                color: theme.primary,
-                fontSize: '18px',
-                fontWeight: 'bold',
-                marginLeft: '8px',
+        minWidth: 0 // Ensure text wrapping works properly
+      }}>
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'flex-start',
+          gap: '8px' // Add gap between name and price
+        }}>
+          <div style={{ flex: 1, minWidth: 0 }}> {/* Container for text content */}
+            <Text 
+              strong 
+              style={{ 
+                fontSize: '16px', 
+                display: 'block',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
-              ₹{item.price}
+              {item.name}
             </Text>
-          </div>
-          <Popover content={item.description} placement="topLeft">
-            <Text
-              type="secondary"
-              style={{
-                fontSize: '14px',
-                display: 'block',
+            <Text 
+              type="secondary" 
+              style={{ 
+                fontSize: '14px', 
+                display: 'block', 
                 marginTop: '4px',
-                maxWidth: '100%',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
                 whiteSpace: 'nowrap',
-                cursor: 'pointer',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
               }}
             >
               {item.description}
             </Text>
-          </Popover>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: '12px',
-            overflow: 'hidden',
-          }}>
-            <Space>
-            {getFoodTypeIcon(item.foodType)}
-
-              <Switch
-                checked={item.isAvailable}
-                onChange={(checked) => handleAvailabilityChange(item.firebaseId, checked)}
-                style={{
-                  backgroundColor: item.isAvailable ? theme.primary : '#f5f5f5',
-                }}
-              />
-              <Badge
-                status={item.isAvailable ? 'success' : 'error'}
-                text={item.isAvailable ? 'Available' : 'Unavailable'}
-              />
-            </Space>
-            <Space>
+          </div>
+          <Text 
+            strong 
+            style={{ 
+              color: theme.primary, 
+              fontSize: '16px',
+              whiteSpace: 'nowrap', // Prevent price from breaking
+              flexShrink: 0 // Prevent price from shrinking
+            }}
+          >
+            ₹{item.price}
+          </Text>
+        </div>
+        <div style={{ 
+          marginTop: '8px', 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center'
+        }}>
+          <Switch
+            checked={item.isAvailable}
+            onChange={(checked) => {
+              // Optimistic update
+              const updatedItem = { ...item, isAvailable: checked };
+              updateLocalState('menu_items', 'update', updatedItem);
+              handleAvailabilityChange(item.firebaseId, checked);
+            }}
+            size="small"
+            style={{ backgroundColor: item.isAvailable ? theme.primary : undefined }}
+          />
+          <Space size="small">
+            <Button
+              type="text"
+              size="small"
+              icon={<EditOutlined />}
+              onClick={() => {
+                const itemToEdit = {
+                  ...item,
+                  categoryId: item.categoryId,
+                  subcategoryId: item.subcategoryId
+                };
+                setEditingItem(itemToEdit);
+                form.setFieldsValue(itemToEdit);
+                setSelectedCategory(item.categoryId);
+                setIsModalVisible(true);
+              }}
+              style={{ padding: '4px 8px' }}
+            />
+            <Popconfirm
+              title="Delete this item?"
+              onConfirm={() => handleDelete(item.firebaseId)}
+              okText="Yes"
+              cancelText="No"
+              placement="topRight"
+            >
               <Button
                 type="text"
-                icon={<EditOutlined />}
-                onClick={() => {
-                  const itemToEdit = {
-                    ...item,
-                    categoryId: item.categoryId,
-                    subcategoryId: item.subcategoryId
-                  };
-                  setEditingItem(itemToEdit);
-                  form.setFieldsValue(itemToEdit);
-                  setSelectedCategory(item.categoryId);
-                  
-                  // Set image data based on existing image
-                  if (item.image) {
-                    if (typeof item.image === 'string') {
-                      setImageInputType('url');
-                      form.setFieldsValue({
-                        imageUrl: item.image
-                      });
-                    } else if (item.image.file && item.image.file.url) {
-                      setImageInputType('upload');
-                      form.setFieldsValue({
-                        imageUpload: [{
-                          uid: '-1',
-                          name: item.image.file.name || 'existing-image.jpg',
-                          status: 'done',
-                          url: item.image.file.url,
-                          thumbUrl: item.image.file.url
-                        }]
-                      });
-                    }
-                  }
-                  
-                  setIsModalVisible(true);
-                }}
+                size="small"
+                danger
+                icon={<DeleteOutlined />}
+                style={{ padding: '4px 8px' }}
               />
-               <Popconfirm
-      title="Are you sure you want to delete this item?"
-      onConfirm={() => handleDelete(item.firebaseId)}
-      okText="Yes"
-      cancelText="No"
-      placement="topRight"
-    >
-      <Button
-        type="text"
-        danger
-        icon={<DeleteOutlined />}
-      />
-    </Popconfirm>
-            </Space>
-          </div>
+            </Popconfirm>
+          </Space>
         </div>
       </div>
-    </Card>
-  );
-};
+    </div>
+  </Card>
+));
 
 
 
@@ -1440,7 +1446,7 @@ const ModernMenuItem = ({ item }) => {
       type="primary"
       shape="circle"
       size="large"
-      icon={<PlusOutlined />}
+      icon={<PlusOutlined style={{ fontSize: '24px' }} />}
       onClick={() => {
         setEditingItem(null);
         form.resetFields();
@@ -1448,22 +1454,66 @@ const ModernMenuItem = ({ item }) => {
       }}
       style={{
         position: 'fixed',
-        bottom: '80px',
+        bottom: `${FOOTER_HEIGHT + 24}px`, // Adjust bottom position to be above footer
         right: '24px',
         backgroundColor: theme.primary,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        boxShadow: '0 6px 16px rgba(0,0,0,0.2)',
         width: '56px',
         height: '56px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        zIndex: 1000
+        zIndex: 1000,
+        border: 'none'
       }}
     />
   );
 
+  // Optimize item rendering with virtualization
+  const VirtualizedMenuItems = () => {
+    const containerRef = useRef(null);
+    const [containerHeight, setContainerHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+      if (containerRef.current) {
+        const updateHeight = () => {
+          const height = window.innerHeight - containerRef.current.offsetTop - FOOTER_HEIGHT;
+          setContainerHeight(height);
+        };
+        updateHeight();
+        window.addEventListener('resize', updateHeight);
+        return () => window.removeEventListener('resize', updateHeight);
+      }
+    }, []);
+
+    return (
+      <div ref={containerRef} style={{ height: containerHeight }}>
+        <VirtualList
+          data={filteredAndSortedItems}
+          height={containerHeight}
+          itemHeight={120} // Adjust based on your card height
+          itemKey="firebaseId"
+          onScroll={() => {}}
+        >
+          {(item) => (
+            <Col xs={24} key={item.firebaseId}>
+              <ModernMenuItem item={item} />
+            </Col>
+          )}
+        </VirtualList>
+      </div>
+    );
+  };
+
   return (
-    <Layout style={{ minHeight: '100vh', background: theme.background , marginTop : "100px"}}>
+    <Layout style={{ 
+      minHeight: '100vh', 
+      background: theme.background,
+      marginTop: "100px",
+      maxWidth: '480px',
+      margin: '0 auto',
+      paddingBottom: `${FOOTER_HEIGHT + 16}px`
+    }}>
       <MobileHeader />
       
       <Drawer
@@ -1472,47 +1522,51 @@ const ModernMenuItem = ({ item }) => {
         onClose={() => setDrawerVisible(false)}
         open={drawerVisible}
         bodyStyle={{ padding: 0 }}
-        width={280}
+        width="80%"
+        style={{
+          borderTopRightRadius: '20px',
+          borderBottomRightRadius: '20px'
+        }}
       >
         {renderSiderContent()}
       </Drawer>
 
-      <Layout style={{ marginTop: '56px', background: theme.background }}>
-        <Content style={{ padding: '16px', maxWidth: '1200px', margin: '0 auto' }}>
+      <Layout style={{ 
+        marginTop: '72px', 
+        background: theme.background,
+        padding: '8px',
+        paddingBottom: '80px'
+      }}>
+        <Content>
           {activeTab === 'menu_items' && showFilters && <SearchAndFilters />}
 
-          <Row gutter={[16, 16]}>
-            {activeTab === 'menu_items' ? (
-              filterAndSortItems(menuItems).map((item) => (
-                <Col xs={24} sm={24} md={12} lg={8} xl={8} key={item.firebaseId}>
-                  <ModernMenuItem item={item} />
-                </Col>
-              ))
-            ) : activeTab === 'categories' ? (
-              categories.map((category) => (
-                <Col xs={24} sm={24} md={12} lg={8} xl={8} key={category.firebaseId}>
-                  <ModernCategoryCard item={category} type="category" />
-                </Col>
-              ))
-            ) : (
-              subcategories.map((subcategory) => (
-                <Col xs={24} sm={24} md={12} lg={8} xl={8} key={subcategory.firebaseId}>
-                  <ModernCategoryCard item={subcategory} type="subcategory" />
-                </Col>
-              ))
-            )}
-          </Row>
+          {activeTab === 'menu_items' ? (
+            <VirtualizedMenuItems />
+          ) : (
+            <Row gutter={[8, 8]}>
+              {activeTab === 'categories' ? (
+                categories.map((category) => (
+                  <Col xs={24} key={category.firebaseId}>
+                    <ModernCategoryCard item={category} type="category" />
+                  </Col>
+                ))
+              ) : (
+                subcategories.map((subcategory) => (
+                  <Col xs={24} key={subcategory.firebaseId}>
+                    <ModernCategoryCard item={subcategory} type="subcategory" />
+                  </Col>
+                ))
+              )}
+            </Row>
+          )}
         </Content>
       </Layout>
 
       <FloatingActionButton />
 
+      {/* Update Modal styles */}
       <Modal
-        title={
-          <Text strong style={{ fontSize: '18px' }}>
-            {editingItem ? 'Edit Item' : 'Add New Item'}
-          </Text>
-        }
+        title={null}
         visible={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -1520,7 +1574,17 @@ const ModernMenuItem = ({ item }) => {
           form.resetFields();
         }}
         footer={null}
-        style={{ top: 20 }}
+        style={{ 
+          top: 20,
+          maxWidth: '90%',
+          margin: '0 auto',
+          maxHeight: `calc(100vh - ${FOOTER_HEIGHT + 40}px)`, // Adjust max height
+          overflow: 'auto'
+        }}
+        bodyStyle={{
+          borderRadius: '16px',
+          padding: '20px'
+        }}
       >
         <Form form={form} layout='vertical' onFinish={editingItem ? handleUpdate : handleCreate}>
           {renderFormItems()}
@@ -1545,4 +1609,52 @@ const ModernMenuItem = ({ item }) => {
   );
 };
 
-export default ModernMenuManagement;
+// Add performance optimization styles
+const styles = `
+  .ant-select-dropdown {
+    position: fixed !important;
+  }
+
+  .menu-item-card {
+    will-change: transform;
+    transform: translateZ(0);
+  }
+
+  .ant-input-affix-wrapper:focus,
+  .ant-input-affix-wrapper-focused {
+    z-index: 1;
+  }
+`;
+
+document.head.insertAdjacentHTML('beforeend', `<style>${styles}</style>`);
+
+// Add these styles to your existing styles
+const additionalStyles = `
+  .menu-button:active {
+    transform: scale(0.95);
+  }
+
+  .header-button {
+    transition: opacity 0.2s ease;
+  }
+
+  .header-button:active {
+    opacity: 0.7;
+  }
+
+  .ant-switch {
+    transition: background-color 0.2s ease;
+  }
+
+  .menu-item-card {
+    transition: transform 0.2s ease;
+  }
+
+  .menu-item-card:active {
+    transform: scale(0.99);
+  }
+`;
+
+document.head.insertAdjacentHTML('beforeend', `<style>${additionalStyles}</style>`);
+
+export default memo(ModernMenuManagement);
