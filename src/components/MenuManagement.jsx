@@ -23,7 +23,9 @@ import {
   Dropdown,
   Divider,
   Popover,
-  Popconfirm
+  Popconfirm,
+  Tag,
+  Slider
 } from 'antd';
 import {
   PlusOutlined,
@@ -40,9 +42,15 @@ import {
   SortDescendingOutlined,
   RestOutlined,
   ShopOutlined,
+  CheckOutlined
 } from '@ant-design/icons';
 import { debounce } from 'lodash';
 import VirtualList from 'rc-virtual-list';
+import { motion, AnimatePresence } from 'framer-motion';
+import { IoFilterSharp, IoSearch } from 'react-icons/io5';
+import { RiPriceTag3Line } from 'react-icons/ri';
+import { MdOutlineSort } from 'react-icons/md';
+import { ScrollMenu } from 'react-horizontal-scrolling-menu';
 
 const { Content, Sider } = Layout;
 const { Option } = Select;
@@ -240,126 +248,285 @@ const ModernMenuManagement = () => {
     </div>
   ));
    // Search and Filter component
-  const SearchAndFilters = memo(() => (
-    <Card style={{ marginBottom: 16, borderRadius: '12px' }}>
-      <Row gutter={[16, 16]} align="middle">
-        <Col xs={24} sm={24} md={8}>
-          <Input
-            placeholder="Search items..."
-            prefix={<SearchOutlined />}
-            onChange={(e) => debouncedSearch(e.target.value)}
-            defaultValue={searchTerm}
-            allowClear
-          />
-        </Col>
-        
-        <Col xs={24} sm={12} md={8}>
-          <Select
-            mode="multiple"
-            placeholder="Filter by category"
-            value={selectedCategories}
-            onChange={setSelectedCategories}
-            style={{ width: '100%' }}
-            maxTagCount="responsive"
-            dropdownMatchSelectWidth={false}
-          >
-            {categories.map(category => (
-              <Select.Option key={category.id} value={category.id}>
-                {category.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Col>
-
-        <Col xs={24} sm={12} md={8}>
-          <Select
-            mode="multiple"
-            placeholder="Filter by subcategory"
-            value={selectedSubcategories}
-            onChange={setSelectedSubcategories}
-            style={{ width: '100%' }}
-            maxTagCount="responsive"
-          >
-            {subcategories.map(subcategory => (
-              <Select.Option key={subcategory.id} value={subcategory.id}>
-                {subcategory.name}
-              </Select.Option>
-            ))}
-          </Select>
-        </Col>
-
-        <Col xs={24} sm={12} md={8}>
-          <Select
-            placeholder="Filter by availability"
-            value={availabilityFilter}
-            onChange={setAvailabilityFilter}
-            style={{ width: '100%' }}
-          >
-            <Select.Option value="all">All Items</Select.Option>
-            <Select.Option value="available">Available Only</Select.Option>
-            <Select.Option value="unavailable">Unavailable Only</Select.Option>
-          </Select>
-        </Col>
-
-        <Col xs={24} sm={12} md={8}>
-          <Select
-            placeholder="Sort by"
-            value={sortBy}
-            onChange={setSortBy}
-            style={{ width: '100%' }}
-            dropdownRender={menu => (
-              <div>
-                {menu}
-                <div style={{ padding: '8px', borderTop: '1px solid #f0f0f0' }}>
-                  <Space>
+  const SearchAndFilters = memo(() => {
+    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+    const [localPriceRange, setLocalPriceRange] = useState(priceRange);
+    
+    return (
+      <AnimatePresence>
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.2 }}
+        >
+          {/* Modern Search Bar */}
+          <div className="search-container" style={{
+            position: 'sticky',
+            top: 72,
+            zIndex: 100,
+            padding: '8px 16px',
+            background: 'rgba(255,255,255,0.95)',
+            backdropFilter: 'blur(10px)',
+            borderRadius: '12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+            margin: '8px 0'
+          }}>
+            <Input
+              prefix={<IoSearch style={{ fontSize: '20px', color: theme.primary }} />}
+              suffix={
+                <Space>
+                  <Badge count={
+                    (selectedCategories.length > 0 ? 1 : 0) +
+                    (selectedSubcategories.length > 0 ? 1 : 0) +
+                    (availabilityFilter !== 'all' ? 1 : 0)
+                  }>
                     <Button
-                      type={sortOrder === 'asc' ? 'primary' : 'text'}
-                      icon={<SortAscendingOutlined />}
-                      onClick={() => setSortOrder('asc')}
-                      size="small"
-                    >
-                      Ascending
-                    </Button>
+                      type="text"
+                      icon={<IoFilterSharp style={{ fontSize: '20px' }} />}
+                      onClick={() => setShowAdvancedFilters(true)}
+                    />
+                  </Badge>
+                  <Divider type="vertical" />
+                  <Dropdown
+                    overlay={
+                      <Menu>
+                        <Menu.ItemGroup title="Sort by">
+                          <Menu.Item 
+                            key="name" 
+                            onClick={() => setSortBy('name')}
+                            icon={sortBy === 'name' ? <CheckOutlined /> : null}
+                          >
+                            Name
+                          </Menu.Item>
+                          <Menu.Item 
+                            key="price" 
+                            onClick={() => setSortBy('price')}
+                            icon={sortBy === 'price' ? <CheckOutlined /> : null}
+                          >
+                            Price
+                          </Menu.Item>
+                        </Menu.ItemGroup>
+                        <Menu.Divider />
+                        <Menu.ItemGroup title="Order">
+                          <Menu.Item 
+                            key="asc" 
+                            onClick={() => setSortOrder('asc')}
+                            icon={sortOrder === 'asc' ? <CheckOutlined /> : null}
+                          >
+                            Ascending
+                          </Menu.Item>
+                          <Menu.Item 
+                            key="desc" 
+                            onClick={() => setSortOrder('desc')}
+                            icon={sortOrder === 'desc' ? <CheckOutlined /> : null}
+                          >
+                            Descending
+                          </Menu.Item>
+                        </Menu.ItemGroup>
+                      </Menu>
+                    }
+                    trigger={['click']}
+                    placement="bottomRight"
+                  >
                     <Button
-                      type={sortOrder === 'desc' ? 'primary' : 'text'}
-                      icon={<SortDescendingOutlined />}
-                      onClick={() => setSortOrder('desc')}
-                      size="small"
-                    >
-                      Descending
-                    </Button>
-                  </Space>
+                      type="text"
+                      icon={<MdOutlineSort style={{ fontSize: '20px' }} />}
+                    />
+                  </Dropdown>
+                </Space>
+              }
+              placeholder="Search menu items..."
+              onChange={(e) => debouncedSearch(e.target.value)}
+              style={{
+                borderRadius: '8px',
+                backgroundColor: '#f5f5f5',
+                border: 'none',
+                padding: '8px 12px',
+              }}
+            />
+          </div>
+
+          {/* Advanced Filters Drawer */}
+          <Drawer
+            placement="bottom"
+            visible={showAdvancedFilters}
+            onClose={() => setShowAdvancedFilters(false)}
+            height="80vh"
+            className="filter-drawer"
+            styles={{
+              body: {
+                padding: 0,
+                borderTopLeftRadius: '20px',
+                borderTopRightRadius: '20px',
+              }
+            }}
+          >
+            <motion.div
+              initial={{ y: 100 }}
+              animate={{ y: 0 }}
+              exit={{ y: 100 }}
+              style={{ padding: '20px' }}
+            >
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between', 
+                alignItems: 'center',
+                marginBottom: '20px'
+              }}>
+                <Title level={4} style={{ margin: 0 }}>Filters</Title>
+                <Button type="text" onClick={() => {
+                  setSelectedCategories([]);
+                  setSelectedSubcategories([]);
+                  setAvailabilityFilter('all');
+                  setPriceRange([0, 10000]);
+                  setLocalPriceRange([0, 10000]);
+                }}>
+                  Reset All
+                </Button>
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <Text strong style={{ marginBottom: '8px', display: 'block' }}>
+                  Categories
+                </Text>
+                <Select
+                  mode="multiple"
+                  style={{ width: '100%' }}
+                  placeholder="Select categories"
+                  value={selectedCategories}
+                  onChange={setSelectedCategories}
+                  maxTagCount="responsive"
+                >
+                  {categories.map(category => (
+                    <Option key={category.id} value={category.id}>
+                      {category.name}
+                    </Option>
+                  ))}
+                </Select>
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <Text strong style={{ marginBottom: '8px', display: 'block' }}>
+                  Price Range
+                </Text>
+                <Slider
+                  range
+                  min={0}
+                  max={10000}
+                  value={localPriceRange}
+                  onChange={setLocalPriceRange}
+                  onAfterChange={setPriceRange}
+                  tooltip={{
+                    formatter: (value) => `₹${value}`
+                  }}
+                />
+                <div style={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between',
+                  marginTop: '8px'
+                }}>
+                  <Text type="secondary">₹{localPriceRange[0]}</Text>
+                  <Text type="secondary">₹{localPriceRange[1]}</Text>
                 </div>
               </div>
-            )}
-          >
-            <Select.Option value="name">Name</Select.Option>
-            <Select.Option value="price">Price</Select.Option>
-            <Select.Option value="category">Category</Select.Option>
-          </Select>
-        </Col>
 
-        <Col xs={24} sm={12} md={8}>
-          <Space>
-            <Button
-              type="primary"
-              onClick={() => {
-                setSearchTerm('');
-                setSelectedCategories([]);
-                setSelectedSubcategories([]);
-                setAvailabilityFilter('all');
-                setPriceRange([0, 10000]);
-                setSortBy('name');
-                setSortOrder('asc');
+              <div style={{ marginBottom: '24px' }}>
+                <Text strong style={{ marginBottom: '8px', display: 'block' }}>
+                  Availability
+                </Text>
+                <Radio.Group
+                  value={availabilityFilter}
+                  onChange={(e) => setAvailabilityFilter(e.target.value)}
+                  style={{ width: '100%' }}
+                >
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    {['all', 'available', 'unavailable'].map(option => (
+                      <Radio.Button
+                        key={option}
+                        value={option}
+                        style={{
+                          width: '100%',
+                          height: '40px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          borderRadius: '8px',
+                          marginBottom: '8px'
+                        }}
+                      >
+                        {option.charAt(0).toUpperCase() + option.slice(1)}
+                      </Radio.Button>
+                    ))}
+                  </Space>
+                </Radio.Group>
+              </div>
+
+              <Button
+                type="primary"
+                block
+                size="large"
+                onClick={() => setShowAdvancedFilters(false)}
+                style={{
+                  borderRadius: '8px',
+                  marginTop: '16px'
+                }}
+              >
+                Apply Filters
+              </Button>
+            </motion.div>
+          </Drawer>
+
+          {/* Active Filters Display */}
+          {(selectedCategories.length > 0 || 
+            selectedSubcategories.length > 0 || 
+            availabilityFilter !== 'all') && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              style={{
+                padding: '8px 16px',
+                marginTop: '8px'
               }}
             >
-              Reset Filters
-            </Button>
-          </Space>
-        </Col>
-      </Row>
-    </Card>
-  ));
+              <ScrollMenu>
+                {selectedCategories.map(catId => (
+                  <Tag
+                    key={catId}
+                    closable
+                    onClose={() => setSelectedCategories(prev => 
+                      prev.filter(id => id !== catId)
+                    )}
+                    style={{
+                      margin: '4px',
+                      borderRadius: '16px',
+                      padding: '4px 12px'
+                    }}
+                  >
+                    {categories.find(c => c.id === catId)?.name}
+                  </Tag>
+                ))}
+                {availabilityFilter !== 'all' && (
+                  <Tag
+                    closable
+                    onClose={() => setAvailabilityFilter('all')}
+                    color={availabilityFilter === 'available' ? 'success' : 'error'}
+                    style={{
+                      margin: '4px',
+                      borderRadius: '16px',
+                      padding: '4px 12px'
+                    }}
+                  >
+                    {availabilityFilter.charAt(0).toUpperCase() + 
+                     availabilityFilter.slice(1)}
+                  </Tag>
+                )}
+              </ScrollMenu>
+            </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
+    );
+  });
    // Get orgId from localStorage
   const orgId = localStorage.getItem('orgId');
 
@@ -1656,5 +1823,52 @@ const additionalStyles = `
 `;
 
 document.head.insertAdjacentHTML('beforeend', `<style>${additionalStyles}</style>`);
+
+// Add these styles to your existing styles
+const enhancedStyles = `
+  .search-container .ant-input-affix-wrapper {
+    transition: all 0.3s ease;
+  }
+
+  .search-container .ant-input-affix-wrapper:hover,
+  .search-container .ant-input-affix-wrapper:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .ant-drawer-content-wrapper {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+  }
+
+  .ant-slider-track {
+    background-color: ${theme.primary};
+  }
+
+  .ant-slider-handle {
+    border-color: ${theme.primary};
+  }
+
+  .ant-radio-button-wrapper-checked {
+    background-color: ${theme.primary}!important;
+    border-color: ${theme.primary}!important;
+    color: white!important;
+  }
+`;
+
+document.head.insertAdjacentHTML('beforeend', `<style>${enhancedStyles}</style>`);
+
+// Add these styles
+const drawerStyles = `
+  .filter-drawer .ant-drawer-content-wrapper {
+    border-radius: 20px 20px 0 0;
+  }
+  
+  .filter-drawer .ant-drawer-body {
+    border-radius: 20px 20px 0 0;
+  }
+`;
+
+document.head.insertAdjacentHTML('beforeend', `<style>${drawerStyles}</style>`);
 
 export default memo(ModernMenuManagement);
