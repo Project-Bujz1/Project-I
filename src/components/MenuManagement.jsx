@@ -250,9 +250,8 @@ const ModernMenuManagement = () => {
   ));
    // Search and Filter component
   const SearchAndFilters = memo(() => {
-    const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
-    const [localPriceRange, setLocalPriceRange] = useState(priceRange);
-    
+    const [filterDrawerVisible, setFilterDrawerVisible] = useState(false);
+
     return (
       <AnimatePresence>
         <motion.div
@@ -276,66 +275,17 @@ const ModernMenuManagement = () => {
             <Input
               prefix={<IoSearch style={{ fontSize: '20px', color: theme.primary }} />}
               suffix={
-                <Space>
-                  <Badge count={
-                    (selectedCategories.length > 0 ? 1 : 0) +
-                    (selectedSubcategories.length > 0 ? 1 : 0) +
-                    (availabilityFilter !== 'all' ? 1 : 0)
-                  }>
-                    <Button
-                      type="text"
-                      icon={<IoFilterSharp style={{ fontSize: '20px' }} />}
-                      onClick={() => setShowAdvancedFilters(true)}
-                    />
-                  </Badge>
-                  <Divider type="vertical" />
-                  <Dropdown
-                    overlay={
-                      <Menu>
-                        <Menu.ItemGroup title="Sort by">
-                          <Menu.Item 
-                            key="name" 
-                            onClick={() => setSortBy('name')}
-                            icon={sortBy === 'name' ? <CheckOutlined /> : null}
-                          >
-                            Name
-                          </Menu.Item>
-                          <Menu.Item 
-                            key="price" 
-                            onClick={() => setSortBy('price')}
-                            icon={sortBy === 'price' ? <CheckOutlined /> : null}
-                          >
-                            Price
-                          </Menu.Item>
-                        </Menu.ItemGroup>
-                        <Menu.Divider />
-                        <Menu.ItemGroup title="Order">
-                          <Menu.Item 
-                            key="asc" 
-                            onClick={() => setSortOrder('asc')}
-                            icon={sortOrder === 'asc' ? <CheckOutlined /> : null}
-                          >
-                            Ascending
-                          </Menu.Item>
-                          <Menu.Item 
-                            key="desc" 
-                            onClick={() => setSortOrder('desc')}
-                            icon={sortOrder === 'desc' ? <CheckOutlined /> : null}
-                          >
-                            Descending
-                          </Menu.Item>
-                        </Menu.ItemGroup>
-                      </Menu>
-                    }
-                    trigger={['click']}
-                    placement="bottomRight"
-                  >
-                    <Button
-                      type="text"
-                      icon={<MdOutlineSort style={{ fontSize: '20px' }} />}
-                    />
-                  </Dropdown>
-                </Space>
+                <Badge count={
+                  (selectedCategories.length > 0 ? 1 : 0) +
+                  (availabilityFilter !== 'all' ? 1 : 0) +
+                  (priceRange[0] !== 0 || priceRange[1] !== 10000 ? 1 : 0)
+                }>
+                  <Button
+                    type="text"
+                    icon={<IoFilterSharp style={{ fontSize: '20px' }} />}
+                    onClick={() => setFilterDrawerVisible(true)}
+                  />
+                </Badge>
               }
               placeholder="Search menu items..."
               onChange={(e) => debouncedSearch(e.target.value)}
@@ -348,191 +298,10 @@ const ModernMenuManagement = () => {
             />
           </div>
 
-          {/* Advanced Filters Drawer */}
-          <Drawer
-            placement="bottom"
-            visible={showAdvancedFilters}
-            onClose={() => setShowAdvancedFilters(false)}
-            height="80vh"
-            className="filter-drawer"
-            styles={{
-              body: {
-                padding: 0,
-                borderTopLeftRadius: '20px',
-                borderTopRightRadius: '20px',
-              }
-            }}
-          >
-            <motion.div
-              initial={{ y: 100 }}
-              animate={{ y: 0 }}
-              exit={{ y: 100 }}
-              style={{ padding: '20px' }}
-            >
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                marginBottom: '20px'
-              }}>
-                <Title level={4} style={{ margin: 0 }}>Filters</Title>
-                <Button type="text" onClick={() => {
-                  setSelectedCategories([]);
-                  setSelectedSubcategories([]);
-                  setAvailabilityFilter('all');
-                  setPriceRange([0, 10000]);
-                  setLocalPriceRange([0, 10000]);
-                }}>
-                  Reset All
-                </Button>
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <Text strong style={{ marginBottom: '8px', display: 'block' }}>
-                  Categories
-                </Text>
-                <Select
-                  mode="multiple"
-                  style={{ width: '100%' }}
-                  placeholder="Select categories"
-                  value={selectedCategories}
-                  onChange={setSelectedCategories}
-                  maxTagCount="responsive"
-                >
-                  {categories.map(category => (
-                    <Option key={category.id} value={category.id}>
-                      {category.name}
-                    </Option>
-                  ))}
-                </Select>
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <Text strong style={{ marginBottom: '8px', display: 'block' }}>
-                  Price Range
-                </Text>
-                <Slider
-                  range
-                  min={0}
-                  max={10000}
-                  value={localPriceRange}
-                  onChange={setLocalPriceRange}
-                  onAfterChange={setPriceRange}
-                  tooltip={{
-                    formatter: (value) => `₹${value}`
-                  }}
-                />
-                <div style={{ 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  marginTop: '8px'
-                }}>
-                  <Text type="secondary">₹{localPriceRange[0]}</Text>
-                  <Text type="secondary">₹{localPriceRange[1]}</Text>
-                </div>
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <Text strong style={{ marginBottom: '8px', display: 'block' }}>
-                  Availability
-                </Text>
-                <Radio.Group
-                  value={availabilityFilter}
-                  onChange={(e) => setAvailabilityFilter(e.target.value)}
-                  style={{ width: '100%' }}
-                >
-                  <Space direction="vertical" style={{ width: '100%' }}>
-                    {['all', 'available', 'unavailable'].map(option => (
-                      <Radio.Button
-                        key={option}
-                        value={option}
-                        style={{
-                          width: '100%',
-                          height: '40px',
-                          display: 'flex',
-                          alignItems: 'center',
-                          borderRadius: '8px',
-                          marginBottom: '8px'
-                        }}
-                      >
-                        {option.charAt(0).toUpperCase() + option.slice(1)}
-                      </Radio.Button>
-                    ))}
-                  </Space>
-                </Radio.Group>
-              </div>
-
-              <Button
-                type="primary"
-                block
-                size="large"
-                onClick={() => setShowAdvancedFilters(false)}
-                style={{
-                  borderRadius: '8px',
-                  marginTop: '16px'
-                }}
-              >
-                Apply Filters
-              </Button>
-            </motion.div>
-          </Drawer>
-
-          {/* Active Filters Display */}
-          {(selectedCategories.length > 0 || 
-            selectedSubcategories.length > 0 || 
-            availabilityFilter !== 'all') && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              style={{
-                padding: '8px 16px',
-                marginTop: '8px'
-              }}
-            >
-              <div style={{
-                display: 'flex',
-                overflowX: 'auto',
-                WebkitOverflowScrolling: 'touch',
-                scrollbarWidth: 'none',
-                msOverflowStyle: 'none',
-                '&::-webkit-scrollbar': {
-                  display: 'none'
-                }
-              }}>
-                {selectedCategories.map(catId => (
-                  <Tag
-                    key={catId}
-                    closable
-                    onClose={() => setSelectedCategories(prev => 
-                      prev.filter(id => id !== catId)
-                    )}
-                    style={{
-                      margin: '4px',
-                      borderRadius: '16px',
-                      padding: '4px 12px'
-                    }}
-                  >
-                    {categories.find(c => c.id === catId)?.name}
-                  </Tag>
-                ))}
-                {availabilityFilter !== 'all' && (
-                  <Tag
-                    closable
-                    onClose={() => setAvailabilityFilter('all')}
-                    color={availabilityFilter === 'available' ? 'success' : 'error'}
-                    style={{
-                      margin: '4px',
-                      borderRadius: '16px',
-                      padding: '4px 12px'
-                    }}
-                  >
-                    {availabilityFilter.charAt(0).toUpperCase() + 
-                     availabilityFilter.slice(1)}
-                  </Tag>
-                )}
-              </div>
-            </motion.div>
-          )}
+          <ModernFilterDrawer 
+            visible={filterDrawerVisible}
+            onClose={() => setFilterDrawerVisible(false)}
+          />
         </motion.div>
       </AnimatePresence>
     );
@@ -1693,6 +1462,262 @@ const ModernMenuItem = memo(({ item }) => (
       </div>
     );
   };
+
+  // Add this new styled drawer component
+  const ModernFilterDrawer = memo(({ visible, onClose }) => {
+    const [localPriceRange, setLocalPriceRange] = useState(priceRange);
+    const [localFilters, setLocalFilters] = useState({
+      categories: selectedCategories,
+      availability: availabilityFilter,
+      sort: sortBy,
+      order: sortOrder
+    });
+
+    // Reset handler
+    const handleReset = () => {
+      setLocalFilters({
+        categories: [],
+        availability: 'all',
+        sort: 'name',
+        order: 'asc'
+      });
+      setLocalPriceRange([0, 10000]);
+    };
+
+    // Apply handler
+    const handleApply = () => {
+      setSelectedCategories(localFilters.categories);
+      setAvailabilityFilter(localFilters.availability);
+      setSortBy(localFilters.sort);
+      setSortOrder(localFilters.order);
+      setPriceRange(localPriceRange);
+      onClose();
+    };
+
+    return (
+      <Drawer
+        title={
+          <div style={{ 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between',
+            padding: '12px 0'
+          }}>
+            <Text strong style={{ fontSize: '18px' }}>Filters & Sort</Text>
+            <Button type="text" onClick={handleReset}>Reset</Button>
+          </div>
+        }
+        placement="right"
+        width="100%"
+        onClose={onClose}
+        open={visible}
+        styles={{
+          header: {
+            padding: '0 24px',
+            borderBottom: '1px solid #f0f0f0'
+          },
+          body: {
+            padding: '0'
+          }
+        }}
+        footer={
+          <div style={{
+            padding: '16px 24px',
+            borderTop: '1px solid #f0f0f0',
+            display: 'flex',
+            gap: '12px'
+          }}>
+            <Button block onClick={onClose}>Cancel</Button>
+            <Button block type="primary" onClick={handleApply}>
+              Apply Filters
+            </Button>
+          </div>
+        }
+      >
+        <div className="modern-drawer-content">
+          {/* Categories Section */}
+          <div className="filter-section">
+            <Text strong className="section-title">Categories</Text>
+            <div className="tag-cloud">
+              {categories.map(category => (
+                <Tag.CheckableTag
+                  key={category.firebaseId}
+                  checked={localFilters.categories.includes(category.firebaseId)}
+                  onChange={checked => {
+                    const newCategories = checked
+                      ? [...localFilters.categories, category.firebaseId]
+                      : localFilters.categories.filter(id => id !== category.firebaseId);
+                    setLocalFilters(prev => ({ ...prev, categories: newCategories }));
+                  }}
+                  style={{
+                    border: '1px solid #d9d9d9',
+                    borderRadius: '16px',
+                    padding: '4px 12px',
+                    margin: '4px'
+                  }}
+                >
+                  {category.name}
+                </Tag.CheckableTag>
+              ))}
+            </div>
+          </div>
+
+          {/* Price Range Section */}
+          <div className="filter-section">
+            <Text strong className="section-title">Price Range</Text>
+            <div style={{ padding: '0 12px' }}>
+              <Slider
+                range
+                min={0}
+                max={10000}
+                value={localPriceRange}
+                onChange={setLocalPriceRange}
+                tooltip={{
+                  formatter: value => `₹${value}`
+                }}
+              />
+              <div style={{ 
+                display: 'flex', 
+                justifyContent: 'space-between',
+                marginTop: '8px'
+              }}>
+                <Text type="secondary">₹{localPriceRange[0]}</Text>
+                <Text type="secondary">₹{localPriceRange[1]}</Text>
+              </div>
+            </div>
+          </div>
+
+          {/* Availability Section */}
+          <div className="filter-section">
+            <Text strong className="section-title">Availability</Text>
+            <Radio.Group
+              value={localFilters.availability}
+              onChange={e => setLocalFilters(prev => ({ ...prev, availability: e.target.value }))}
+              style={{ width: '100%', padding: '0 12px' }}
+            >
+              <Space direction="vertical" style={{ width: '100%' }}>
+                {[
+                  { value: 'all', label: 'All Items' },
+                  { value: 'available', label: 'Available Only' },
+                  { value: 'unavailable', label: 'Unavailable Only' }
+                ].map(option => (
+                  <Radio.Button
+                    key={option.value}
+                    value={option.value}
+                    className="modern-radio-button"
+                  >
+                    {option.label}
+                  </Radio.Button>
+                ))}
+              </Space>
+            </Radio.Group>
+          </div>
+
+          {/* Sort Section */}
+          <div className="filter-section">
+            <Text strong className="section-title">Sort By</Text>
+            <div className="sort-options">
+              <Select
+                value={localFilters.sort}
+                onChange={value => setLocalFilters(prev => ({ ...prev, sort: value }))}
+                style={{ width: '100%', marginBottom: '12px' }}
+              >
+                <Option value="name">Name</Option>
+                <Option value="price">Price</Option>
+                <Option value="category">Category</Option>
+              </Select>
+              <Radio.Group
+                value={localFilters.order}
+                onChange={e => setLocalFilters(prev => ({ ...prev, order: e.target.value }))}
+                optionType="button"
+                buttonStyle="solid"
+                style={{ width: '100%' }}
+              >
+                <Radio.Button value="asc" style={{ width: '50%', textAlign: 'center' }}>
+                  Ascending
+                </Radio.Button>
+                <Radio.Button value="desc" style={{ width: '50%', textAlign: 'center' }}>
+                  Descending
+                </Radio.Button>
+              </Radio.Group>
+            </div>
+          </div>
+        </div>
+      </Drawer>
+    );
+  });
+
+  // Add these styles to your existing styles
+  const modernDrawerStyles = `
+    .modern-drawer-content {
+      height: 100%;
+      overflow-y: auto;
+    }
+
+    .filter-section {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .section-title {
+      display: block;
+      margin-bottom: 16px;
+      font-size: 16px;
+    }
+
+    .tag-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .modern-radio-button {
+      width: 100%;
+      height: 40px;
+      margin: 4px 0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 0 16px;
+    }
+
+    .sort-options {
+      padding: 0 12px;
+    }
+
+    .ant-radio-button-wrapper {
+      transition: all 0.3s ease;
+    }
+
+    .ant-radio-button-wrapper:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .ant-drawer-content-wrapper {
+      transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1) !important;
+    }
+
+    .ant-slider-handle::after {
+      box-shadow: 0 0 0 2px ${theme.primary};
+    }
+
+    .ant-tag-checkable {
+      transition: all 0.3s ease;
+    }
+
+    .ant-tag-checkable:hover {
+      transform: translateY(-1px);
+    }
+
+    .ant-tag-checkable-checked {
+      background-color: ${theme.primary} !important;
+      border-color: ${theme.primary} !important;
+    }
+  `;
+
+  document.head.insertAdjacentHTML('beforeend', `<style>${modernDrawerStyles}</style>`);
 
   return (
     <Layout style={{ 
