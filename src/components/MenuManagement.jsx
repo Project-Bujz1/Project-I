@@ -1646,31 +1646,43 @@ const ModernMenuItem = memo(({ item }) => (
     />
   );
 
-  // Optimize item rendering with virtualization
+  // Update the VirtualizedMenuItems component
   const VirtualizedMenuItems = () => {
     const containerRef = useRef(null);
     const [containerHeight, setContainerHeight] = useState(window.innerHeight);
 
     useEffect(() => {
-      if (containerRef.current) {
-        const updateHeight = () => {
-          const height = window.innerHeight - containerRef.current.offsetTop - FOOTER_HEIGHT;
-          setContainerHeight(height);
-        };
-        updateHeight();
-        window.addEventListener('resize', updateHeight);
-        return () => window.removeEventListener('resize', updateHeight);
-      }
-    }, []);
+      const updateHeight = () => {
+        // Calculate height by subtracting header height, search bar height, and footer
+        const headerHeight = 120; // Height of MobileHeader
+        const searchBarHeight = showFilters ? 140 : 0; // Approximate height of search bar when visible
+        const height = window.innerHeight - headerHeight - searchBarHeight - FOOTER_HEIGHT;
+        setContainerHeight(height);
+      };
+
+      updateHeight();
+      window.addEventListener('resize', updateHeight);
+      return () => window.removeEventListener('resize', updateHeight);
+    }, [showFilters]); // Add showFilters as dependency
 
     return (
-      <div ref={containerRef} style={{ height: containerHeight }}>
+      <div 
+        ref={containerRef} 
+        style={{ 
+          height: containerHeight,
+          overflow: 'hidden' // Prevent outer scrolling
+        }}
+      >
         <VirtualList
           data={filteredAndSortedItems}
           height={containerHeight}
-          itemHeight={120} // Adjust based on your card height
+          itemHeight={120}
           itemKey="firebaseId"
           onScroll={() => {}}
+          style={{
+            padding: '0 8px',
+            overflowX: 'hidden' // Prevent horizontal scrolling
+          }}
         >
           {(item) => (
             <Col xs={24} key={item.firebaseId}>
@@ -1686,10 +1698,14 @@ const ModernMenuItem = memo(({ item }) => (
     <Layout style={{ 
       minHeight: '100vh', 
       background: theme.background,
-      marginTop: "100px",
       maxWidth: '480px',
       margin: '0 auto',
-      paddingBottom: `${FOOTER_HEIGHT + 16}px`
+      position: 'fixed', // Fix the layout
+      top: 0,
+      left: '50%',
+      transform: 'translateX(-50%)',
+      width: '100%',
+      overflow: 'hidden' // Prevent outer scrolling
     }}>
       <MobileHeader />
       
@@ -1722,30 +1738,38 @@ const ModernMenuItem = memo(({ item }) => (
           <Layout style={{ 
             marginTop: '120px', 
             background: theme.background,
-            padding: '8px',
-            paddingBottom: '80px'
+            height: `calc(100vh - 120px)`, // Set fixed height
+            overflow: 'hidden' // Prevent layout scrolling
           }}>
-            <Content>
+            <Content style={{
+              overflow: 'hidden', // Prevent content scrolling
+              position: 'relative'
+            }}>
               {activeTab === 'menu_items' && showFilters && <SearchAndFilters />}
-
               {activeTab === 'menu_items' ? (
                 <VirtualizedMenuItems />
               ) : (
-                <Row gutter={[8, 8]}>
-                  {activeTab === 'categories' ? (
-                    categories.map((category) => (
-                      <Col xs={24} key={category.firebaseId}>
-                        <ModernCategoryCard item={category} type="category" />
-                      </Col>
-                    ))
-                  ) : (
-                    subcategories.map((subcategory) => (
-                      <Col xs={24} key={subcategory.firebaseId}>
-                        <ModernCategoryCard item={subcategory} type="subcategory" />
-                      </Col>
-                    ))
-                  )}
-                </Row>
+                <div style={{
+                  height: `calc(100vh - 180px)`,
+                  overflowY: 'auto',
+                  padding: '8px'
+                }}>
+                  <Row gutter={[8, 8]}>
+                    {activeTab === 'categories' ? (
+                      categories.map((category) => (
+                        <Col xs={24} key={category.firebaseId}>
+                          <ModernCategoryCard item={category} type="category" />
+                        </Col>
+                      ))
+                    ) : (
+                      subcategories.map((subcategory) => (
+                        <Col xs={24} key={subcategory.firebaseId}>
+                          <ModernCategoryCard item={subcategory} type="subcategory" />
+                        </Col>
+                      ))
+                    )}
+                  </Row>
+                </div>
               )}
             </Content>
           </Layout>
@@ -1893,5 +1917,32 @@ const drawerStyles = `
 `;
 
 document.head.insertAdjacentHTML('beforeend', `<style>${drawerStyles}</style>`);
+
+// Add these styles
+const scrollStyles = `
+  body {
+    overflow: hidden;
+  }
+
+  .ant-virtual-list {
+    scrollbar-width: thin;
+    scrollbar-color: ${theme.primary}20 transparent;
+  }
+
+  .ant-virtual-list::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .ant-virtual-list::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .ant-virtual-list::-webkit-scrollbar-thumb {
+    background-color: ${theme.primary}20;
+    border-radius: 3px;
+  }
+`;
+
+document.head.insertAdjacentHTML('beforeend', `<style>${scrollStyles}</style>`);
 
 export default memo(ModernMenuManagement);
