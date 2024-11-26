@@ -51,6 +51,7 @@ import { IoFilterSharp, IoSearch } from 'react-icons/io5';
 import { RiPriceTag3Line } from 'react-icons/ri';
 import { MdOutlineSort } from 'react-icons/md';
 import { ScrollMenu } from 'react-horizontal-scrolling-menu';
+import FoodLoader from './FoodLoader';
 
 const { Content, Sider } = Layout;
 const { Option } = Select;
@@ -1692,95 +1693,108 @@ const ModernMenuItem = memo(({ item }) => (
     }}>
       <MobileHeader />
       
-      <Drawer
-        placement="left"
-        closable={false}
-        onClose={() => setDrawerVisible(false)}
-        open={drawerVisible}
-        bodyStyle={{ padding: 0 }}
-        width="80%"
-        style={{
-          borderTopRightRadius: '20px',
-          borderBottomRightRadius: '20px'
-        }}
-      >
-        {renderSiderContent()}
-      </Drawer>
+      {loading ? (
+        <div style={{ 
+          display: 'flex', 
+          justifyContent: 'center', 
+          alignItems: 'center', 
+          minHeight: '60vh' 
+        }}>
+          <FoodLoader />
+        </div>
+      ) : (
+        <>
+          <Drawer
+            placement="left"
+            closable={false}
+            onClose={() => setDrawerVisible(false)}
+            open={drawerVisible}
+            bodyStyle={{ padding: 0 }}
+            width="80%"
+            style={{
+              borderTopRightRadius: '20px',
+              borderBottomRightRadius: '20px'
+            }}
+          >
+            {renderSiderContent()}
+          </Drawer>
 
-      <Layout style={{ 
-        marginTop: '120px', 
-        background: theme.background,
-        padding: '8px',
-        paddingBottom: '80px'
-      }}>
-        <Content>
-          {activeTab === 'menu_items' && showFilters && <SearchAndFilters />}
+          <Layout style={{ 
+            marginTop: '120px', 
+            background: theme.background,
+            padding: '8px',
+            paddingBottom: '80px'
+          }}>
+            <Content>
+              {activeTab === 'menu_items' && showFilters && <SearchAndFilters />}
 
-          {activeTab === 'menu_items' ? (
-            <VirtualizedMenuItems />
-          ) : (
-            <Row gutter={[8, 8]}>
-              {activeTab === 'categories' ? (
-                categories.map((category) => (
-                  <Col xs={24} key={category.firebaseId}>
-                    <ModernCategoryCard item={category} type="category" />
-                  </Col>
-                ))
+              {activeTab === 'menu_items' ? (
+                <VirtualizedMenuItems />
               ) : (
-                subcategories.map((subcategory) => (
-                  <Col xs={24} key={subcategory.firebaseId}>
-                    <ModernCategoryCard item={subcategory} type="subcategory" />
-                  </Col>
-                ))
+                <Row gutter={[8, 8]}>
+                  {activeTab === 'categories' ? (
+                    categories.map((category) => (
+                      <Col xs={24} key={category.firebaseId}>
+                        <ModernCategoryCard item={category} type="category" />
+                      </Col>
+                    ))
+                  ) : (
+                    subcategories.map((subcategory) => (
+                      <Col xs={24} key={subcategory.firebaseId}>
+                        <ModernCategoryCard item={subcategory} type="subcategory" />
+                      </Col>
+                    ))
+                  )}
+                </Row>
               )}
-            </Row>
-          )}
-        </Content>
-      </Layout>
+            </Content>
+          </Layout>
 
-      <FloatingActionButton />
+          <FloatingActionButton />
 
-      {/* Update Modal styles */}
-      <Modal
-        title={null}
-        visible={isModalVisible}
-        onCancel={() => {
-          setIsModalVisible(false);
-          setEditingItem(null);
-          form.resetFields();
-        }}
-        footer={null}
-        style={{ 
-          top: 20,
-          maxWidth: '90%',
-          margin: '0 auto',
-          maxHeight: `calc(100vh - ${FOOTER_HEIGHT + 40}px)`, // Adjust max height
-          overflow: 'auto'
-        }}
-        bodyStyle={{
-          borderRadius: '16px',
-          padding: '20px'
-        }}
-      >
-        <Form form={form} layout='vertical' onFinish={editingItem ? handleUpdate : handleCreate}>
-          {renderFormItems()}
-          <Form.Item>
-            <Button
-              type='primary'
-              htmlType='submit'
-              style={{
-                backgroundColor: '#ff4d4f',
-                borderColor: '#ff4d4f',
-                width: '100%',
-                height: '40px',
-                borderRadius: '6px',
-              }}
-            >
-              {editingItem ? 'Update' : 'Create'}
-            </Button>
-          </Form.Item>
-        </Form>
-      </Modal>
+          {/* Update Modal styles */}
+          <Modal
+            title={null}
+            visible={isModalVisible}
+            onCancel={() => {
+              setIsModalVisible(false);
+              setEditingItem(null);
+              form.resetFields();
+            }}
+            footer={null}
+            style={{ 
+              top: 20,
+              maxWidth: '90%',
+              margin: '0 auto',
+              maxHeight: `calc(100vh - ${FOOTER_HEIGHT + 40}px)`, // Adjust max height
+              overflow: 'auto'
+            }}
+            bodyStyle={{
+              borderRadius: '16px',
+              padding: '20px'
+            }}
+          >
+            <Form form={form} layout='vertical' onFinish={editingItem ? handleUpdate : handleCreate}>
+              {renderFormItems()}
+              <Form.Item>
+                <Button
+                  type='primary'
+                  htmlType='submit'
+                  style={{
+                    backgroundColor: '#ff4d4f',
+                    borderColor: '#ff4d4f',
+                    width: '100%',
+                    height: '40px',
+                    borderRadius: '6px',
+                  }}
+                >
+                  {editingItem ? 'Update' : 'Create'}
+                </Button>
+              </Form.Item>
+            </Form>
+          </Modal>
+        </>
+      )}
     </Layout>
   );
 };
