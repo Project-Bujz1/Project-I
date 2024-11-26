@@ -52,6 +52,7 @@ import { RiPriceTag3Line } from 'react-icons/ri';
 import { MdOutlineSort } from 'react-icons/md';
 import { ScrollMenu } from 'react-horizontal-scrolling-menu';
 import FoodLoader from './FoodLoader';
+import StylishButton from './common/StylishButton';
 
 const { Content, Sider } = Layout;
 const { Option } = Select;
@@ -1527,10 +1528,12 @@ const ModernMenuItem = memo(({ item }) => (
             display: 'flex',
             gap: '12px'
           }}>
-            <Button block onClick={onClose}>Cancel</Button>
-            <Button block type="primary" onClick={handleApply}>
+            <StylishButton type="default" block onClick={onClose}>
+              Cancel
+            </StylishButton>
+            <StylishButton type="primary" block onClick={handleApply}>
               Apply Filters
-            </Button>
+            </StylishButton>
           </div>
         }
       >

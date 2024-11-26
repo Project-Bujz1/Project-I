@@ -1,0 +1,111 @@
+/* Modern button styles */
+.stylish-button {
+  border-radius: 12px !important;
+  border: none !important;
+  height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.stylish-button:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.stylish-button:hover:before {
+  opacity: 1;
+}
+
+.stylish-button:active {
+  transform: scale(0.98) !important;
+}
+
+/* Primary button - Red theme */
+.primary-button {
+  background: linear-gradient(135deg, #ff4d4d, #ff1a1a) !important;
+  color: white !important;
+}
+
+.primary-button:hover {
+  background: linear-gradient(135deg, #ff6666, #ff3333) !important;
+  box-shadow: 0 4px 12px rgba(255, 26, 26, 0.3) !important;
+}
+
+/* Default button - White theme */
+.default-button {
+  background: white !important;
+  color: #ff1a1a !important;
+  border: 2px solid #ff1a1a !important;
+}
+
+.default-button:hover {
+  background: #fff5f5 !important;
+  box-shadow: 0 4px 12px rgba(255, 26, 26, 0.15) !important;
+}
+
+/* Ghost button */
+.ghost-button {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(8px) !important;
+  color: #ff1a1a !important;
+}
+
+.ghost-button:hover {
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Disabled state */
+.stylish-button[disabled] {
+  background: #f5f5f5 !important;
+  color: #bfbfbf !important;
+  box-shadow: none !important;
+  cursor: not-allowed !important;
+}
+
+/* Mobile-specific enhancements */
+@media (max-width: 768px) {
+  .stylish-button {
+    height: 44px !important;
+    font-size: 15px !important;
+  }
+  
+  .stylish-button.ant-btn-lg {
+    height: 52px !important;
+    font-size: 17px !important;
+  }
+  
+  .stylish-button.ant-btn-sm {
+    height: 36px !important;
+    font-size: 14px !important;
+  }
+}
+
+/* Button group styles for mobile-like tabs */
+.mobile-tab-group {
+  display: flex;
+  gap: 8px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 16px;
+}
+
+.mobile-tab-group .stylish-button {
+  flex: 1;
+  border-radius: 12px !important;
+  height: 40px !important;
+} 
