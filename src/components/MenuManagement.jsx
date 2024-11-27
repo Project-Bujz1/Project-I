@@ -1401,7 +1401,7 @@ const ModernMenuItem = memo(({ item }) => (
       }}
       style={{
         position: 'fixed',
-        bottom: `${FOOTER_HEIGHT + 24}px`, // Adjust bottom position to be above footer
+        bottom: `${FOOTER_HEIGHT + 44}px`, // Adjust bottom position to be above footer
         right: '24px',
         backgroundColor: theme.primary,
         boxShadow: '0 6px 16px rgba(0,0,0,0.2)',
@@ -1450,7 +1450,8 @@ const ModernMenuItem = memo(({ item }) => (
           itemKey="firebaseId"
           style={{
             padding: '0 8px',
-            overflowX: 'hidden'
+            overflowX: 'hidden',
+            paddingTop: '54px'
           }}
         >
           {(item) => (
