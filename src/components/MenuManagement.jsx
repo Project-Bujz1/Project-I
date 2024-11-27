@@ -1423,24 +1423,24 @@ const ModernMenuItem = memo(({ item }) => (
 
     useEffect(() => {
       const updateHeight = () => {
-        // Calculate height by subtracting header height, search bar height, and footer
-        const headerHeight = 120; // Height of MobileHeader
-        const searchBarHeight = showFilters ? 140 : 0; // Approximate height of search bar when visible
-        const height = window.innerHeight - headerHeight - searchBarHeight - FOOTER_HEIGHT;
-        setContainerHeight(height);
+        if (containerRef.current) {
+          const searchBarHeight = showFilters ? 140 : 0;
+          const height = containerRef.current.offsetHeight - searchBarHeight;
+          setContainerHeight(height);
+        }
       };
 
       updateHeight();
       window.addEventListener('resize', updateHeight);
       return () => window.removeEventListener('resize', updateHeight);
-    }, [showFilters]); // Add showFilters as dependency
+    }, [showFilters]);
 
     return (
       <div 
         ref={containerRef} 
         style={{ 
-          height: containerHeight,
-          overflow: 'hidden' // Prevent outer scrolling
+          height: '100%',
+          overflow: 'hidden'
         }}
       >
         <VirtualList
@@ -1448,10 +1448,9 @@ const ModernMenuItem = memo(({ item }) => (
           height={containerHeight}
           itemHeight={120}
           itemKey="firebaseId"
-          onScroll={() => {}}
           style={{
             padding: '0 8px',
-            overflowX: 'hidden' // Prevent horizontal scrolling
+            overflowX: 'hidden'
           }}
         >
           {(item) => (
@@ -1722,132 +1721,195 @@ const ModernMenuItem = memo(({ item }) => (
 
   document.head.insertAdjacentHTML('beforeend', `<style>${modernDrawerStyles}</style>`);
 
+  // Replace the existing updatedScrollStyles with this:
+  const updatedScrollStyles = `
+    html, body {
+      overflow: auto;
+      width: 100%;
+      height: 100%;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #root {
+      height: 100%;
+      overflow: auto;
+    }
+
+    .menu-management-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      overflow: hidden;
+    }
+
+    .menu-management-content {
+      height: 100%;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .ant-virtual-list {
+      scrollbar-width: thin;
+      scrollbar-color: ${theme.primary}20 transparent;
+    }
+
+    .ant-virtual-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .ant-virtual-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .ant-virtual-list::-webkit-scrollbar-thumb {
+      background-color: ${theme.primary}20;
+      border-radius: 3px;
+    }
+  `;
+
+  document.head.insertAdjacentHTML('beforeend', `<style>${updatedScrollStyles}</style>`);
+
   return (
-    <Layout style={{ 
-      minHeight: '100vh', 
-      background: theme.background,
-      maxWidth: '480px',
-      margin: '0 auto',
-      position: 'fixed', // Fix the layout
-      top: 0,
-      left: '50%',
-      transform: 'translateX(-50%)',
-      width: '100%',
-      overflow: 'hidden' // Prevent outer scrolling
-    }}>
-      <MobileHeader />
-      
-      {loading ? (
-        <div style={{ 
-          display: 'flex', 
-          justifyContent: 'center', 
-          alignItems: 'center', 
-          minHeight: '60vh' 
-        }}>
-          <FoodLoader />
-        </div>
-      ) : (
-        <>
-          <Drawer
-            placement="left"
-            closable={false}
-            onClose={() => setDrawerVisible(false)}
-            open={drawerVisible}
-            bodyStyle={{ padding: 0 }}
-            width="80%"
-            style={{
-              borderTopRightRadius: '20px',
-              borderBottomRightRadius: '20px'
-            }}
-          >
-            {renderSiderContent()}
-          </Drawer>
-
-          <Layout style={{ 
-            marginTop: '120px', 
-            background: theme.background,
-            height: `calc(100vh - 120px)`, // Set fixed height
-            overflow: 'hidden' // Prevent layout scrolling
+    <div className="menu-management-container">
+      <Layout style={{ 
+        minHeight: '100vh', 
+        background: theme.background,
+        maxWidth: '480px',
+        margin: '0 auto',
+        width: '100%',
+      }}>
+        <MobileHeader />
+        
+        {loading ? (
+          <div style={{ 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center', 
+            minHeight: '60vh' 
           }}>
-            <Content style={{
-              overflow: 'hidden', // Prevent content scrolling
-              position: 'relative'
+            <FoodLoader />
+          </div>
+        ) : (
+          <div className="menu-management-content">
+            <Drawer
+              placement="left"
+              closable={false}
+              onClose={() => setDrawerVisible(false)}
+              open={drawerVisible}
+              bodyStyle={{ padding: 0 }}
+              width="80%"
+              style={{
+                borderTopRightRadius: '20px',
+                borderBottomRightRadius: '20px'
+              }}
+            >
+              {renderSiderContent()}
+            </Drawer>
+
+            <Layout style={{ 
+              marginTop: '72px',
+              background: theme.background,
+              height: `calc(100vh - 72px)`,
+              width: '100%',
+              maxWidth: '480px',
             }}>
-              {activeTab === 'menu_items' && showFilters && <SearchAndFilters />}
-              {activeTab === 'menu_items' ? (
-                <VirtualizedMenuItems />
-              ) : (
-                <div style={{
-                  height: `calc(100vh - 180px)`,
-                  overflowY: 'auto',
-                  padding: '8px'
+              <Content style={{
+                height: '100%',
+                overflow: 'hidden',
+                position: 'relative',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                {activeTab === 'menu_items' && showFilters && (
+                  <div style={{ flexShrink: 0 }}>
+                    <SearchAndFilters />
+                  </div>
+                )}
+                
+                <div style={{ 
+                  flex: 1, 
+                  overflow: 'hidden',
+                  position: 'relative'
                 }}>
-                  <Row gutter={[8, 8]}>
-                    {activeTab === 'categories' ? (
-                      categories.map((category) => (
-                        <Col xs={24} key={category.firebaseId}>
-                          <ModernCategoryCard item={category} type="category" />
-                        </Col>
-                      ))
-                    ) : (
-                      subcategories.map((subcategory) => (
-                        <Col xs={24} key={subcategory.firebaseId}>
-                          <ModernCategoryCard item={subcategory} type="subcategory" />
-                        </Col>
-                      ))
-                    )}
-                  </Row>
+                  {activeTab === 'menu_items' ? (
+                    <VirtualizedMenuItems />
+                  ) : (
+                    <div style={{
+                      height: '100%',
+                      overflowY: 'auto',
+                      padding: '8px',
+                      WebkitOverflowScrolling: 'touch'
+                    }}>
+                      <Row gutter={[8, 8]}>
+                        {activeTab === 'categories' ? (
+                          categories.map((category) => (
+                            <Col xs={24} key={category.firebaseId}>
+                              <ModernCategoryCard item={category} type="category" />
+                            </Col>
+                          ))
+                        ) : (
+                          subcategories.map((subcategory) => (
+                            <Col xs={24} key={subcategory.firebaseId}>
+                              <ModernCategoryCard item={subcategory} type="subcategory" />
+                            </Col>
+                          ))
+                        )}
+                      </Row>
+                    </div>
+                  )}
                 </div>
-              )}
-            </Content>
-          </Layout>
+              </Content>
+            </Layout>
 
-          <FloatingActionButton />
+            <FloatingActionButton />
 
-          {/* Update Modal styles */}
-          <Modal
-            title={null}
-            visible={isModalVisible}
-            onCancel={() => {
-              setIsModalVisible(false);
-              setEditingItem(null);
-              form.resetFields();
-            }}
-            footer={null}
-            style={{ 
-              top: 20,
-              maxWidth: '90%',
-              margin: '0 auto',
-              maxHeight: `calc(100vh - ${FOOTER_HEIGHT + 40}px)`, // Adjust max height
-              overflow: 'auto'
-            }}
-            bodyStyle={{
-              borderRadius: '16px',
-              padding: '20px'
-            }}
-          >
-            <Form form={form} layout='vertical' onFinish={editingItem ? handleUpdate : handleCreate}>
-              {renderFormItems()}
-              <Form.Item>
-                <Button
-                  type='primary'
-                  htmlType='submit'
-                  style={{
-                    backgroundColor: '#ff4d4f',
-                    borderColor: '#ff4d4f',
-                    width: '100%',
-                    height: '40px',
-                    borderRadius: '6px',
-                  }}
-                >
-                  {editingItem ? 'Update' : 'Create'}
-                </Button>
-              </Form.Item>
-            </Form>
-          </Modal>
-        </>
-      )}
-    </Layout>
+            {/* Update Modal styles */}
+            <Modal
+              title={null}
+              visible={isModalVisible}
+              onCancel={() => {
+                setIsModalVisible(false);
+                setEditingItem(null);
+                form.resetFields();
+              }}
+              footer={null}
+              style={{ 
+                top: 20,
+                maxWidth: '90%',
+                margin: '0 auto',
+                maxHeight: `calc(100vh - ${FOOTER_HEIGHT + 40}px)`, // Adjust max height
+                overflow: 'auto'
+              }}
+              bodyStyle={{
+                borderRadius: '16px',
+                padding: '20px'
+              }}
+            >
+              <Form form={form} layout='vertical' onFinish={editingItem ? handleUpdate : handleCreate}>
+                {renderFormItems()}
+                <Form.Item>
+                  <Button
+                    type='primary'
+                    htmlType='submit'
+                    style={{
+                      backgroundColor: '#ff4d4f',
+                      borderColor: '#ff4d4f',
+                      width: '100%',
+                      height: '40px',
+                      borderRadius: '6px',
+                    }}
+                  >
+                    {editingItem ? 'Update' : 'Create'}
+                  </Button>
+                </Form.Item>
+              </Form>
+            </Modal>
+          </div>
+        )}
+      </Layout>
+    </div>
   );
 };
 
@@ -1945,32 +2007,5 @@ const drawerStyles = `
 `;
 
 document.head.insertAdjacentHTML('beforeend', `<style>${drawerStyles}</style>`);
-
-// Add these styles
-const scrollStyles = `
-  body {
-    overflow: hidden;
-  }
-
-  .ant-virtual-list {
-    scrollbar-width: thin;
-    scrollbar-color: ${theme.primary}20 transparent;
-  }
-
-  .ant-virtual-list::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  .ant-virtual-list::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  .ant-virtual-list::-webkit-scrollbar-thumb {
-    background-color: ${theme.primary}20;
-    border-radius: 3px;
-  }
-`;
-
-document.head.insertAdjacentHTML('beforeend', `<style>${scrollStyles}</style>`);
 
 export default memo(ModernMenuManagement);
